@@ -76,9 +76,9 @@ include_directories(
          src/core/Facts.cpp
          )
 
-add_executable(test_1 src/tests/test1.cpp)
-add_dependencies(test_1 ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_1
+add_executable(test_facts src/tests/test_facts.cpp )
+add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_facts
    ${PROJECT_NAME}_lib
  )
 add_executable(test_wordtable src/tests/test_wordtable.cpp)
