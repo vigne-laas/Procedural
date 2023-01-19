@@ -1,0 +1,15 @@
+Pick:
+  ordered_facts:
+    - ?A hasHandMovingToward ?O
+    - ?A hasInHand ?O
+    - or_facts:
+        - NOT ?O isInContainer ?S REQUIRED
+        - not ?O isOnTopOf ?S
+  effects:
+    - ?? isA PickAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Place:
+  ordered
