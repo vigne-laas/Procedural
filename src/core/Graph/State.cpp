@@ -1,10 +1,10 @@
-#include "procedural/graph/State.h"
+#include "procedural/core/Graph/State.h"
 
 namespace procedural {
-State::State(std::string name) : name_(name), id_(1),initial_node_(false),final_node_(false)
-{
 
-}
+State::State(const std::string& name, int id) : name_(name + "_" + std::to_string(id)), 
+                                                initial_node_(false)
+{}
 
 State* State::evolve(const Fact& fact) const
 {
@@ -25,27 +25,6 @@ void State::addTransition(const Transition& transition)
 void State::setTransition(const std::vector<Transition>& transitions)
 {
     transitions_ = transitions;
-}
-
-
-void State::setInitialNode()
-{
-    initial_node_ = true;
-}
-
-void State::setFinalNode()
-{
-    final_node_ = true;
-}
-
-bool State::isInitialNode() const
-{
-    return initial_node_;
-}
-
-bool State::isFinalNode() const
-{
-    return transitions_.empty();
 }
 
 std::vector<Transition>& State::getTransitions()

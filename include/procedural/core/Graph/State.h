@@ -2,7 +2,7 @@
 #define PROCEDURAL_STATE_H
 
 #include <unordered_set>
-#include "procedural/graph/Transition.h"
+#include "procedural/core/Graph/Transition.h"
 #include "procedural/core/Types/Fact.h"
 
 
@@ -14,7 +14,7 @@ class Fact;
 class State
 {
 public:
-    State(std::string name);
+    explicit State(const std::string& name, int id);
 
     State* evolve(const Fact& fact) const;
 
@@ -22,24 +22,19 @@ public:
 
     void setTransition(const std::vector<Transition>& transitions);
 
-    void setInitialNode();
-    void setFinalNode();
+    void setInitialNode() { initial_node_ = true; }
 
-    bool isInitialNode() const;
-    bool isFinalNode() const;
+    bool isInitialNode() const { return initial_node_; }
+    bool isFinalNode() const { return transitions_.empty(); }
 
     std::vector<Transition>& getTransitions();
 
     std::string toString();
-    int id_;
 
-    std::string name_;
 private:
-
-    bool final_node_;
+    std::string name_;
     bool initial_node_;
-    std::vector<Transition> transitions_;
-
+    std::vector<std::pair<State*, Transition>> nexts_;
 };
 
 } // procedural
