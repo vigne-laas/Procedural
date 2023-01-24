@@ -9,7 +9,7 @@
 
 #include "procedural/graph/Transition.h"
 #include "procedural/graph/State.h"
-#include "procedural/core/FactPattern.h"
+#include "procedural/core/Types/FactPattern.h"
 #include "procedural/core/Types/Fact.h"
 
 

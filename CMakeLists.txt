@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 project(procedural)
 
 add_compile_options(-std=c++17)
@@ -76,7 +77,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
-        src/core/FactPattern.cpp
+        src/core/Types/FactPattern.cpp
         src/core/Types/WordTable.cpp
         src/core/Types/Fact.cpp
         )
