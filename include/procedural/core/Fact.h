@@ -15,22 +15,27 @@ public:
 
     Fact(bool add, const std::string& subject, const std::string& property, const std::string& object);
 
-    bool isValid();
+    bool isValid() const;
 
-    uint32_t getProperty();
-    uint32_t getSubject();
-    uint32_t getObject();
+    int32_t getProperty() const;
 
-    std::string getStringProperty();
-    std::string getStringSubject();
-    std::string getStringObject();
+    uint32_t getSubject() const;
 
-    void printProperties();
-    void printSubjectsObjects();
+    uint32_t getObject() const;
+
+    std::string getStringProperty() const;
+
+    std::string getStringSubject() const;
+
+    std::string getStringObject() const;
+
+    void printProperties() const;
+
+    void printSubjectsObjects() const;
 
     bool operator==(const Fact& F2);
 
-    std::string toString();
+    std::string toString() const;
 
 
     static WordTable table_properties_;

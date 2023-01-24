@@ -27,62 +27,65 @@ Fact::Fact(bool add, const std::string& subject, const std::string& property, co
     object_ = table_subjects_objects_.get(object);
 }
 
-bool Fact::isValid()
+bool Fact::isValid() const
 {
-    return property_!=0;
+    return property_ != 0;
 }
 
-uint32_t Fact::getProperty()
+int32_t Fact::getProperty() const
 {
-    return property_;
+    return add_ ? property_ : property_ * -1;
 }
 
-uint32_t Fact::getSubject()
+uint32_t Fact::getSubject() const
 {
     return subject_;
 }
 
-uint32_t Fact::getObject()
+uint32_t Fact::getObject() const
 {
     return object_;
 }
 
 bool Fact::operator==(const Fact& F2)
 {
-    return (this->add_==F2.add_) and (this->property_ == F2.property_) and (this->subject_ == F2.subject_) and (this->object_ == F2.object_);
+    return (this->add_ == F2.add_) and (this->property_ == F2.property_) and (this->subject_ == F2.subject_) and
+           (this->object_ == F2.object_);
 }
 
-std::string Fact::toString()
+std::string Fact::toString() const
 {
-    std::cout << table_subjects_objects_[object_]<<std::endl;
-    if(this->isValid())
-        return (this->add_) ? "ADD " : "DEL " + table_subjects_objects_[this->subject_] + " " + table_properties_[this->property_] + " " + table_subjects_objects_[this->object_];
+    std::cout << table_subjects_objects_[object_] << std::endl;
+    if (this->isValid())
+        return (this->add_) ? "ADD " : "DEL " + table_subjects_objects_[this->subject_] + " " +
+                                       table_properties_[this->property_] + " " +
+                                       table_subjects_objects_[this->object_];
     else
         return "invalid Fact";
 }
 
-std::string Fact::getStringProperty()
+std::string Fact::getStringProperty() const
 {
     return table_properties_[property_];
 }
 
-std::string Fact::getStringSubject()
+std::string Fact::getStringSubject() const
 {
     return table_subjects_objects_[subject_];
 }
 
-std::string Fact::getStringObject()
+std::string Fact::getStringObject() const
 {
 //    table_subjects_objects_.printAll();
     return table_subjects_objects_[object_];
 }
 
-void Fact::printProperties()
+void Fact::printProperties() const
 {
     table_properties_.printAll();
 }
 
-void Fact::printSubjectsObjects()
+void Fact::printSubjectsObjects() const
 {
     table_subjects_objects_.printAll();
 }
