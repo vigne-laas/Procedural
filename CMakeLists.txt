@@ -76,6 +76,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
+        src/core/FactPattern.cpp
         src/core/WordTable.cpp
         src/core/Fact.cpp
         )
