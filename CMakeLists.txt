@@ -82,7 +82,7 @@ add_library(${PROJECT_NAME}_lib
         src/core/Types/Fact.cpp
         )
 add_library(${PROJECT_NAME}_network_lib
-        src/graph/Transition.cpp
+        src/core/Graph/Transition.cpp
         src/graph/State.cpp
         src/graph/Network.cpp
         )

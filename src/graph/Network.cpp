@@ -36,10 +36,7 @@ void Network::addTransitionIndex(const FactPattern& pattern, int32_t index)
 
     variables_map_.insert({pattern.getVarObject(), -1});
     variables_map_.insert({pattern.getVarSubject(), -1});
-    Transition t = Transition();
-    t.addProperty(pattern.getProperty());
-    t.setVarObject(pattern.getVarObject());
-    t.setVarSubject(pattern.getVarSubject());
+    Transition t = Transition(pattern);
 
     if (index < graph_.size())
         t.setNextState(&(graph_[index + 1]));
