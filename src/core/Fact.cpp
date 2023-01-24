@@ -57,7 +57,7 @@ std::string Fact::toString() const
 {
     std::cout << table_subjects_objects_[object_] << std::endl;
     if (this->isValid())
-        return (this->add_) ? "ADD " : "DEL " + table_subjects_objects_[this->subject_] + " " +
+        return ((this->add_) ? "ADD " : "DEL " )+ table_subjects_objects_[this->subject_] + " " +
                                        table_properties_[this->property_] + " " +
                                        table_subjects_objects_[this->object_];
     else
