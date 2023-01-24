@@ -1,6 +1,6 @@
 #include <iostream>
 #include "procedural/core/FactPattern.h"
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 namespace procedural {
 FactPattern::FactPattern(bool negative, const std::string& varSubject, const std::string& property,

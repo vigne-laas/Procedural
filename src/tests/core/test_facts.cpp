@@ -1,6 +1,6 @@
 #include "test_facts.h"
 
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 #include <iostream>
 

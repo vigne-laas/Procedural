@@ -1,4 +1,4 @@
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 #include <iostream>
 

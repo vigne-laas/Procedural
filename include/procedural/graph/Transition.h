@@ -3,7 +3,7 @@
 
 #include <cstdint> //FIXME Obliger ajouter ca ???
 #include <unordered_set>
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 #include "procedural/graph/State.h"
 #include "procedural/graph/Network.h"
 
