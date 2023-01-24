@@ -9,11 +9,11 @@ FactPattern::FactPattern(bool negative, const std::string& varSubject, const std
         var_object_(varObject), var_subject_(varSubject)
 {
     //TODO link with getOn/getUp Ontologenius pour hierarchie des proprietes
-    property_ = Fact::table_properties_.get(property);
+    property_ = Fact::properties_table.get(property);
 //    std::cout<<"Constructeur Pattern"<< std::endl;
 //    std::cout << "\t\t subject : " << var_subject_ << std::endl;
 //    std::cout << "\t\t object : " << var_object_ << std::endl;
-//    Fact::table_properties_.printAll();
+//    Fact::properties_table.printAll();
 }
 
 int32_t FactPattern::getProperty() const
@@ -23,7 +23,7 @@ int32_t FactPattern::getProperty() const
 
 const std::string& FactPattern::getStringProperty() const
 {
-    return Fact::table_properties_[property_];
+    return Fact::properties_table[property_];
 }
 
 const std::string& FactPattern::getVarSubject() const
