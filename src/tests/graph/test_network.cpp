@@ -44,7 +44,7 @@ int main()
     /*procedural::Fact Fp = procedural::Fact(true, "Bastien", "MoveThrought", "Cube");
     procedural::Fact Fp1 = procedural::Fact(true, "Bastien", "hasInHand", "Cube");
     procedural::Fact Fp2 = procedural::Fact(false, "Cube", "overSupport", "Table");
-    Fact::individuals_table.printAll();
+    std::cout << Fact::individuals_table.toString() << std::endl;
     std::cout << Fp.getProperty() << std::endl;
     N.evolve(Fp);
     N.displayVariables();

@@ -3,7 +3,7 @@
 
 #include <unordered_set>
 #include "procedural/graph/Transition.h"
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 
 namespace procedural {

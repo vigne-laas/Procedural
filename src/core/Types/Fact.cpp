@@ -10,7 +10,7 @@ WordTable Fact::individuals_table;
 
 Fact::Fact(bool add, const std::string& subject, const std::string& property, const std::string& object) : add_(add)
 {
-    property_ = properties_table.get_const(property);
+    property_ = properties_table.getConst(property);
     subject_ = individuals_table.get(subject);
     object_ = individuals_table.get(object);
 }

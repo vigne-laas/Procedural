@@ -13,8 +13,8 @@ public:
     WordTable();
     ~WordTable() = default;
 
-    void printSize();
-    void printAll();
+    size_t size() { return table_.size(); }
+    std::string toString();
 
     void add(const std::string& word);
     void add(const std::unordered_set<std::string>& list);
@@ -22,7 +22,7 @@ public:
     const std::string& get(uint32_t index);
     uint32_t get(const std::string& word);
 
-    uint32_t get_const(const std::string& word) const;
+    uint32_t getConst(const std::string& word) const;
 
     const std::string& operator[](uint32_t index);
     uint32_t operator[](const std::string& word);
@@ -31,6 +31,6 @@ private:
     std::vector<std::string> table_;
 };
 
-} // procedural
+} // namespace procedural
 
 #endif //PROCEDURAL_WORDTABLE_H

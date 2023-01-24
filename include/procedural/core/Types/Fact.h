@@ -4,7 +4,7 @@
 #include <string>
 #include <regex>
 
-#include "procedural/core/WordTable.h"
+#include "procedural/core/Types/WordTable.h"
 
 //TODO Add stamp data et moyen de synchro les faits infered
 //TODO add id

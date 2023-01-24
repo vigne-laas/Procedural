@@ -13,7 +13,7 @@ FactPattern::FactPattern(bool negative, const std::string& varSubject, const std
 //    std::cout<<"Constructeur Pattern"<< std::endl;
 //    std::cout << "\t\t subject : " << var_subject_ << std::endl;
 //    std::cout << "\t\t object : " << var_object_ << std::endl;
-//    Fact::properties_table.printAll();
+//    std::cout << Fact::properties_table.toString() << std::endl;
 }
 
 int32_t FactPattern::getProperty() const

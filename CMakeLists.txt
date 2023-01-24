@@ -77,8 +77,8 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
         src/core/FactPattern.cpp
-        src/core/WordTable.cpp
-        src/core/Fact.cpp
+        src/core/Types/WordTable.cpp
+        src/core/Types/Fact.cpp
         )
 add_library(${PROJECT_NAME}_network_lib
         src/graph/Transition.cpp
@@ -94,6 +94,10 @@ target_link_libraries(${PROJECT_NAME}_reader_lib yaml-cpp)
 add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp
         )
+
+##################################
+##      Test executables        ##
+##################################
 
 add_executable(test_facts src/tests/core/test_facts.cpp)
 add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
@@ -119,19 +123,8 @@ target_link_libraries(test_reader
         yaml-cpp
         )
 
-add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
+add_executable(test_feeder src/tests/test_feeder.cpp)
 add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_feeder
         ${PROJECT_NAME}_feed_lib
         )
-#add_executable(test_feeder src/tests/test_feeder.cpp)
-#add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(test_feeder
-#        ${PROJECT_NAME}_lib
-#        ${PROJECT_NAME}_feed_lib
-#        )
-
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )

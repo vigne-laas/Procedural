@@ -10,7 +10,7 @@ int main(){
     procedural::Fact F1 = procedural::Fact(false, "plop", "isA", "kyoto_floor");
     std::cout <<"object : " <<F1.getObject() << ":" <<F1.getStringObject() <<std::endl;
     std::cout << F1.toString() << std::endl;
-    procedural::Fact::individuals_table.printAll();
+    std::cout << procedural::Fact::individuals_table.toString() << std::endl;
     procedural::Fact F2 = procedural::Fact(true, "plop", "is", "kyoto_floor");
     std::cout << F2.toString() << std::endl;
 

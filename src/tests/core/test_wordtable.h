@@ -5,7 +5,7 @@
 #ifndef PROCEDURAL_TEST_WORDTABLE_H
 #define PROCEDURAL_TEST_WORDTABLE_H
 
-#include "procedural/core/WordTable.h"
+#include "procedural/core/Types/WordTable.h"
 
 namespace procedural {
 
