@@ -30,16 +30,13 @@ Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const st
 
 void Network::addTransitionIndex(const FactPattern& pattern, int32_t index)
 {
-//    std::cout << pattern.to_string() << std::endl;
+//    std::cout << pattern.toString() << std::endl;
 //    std::cout<<"Add in map var subject : "<<pattern.getVarSubject()<<std::endl;
 //    std::cout<<"Add in map var object : "<<pattern.getVarObject()<<std::endl;
 
     variables_map_.insert({pattern.getVarObject(), -1});
     variables_map_.insert({pattern.getVarSubject(), -1});
-    Transition t = Transition();
-    t.addProperty(pattern.getProperty());
-    t.setVarObject(pattern.getVarObject());
-    t.setVarSubject(pattern.getVarSubject());
+    Transition t = Transition(pattern);
 
     if (index < graph_.size())
         t.setNextState(&(graph_[index + 1]));

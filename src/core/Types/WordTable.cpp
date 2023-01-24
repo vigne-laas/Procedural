@@ -1,32 +1,24 @@
-#include "procedural/core/WordTable.h"
-#include <iostream>
+#include "procedural/core/Types/WordTable.h"
+
 #include <algorithm>
 
 namespace procedural {
 
 WordTable::WordTable() : table_({""})
-{
-}
+{}
 
-void WordTable::printSize()
+std::string WordTable::toString()
 {
-    std::cout << "Size of the table : " << table_.size() << std::endl;
-}
-
-void WordTable::printAll()
-{
-    std::cout << "Elements in  the table : " << std::endl;
-    for (unsigned int i = 0; i < table_.size(); i++)
-    {
-        std::cout << "table[" << i << "] : " << table_[i] << std::endl;
-    }
+    std::string str;
+    for(size_t i = 0; i < table_.size(); i++)
+        str += std::to_string(i) + " : " + table_[i] + "\n";
+    return str;
 }
 
 void WordTable::add(const std::string& word)
 {
     if (std::find(table_.begin(), table_.end(), word) == table_.end())
         table_.push_back(word);
-
 }
 
 void WordTable::add(const std::unordered_set<std::string>& words)
@@ -37,10 +29,10 @@ void WordTable::add(const std::unordered_set<std::string>& words)
 
 const std::string& WordTable::get(uint32_t index)
 {
-    if (index > 0 & index < table_.size())
+    if ((index > 0) && (index < table_.size()))
         return table_[index];
     else
-        return table_[0];
+        return table_.front();
 }
 
 uint32_t WordTable::get(const std::string& word)
@@ -65,7 +57,7 @@ uint32_t WordTable::operator[](const std::string& word)
     return get(word);
 }
 
-uint32_t WordTable::get_const(const std::string& word) const
+uint32_t WordTable::getConst(const std::string& word) const
 {
     auto iter = std::find(table_.begin(), table_.end(), word);
     if (iter != table_.end())
@@ -74,4 +66,4 @@ uint32_t WordTable::get_const(const std::string& word) const
         return 0;
 }
 
-} // procedural
+} // namespace procedural

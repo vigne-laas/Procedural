@@ -1,5 +1,6 @@
 #include "test_network.h"
-#include "procedural/core/FactPattern.h"
+#include "procedural/core/Types/FactPattern.h"
+#include "procedural/graph/Network.h"
 #include <iostream>
 
 int main()
@@ -10,10 +11,10 @@ int main()
     procedural::FactPattern F2 = procedural::FactPattern(true, "O", "overSupport", "S", true);
     procedural::FactPattern F3 = procedural::FactPattern(true, "O", "inContainer", "S", true);
 //    std::cout << "Before Network \n"<< std::endl;
-//    std::cout << F.to_string() << std::endl;
-//    std::cout << F1.to_string() << std::endl;
-//    std::cout << F2.to_string() << std::endl;
-//    std::cout << F3.to_string() << std::endl;
+//    std::cout << F.toString() << std::endl;
+//    std::cout << F1.toString() << std::endl;
+//    std::cout << F2.toString() << std::endl;
+//    std::cout << F3.toString() << std::endl;
 //    std::cout << "END Before Network \n"<< std::endl;
 
     list_facts.resize(3);
@@ -44,7 +45,7 @@ int main()
     /*procedural::Fact Fp = procedural::Fact(true, "Bastien", "MoveThrought", "Cube");
     procedural::Fact Fp1 = procedural::Fact(true, "Bastien", "hasInHand", "Cube");
     procedural::Fact Fp2 = procedural::Fact(false, "Cube", "overSupport", "Table");
-    Fp.printSubjectsObjects();
+    std::cout << Fact::individuals_table.toString() << std::endl;
     std::cout << Fp.getProperty() << std::endl;
     N.evolve(Fp);
     N.displayVariables();

@@ -7,19 +7,18 @@
 #include <vector>
 #include <string>
 
-#include "procedural/graph/Transition.h"
-#include "procedural/graph/State.h"
-#include "procedural/core/FactPattern.h"
-#include "procedural/core/Fact.h"
+#include "procedural/core/Graph/Transition.h"
+#include "procedural/core/Graph/State.h"
+#include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Types/Fact.h"
 
 
 
 
 namespace procedural {
 
-//class FactPattern;
-//class Transition;
-//class State;
+class Transition;
+class State;
 
 class Network
 {

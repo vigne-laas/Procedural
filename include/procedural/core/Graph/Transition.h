@@ -3,8 +3,9 @@
 
 #include <cstdint> //FIXME Obliger ajouter ca ???
 #include <unordered_set>
-#include "procedural/core/Fact.h"
-#include "procedural/graph/State.h"
+
+#include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Graph/State.h"
 #include "procedural/graph/Network.h"
 
 namespace procedural {
@@ -16,42 +17,38 @@ class Transition
 {
     friend Network;
 public:
-    Transition();
+    explicit Transition(const FactPattern& pattern);
 
     State* evolve(const Fact& fact) const;
 
     void setObject(int32_t object);
     void setSubject(int32_t subject);
-    void setVarObject(const std::string& object);
-    void setVarSubject(const std::string& subject);
-    const std::string& getVarObject()const;
-    const std::string& getVarSubject()const;
-    void setProperties(const std::unordered_set<int32_t>& properties);
-    void addProperty(int32_t property);
 
+    const std::string& getVarObject() const { return var_object_; }
+    const std::string& getVarSubject() const { return var_subject_; }
 
-    void setNextState(State * nextState);
+    void expandProperty();
+
+    void setNextState(State * nextState) { nextState_ = nextState; }
 
     std::string toString()const;
 
-
-
-    bool operator==(const Transition& transition) const;
-    bool operator==(const Fact& fact) const;
+    bool operator==(const Transition& other) const;
+    bool matchFact(const Fact& fact) const;
 
     void checkUpdate(const Network* pNetwork);
 
 private:
     std::string var_subject_;
     std::string var_object_;
+
     int32_t subject_;
     int32_t object_;
+
     State* nextState_;
     std::unordered_set<int32_t> properties_;
-
-
 };
 
-} // procedural
+} // namespace procedural
 
 #endif //PROCEDURAL_TRANSITION_H

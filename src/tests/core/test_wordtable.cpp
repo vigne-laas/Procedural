@@ -18,14 +18,14 @@ int main() {
     list.insert("ajout");
     Table.add(list);
     Table.add("coucou");
-    Table.printAll();
+    std::cout << Table.toString() << std::endl;
     uint32_t index = Table["bonjour"];
     uint32_t index2 = Table["coucou"];
     std::cout << index << " " << index2 << std::endl;
     std::string txt = Table[0];
     std::string txt2 = Table[1];
     std::cout << txt << " " << txt2 << std::endl;
-    Table.printAll();
+    std::cout << Table.toString() << std::endl;
 
 
 

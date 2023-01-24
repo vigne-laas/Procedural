@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 project(procedural)
 
 add_compile_options(-std=c++17)
@@ -77,13 +78,13 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
         src/core/Action.cpp
-        src/core/FactPattern.cpp
-        src/core/WordTable.cpp
-        src/core/Fact.cpp
+        src/core/Types/FactPattern.cpp
+        src/core/Types/WordTable.cpp
+        src/core/Types/Fact.cpp
         )
 add_library(${PROJECT_NAME}_network_lib
-        src/graph/Transition.cpp
-        src/graph/State.cpp
+        src/core/Graph/Transition.cpp
+        src/core/Graph/State.cpp
         src/graph/Network.cpp
         )
 
@@ -95,6 +96,10 @@ target_link_libraries(${PROJECT_NAME}_reader_lib yaml-cpp)
 add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp
         )
+
+##################################
+##      Test executables        ##
+##################################
 
 add_executable(test_facts src/tests/core/test_facts.cpp)
 add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
