@@ -1,5 +1,5 @@
 #include <iostream>
-#include "procedural/core/Action.h"
+#include "procedural/graph/Action.h"
 
 namespace procedural {
 Action::Action(const std::string& name) : name_(name)

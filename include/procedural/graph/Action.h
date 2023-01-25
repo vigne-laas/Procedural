@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "procedural/core/FactPattern.h"
+#include "procedural/core/Types/FactPattern.h"
 #include "procedural/graph/Network.h"
 
 
