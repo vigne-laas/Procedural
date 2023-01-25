@@ -4,11 +4,13 @@
 #include <unordered_set>
 #include "procedural/core/Graph/Transition.h"
 #include "procedural/core/Types/Fact.h"
+#include "procedural/core/Types/Variable.h"
 
 
 namespace procedural {
 
 class Transition;
+
 class Fact;
 
 class State
@@ -18,23 +20,27 @@ public:
 
     State* evolve(const Fact& fact) const;
 
-    void addTransition(const Transition& transition);
+    void addTransition(const Transition& transition, State* pnext_state);
 
-    void setTransition(const std::vector<Transition>& transitions);
+//    void setTransition(const std::vector<Transition>& transitions);
 
-    void setInitialNode() { initial_node_ = true; }
+    void setInitialNode()
+    { initial_node_ = true; }
 
     bool isInitialNode() const { return initial_node_; }
-    bool isFinalNode() const { return transitions_.empty(); }
+    bool isFinalNode() const { return nexts_.empty(); }
 
-    std::vector<Transition>& getTransitions();
+//    std::vector<Transition>& getTransitions();
+    void link_transitions(std::vector<Variable_t>& variables_);
 
     std::string toString();
+
+    void expand_transitions();
 
 private:
     std::string name_;
     bool initial_node_;
-    std::vector<std::pair<State*, Transition>> nexts_;
+    std::vector<std::pair<Transition, State*>> nexts_;
 };
 
 } // procedural

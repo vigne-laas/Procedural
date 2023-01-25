@@ -5,12 +5,31 @@ namespace procedural {
 
 Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name) : name_(name),
                                                                                                    current_state_(
-                                                                                                           nullptr)
+                                                                                                           nullptr),literal_variables_({}),variables_({})
 {
-    graph_.resize(patterns.size() + 1, State(name_));
+    for (auto index = 0; index < patterns.size() + 1; index++)
+        graph_.emplace_back(name_, index);
+
+    buildNetwork(patterns);
+    linkNetwork();
+
+
+//    for (auto& var: literal_variables_)
+//        std::cout << var << std::endl;
+//    for (auto& var: variables_)
+//        std::cout << var.toString() << std::endl;
+//    std::cout << "try print" << std::endl;
+
+    graph_.front().setInitialNode();
+    current_state_ = &graph_.front();
+
+}
+
+void Network::buildNetwork(const std::vector<std::vector<FactPattern>>& patterns)
+{
     for (auto index_pattern = 0; index_pattern < patterns.size(); index_pattern++)
     {
-        graph_[index_pattern].id_ = index_pattern;
+
         if (patterns[index_pattern].size() == 1)
             addTransitionIndex(patterns[index_pattern].front(), index_pattern);
         else
@@ -21,31 +40,51 @@ Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const st
             }
         }
     }
-//    initialTransition_ = graph_.front().getTransitions();
-//    graph_[0].setInitialNode();
-    graph_.back().id_ = graph_.size() - 1;
-    current_state_ = &graph_.front();
-//    graph_[graph_.size()-1].id_ = graph_.size()-1;
 }
+
+
+void Network::linkNetwork()
+{
+    for(auto& state : graph_)
+    {
+        state.link_transitions(variables_);
+//        state.expand_transitions();
+    }
+
+}
+void Network::checkVar(const FactPattern& pattern)
+{
+    if (literal_variables_.find(pattern.getVarSubject()) == literal_variables_.end())
+    {
+        literal_variables_.insert(pattern.getVarSubject());
+        variables_.emplace_back(pattern.getVarSubject());
+//        std::cout << "add var : " << pattern.getVarSubject() << std::endl;
+    }
+    if (literal_variables_.find(pattern.getVarObject()) == literal_variables_.end())
+    {
+        literal_variables_.insert(pattern.getVarObject());
+        variables_.emplace_back(pattern.getVarObject());
+//        std::cout << "add var : " << pattern.getVarObject() << std::endl;
+
+    }
+
+}
+
 
 void Network::addTransitionIndex(const FactPattern& pattern, int32_t index)
 {
 //    std::cout << pattern.toString() << std::endl;
 //    std::cout<<"Add in map var subject : "<<pattern.getVarSubject()<<std::endl;
 //    std::cout<<"Add in map var object : "<<pattern.getVarObject()<<std::endl;
-
-    variables_map_.insert({pattern.getVarObject(), -1});
-    variables_map_.insert({pattern.getVarSubject(), -1});
+    checkVar(pattern);
     Transition t = Transition(pattern);
 
-    if (index < graph_.size())
-        t.setNextState(&(graph_[index + 1]));
-    graph_[index].addTransition(t);
+    graph_[index].addTransition(t, &(graph_[index + 1]));
     if (pattern.isRequired())
     {
         for (auto i = 0; i < index; i++)
         {
-            graph_[i].addTransition(t);
+            graph_[i].addTransition(t, &(graph_[index + 1]));
         }
     }
 }
@@ -59,45 +98,44 @@ void Network::displayNetwork()
     }
 }
 
+void Network::displayCurrentState()
+{
+
+    std::cout << current_state_->toString() << "\n\n" << std::endl;
+
+}
+
 void Network::displayVariables()
 {
-    for (auto& var: variables_map_)
+    for (auto& var: variables_)
     {
-        std::cout << "key : " << var.first << " => " << std::to_string(var.second) << std::endl;
+        std::cout << "key : " << var.literal << " => " << std::to_string(var.value) << std::endl;
     }
 }
 
 bool Network::evolve(const Fact& fact)
 {
-
-    for (auto& transition: current_state_->getTransitions())
-    {
-        auto evolution = transition.evolve(fact);
-        if (evolution != nullptr)
-        {
-//            std::cout<<"evolution"<<std::endl;
-            current_state_ = evolution;
-            updateVariables(fact,transition);
-            if(current_state_->isFinalNode())
-                std::cout<< "action detected : " << name_ <<std::endl;
-            return true;
-        }
-    }
-    return false;
+    auto evolution = current_state_->evolve(fact);
+    if (evolution == nullptr)
+        return false;
+    current_state_ = evolution;
+    return true;
 }
 
 void Network::updateVariables(const Fact& fact, const Transition& update_transition)
 {
-    variables_map_.at(update_transition.getVarObject()) = fact.getObject();
-    variables_map_.at(update_transition.getVarSubject()) = fact.getSubject();
+//    variables_map_.at(update_transition.getVarObject()) = fact.getObject();
+//    variables_map_.at(update_transition.getVarSubject()) = fact.getSubject();
     for (auto& state: graph_)
     {
-        for(auto& transition: state.getTransitions())
-        {
-            transition.checkUpdate(this);
-        }
+//        for (auto& transition: state.getTransitions())
+//        {
+//            transition.checkUpdate(this);
+//        }
     }
 }
+
+
 
 
 }

@@ -1,49 +1,59 @@
 #include "procedural/core/Graph/State.h"
 
+#include <iostream>
+
 namespace procedural {
 
-State::State(const std::string& name, int id) : name_(name + "_" + std::to_string(id)), 
-                                                initial_node_(false)
+State::State(const std::string& name, int id) : name_(name + "_" + std::to_string(id)),
+                                                initial_node_(false), nexts_({})
 {}
 
 State* State::evolve(const Fact& fact) const
 {
-    for (auto transition: transitions_)
+//    std::cout << "try evolve" << std::endl;
+    for (auto& pair: nexts_)
     {
-        auto new_state = transition.evolve(fact);
-        if (new_state != nullptr)
-            return new_state;
+//        std::cout << pair.first.toString() << std::endl;
+        if (pair.first.matchFact(fact))
+        {
+            pair.first.subject_->value = fact.getSubject();
+            pair.first.object_->value = fact.getObject();
+//            std::cout << "evolition" << std::endl;
+            return pair.second;
+        }
+
     }
     return nullptr;
 }
 
-void State::addTransition(const Transition& transition)
+void State::addTransition(const Transition& transition, State* pnext_state)
 {
-    transitions_.push_back(transition);
-}
-
-void State::setTransition(const std::vector<Transition>& transitions)
-{
-    transitions_ = transitions;
-}
-
-std::vector<Transition>& State::getTransitions()
-{
-    return transitions_;
+    nexts_.emplace_back(transition, pnext_state);
 }
 
 std::string State::toString()
 {
-    std::string msg = "State : " + name_ + "_" + std::to_string(id_)+"\n";
+    std::string msg = "State : " + name_ + "\n";
     msg += isFinalNode() ? "Final Node \n" : "";
     msg += initial_node_ ? "Initial Node \n" : "";
-
-    msg += "\t nombre de transition : " + std::to_string(transitions_.size()) + "\n";
-    for (auto transition: transitions_)
-    {
-        msg += "\t\t -  " + transition.toString();
-    }
+    msg += "\t nombre de transition : " + std::to_string(nexts_.size()) + "\n";
+    if (!nexts_.empty())
+        for (auto& pair_transition_state: nexts_)
+        {
+            msg += "\t\t -  " + pair_transition_state.first.toString();
+        }
     return msg;
+}
+
+void State::link_transitions(std::vector<Variable_t>& variables_)
+{
+    for (auto& pair: nexts_)
+        pair.first.linkVariables(variables_);
+}
+
+void State::expand_transitions()
+{
+//TODO link with transition.expand
 }
 
 } // procedural
