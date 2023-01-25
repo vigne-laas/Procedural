@@ -25,22 +25,27 @@ int main()
 
 
     procedural::Network N = procedural::Network(list_facts, "pick");
-    N.displayNetwork();
-    N.displayVariables();
+//    N.displayNetwork();
+//    N.displayVariables();
 
     std::vector<procedural::Fact> facts;
     facts.emplace_back(true, "Bastien", "MoveThrought", "Cube");
     facts.emplace_back(true, "Bob", "hasInHand", "Cube");
+    facts.emplace_back(true, "Cube", "hasInHand", "Cube");
     facts.emplace_back(true, "Bastien", "hasInHand", "Cube");
+    facts.emplace_back(true, "Cube", "overSupport", "Table");
     facts.emplace_back(false, "Cube", "overSupport", "Table");
-
+//
     for(auto& fact : facts)
     {
         std::cout << "--------------" << std::endl;
+        std::cout << "fact : " << fact.toString() << std::endl;
         N.evolve(fact);
-        N.displayVariables();
-        N.displayNetwork();
+//        N.displayVariables();
+//        N.displayNetwork();
+        N.displayCurrentState();
     }
+    N.displayNetwork();
 
     /*procedural::Fact Fp = procedural::Fact(true, "Bastien", "MoveThrought", "Cube");
     procedural::Fact Fp1 = procedural::Fact(true, "Bastien", "hasInHand", "Cube");
