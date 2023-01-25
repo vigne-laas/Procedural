@@ -24,7 +24,7 @@ bool Fact::operator==(const Fact& other) const
 std::string Fact::toString() const
 {
     if (this->isValid())
-        return (this->add_) ? "ADD " : "DEL " + individuals_table[this->subject_] + " " +
+        return ((this->add_) ? "ADD " : "DEL " )+ individuals_table[this->subject_] + " " +
                                        properties_table[this->property_] + " " +
                                        individuals_table[this->object_];
     else
