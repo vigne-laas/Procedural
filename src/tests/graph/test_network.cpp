@@ -1,4 +1,3 @@
-#include "test_network.h"
 #include "procedural/core/Types/FactPattern.h"
 #include "procedural/graph/Network.h"
 #include <iostream>

@@ -1,11 +1,8 @@
-//
-// Created by avigne on 18/01/23.
-//
-
-#include "test_wordtable.h"
+#include "procedural/core/Types/WordTable.h"
 #include <iostream>
 
-int main() {
+int main()
+{
     procedural::WordTable Table = procedural::WordTable();
     Table.add("coucou");
     //std::cout << "index : " << index << std::endl;
@@ -26,8 +23,6 @@ int main() {
     std::string txt2 = Table[1];
     std::cout << txt << " " << txt2 << std::endl;
     std::cout << Table.toString() << std::endl;
-
-
 
     return 0;
 }

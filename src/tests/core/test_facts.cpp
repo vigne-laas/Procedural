@@ -1,10 +1,9 @@
-#include "test_facts.h"
-
 #include "procedural/core/Types/Fact.h"
 
 #include <iostream>
 
-int main(){
+int main()
+{
     procedural::Fact::properties_table.add("isA");
     procedural::Fact::properties_table.add("isUnder");
     procedural::Fact F1 = procedural::Fact(false, "plop", "isA", "kyoto_floor");
@@ -18,10 +17,6 @@ int main(){
     if(!F2.isValid()){
         std::cout << "F2 is invalid" << std::endl;
     }
-
-
-
-
 
     return 0;
 }
