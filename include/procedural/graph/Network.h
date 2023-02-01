@@ -28,6 +28,7 @@ public:
 
     Network(const Network& mother) = delete;
 
+    Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id);
 
     void addTransitionIndex(const FactPattern& pattern, int32_t index);
 
@@ -47,12 +48,17 @@ public:
 //        return false;
     }
 
+
+    Network* clone();
+
     std::string name_;
     uint32_t id_;
 
 private:
+    Network(const std::string& name,int id);
 
     void buildNetwork(const std::vector<std::vector<FactPattern>>& patterns);
+
     void linkNetwork();
 
     void checkVar(const FactPattern& pattern);
@@ -62,7 +68,7 @@ private:
     std::unordered_set<std::string> literal_variables_;
 
     std::vector<State> graph_;
-    std::vector<Transition> initialTransition_;
+//    std::vector<Transition> initialTransition_;
     State* current_state_;
 
 //    void init_graph(int32_t vector_size);
