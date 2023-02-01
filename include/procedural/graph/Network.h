@@ -6,23 +6,14 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "procedural/core/Graph/State.h"
 
-#include "procedural/core/Graph/Transition.h"
-//#include "procedural/core/Graph/State.h"
-#include "procedural/core/Types/FactPattern.h"
-#include "procedural/core/Types/Fact.h"
-#include "procedural/core/Types/Variable.h"
+#include "procedural/core/Graph/State.h"
 
 
 namespace procedural {
 
-class Transition;
-class State;
-
 class Network
 {
-    friend Transition;
 public:
     Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id);
     Network(const Network& mother) = delete;
@@ -38,6 +29,7 @@ public:
     void updateVariables(const Fact& fact, const Transition& update_transition);
 
     void displayCurrentState();
+    const State* getCurrentState() { return current_state_; }
 
     bool isComplete() { return current_state_->isFinalNode(); }
 
