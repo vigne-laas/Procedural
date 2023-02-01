@@ -56,4 +56,4 @@ void State::expand_transitions()
 //TODO link with transition.expand
 }
 
-} // procedural
+} // namespace procedural

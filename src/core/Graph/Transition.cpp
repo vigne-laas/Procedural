@@ -3,8 +3,8 @@
 
 namespace procedural {
 
-Transition::Transition(const FactPattern& pattern)
-        : subject_(nullptr), object_(nullptr)
+Transition::Transition(const FactPattern& pattern) : subject_(nullptr),
+                                                     object_(nullptr)
 {
     var_subject_ = pattern.getVarSubject();
     var_object_ = pattern.getVarObject();
@@ -15,11 +15,11 @@ Transition::Transition(const FactPattern& pattern)
 bool Transition::matchFact(const Fact& fact) const
 {
     bool match = true;
-//    match &= ((subject_->asValue()) || (fact.getSubject() == subject_->value));
-//    match &= ((object_->asValue()) || (fact.getObject() == object_->value));
-    if (subject_->asValue())
+//    match &= ((subject_->getValue()) || (fact.getSubject() == subject_->value));
+//    match &= ((object_->getValue()) || (fact.getObject() == object_->value));
+    if (subject_->getValue())
         match = match && (fact.getSubject() == subject_->value);
-    if (object_->asValue())
+    if (object_->getValue())
         match = match && (fact.getObject() == object_->value);
 
     std::cout << "match :" << match << std::endl;
@@ -58,10 +58,10 @@ bool Transition::operator==(const Transition& other) const
 
 std::string Transition::toString() const
 {
-    std::string str = ((subject_->asValue()) ? std::to_string(subject_->value) : var_subject_) + " - (";
+    std::string str = ((subject_->getValue()) ? std::to_string(subject_->value) : var_subject_) + " - (";
     for (auto property: properties_)
         str += " " + std::to_string(property);
-    str += ") - " + ((object_->asValue()) ? std::to_string(object_->value) : var_object_);
+    str += ") - " + ((object_->getValue()) ? std::to_string(object_->value) : var_object_);
 
     return str;
 }
@@ -73,4 +73,4 @@ std::string Transition::toString() const
 //}
 
 
-} // procedural
+} // namespace procedural

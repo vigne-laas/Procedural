@@ -2,15 +2,14 @@
 #define PROCEDURAL_STATE_H
 
 #include <unordered_set>
+
 #include "procedural/core/Graph/Transition.h"
 #include "procedural/core/Types/Fact.h"
 #include "procedural/core/Types/Variable.h"
 
-
 namespace procedural {
 
 class Transition;
-
 class Fact;
 
 class State
@@ -24,8 +23,7 @@ public:
 
 //    void setTransition(const std::vector<Transition>& transitions);
 
-    void setInitialNode()
-    { initial_node_ = true; }
+    void setInitialNode() { initial_node_ = true; }
 
     bool isInitialNode() const { return initial_node_; }
     bool isFinalNode() const { return nexts_.empty(); }
@@ -43,6 +41,6 @@ private:
     std::vector<std::pair<Transition, State*>> nexts_;
 };
 
-} // procedural
+} // namespace procedural
 
-#endif //PROCEDURAL_STATE_H
+#endif // PROCEDURAL_STATE_H

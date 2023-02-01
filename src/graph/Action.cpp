@@ -2,7 +2,8 @@
 #include "procedural/graph/Action.h"
 
 namespace procedural {
-Action::Action(const std::string& name) : name_(name),networks_({}),complete_networks_({})
+
+Action::Action(const std::string& name) : name_(name)
 {
 
 }
@@ -104,4 +105,4 @@ void Action::addPatterns(const PatternRecognition_t& pattern)
     networks_.resize(root_networks_.size(),{});
 }
 
-} // procedural
+} // namespace procedural

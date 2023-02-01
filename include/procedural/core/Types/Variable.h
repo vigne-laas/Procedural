@@ -8,27 +8,25 @@
 #include <string>
 
 namespace procedural {
+
 struct Variable_t
 {
-    explicit Variable_t(const std::string& name){
-        literal = name;
-    }
-    std::string literal;
-    uint32_t value = 0;
+    explicit Variable_t(const std::string& name) : literal(name), value(0){}
 
-    bool asValue() const
+    std::string literal;
+    uint32_t value;
+
+    bool getValue() const
     {
         return value;
     }
 
     std::string toString() const
     {
-        return (this->asValue() ? std::to_string(value) : literal);
+        return (this->getValue() ? std::to_string(value) : literal);
     }
-
-
 };
-}
 
+} // namespace procedural
 
 #endif //PROCEDURAL_VARIABLE_H

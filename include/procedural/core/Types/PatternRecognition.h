@@ -5,13 +5,13 @@
 #include "procedural/core/Types/FactPattern.h"
 
 namespace procedural {
+
 struct PatternRecognition_t
 {
     std::vector<std::vector<FactPattern>> patterns;
     std::vector<std::string> descriptions;
-
-
 };
 
-} //procedural
+} // namespace procedural
+
 #endif //PROCEDURAL_PATTERNRECOGNITION_H

@@ -18,17 +18,14 @@
 namespace procedural {
 
 class Transition;
-
 class State;
 
 class Network
 {
     friend Transition;
 public:
-
-    Network(const Network& mother) = delete;
-
     Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id);
+    Network(const Network& mother) = delete;
 
     void addTransitionIndex(const FactPattern& pattern, int32_t index);
 
@@ -42,11 +39,7 @@ public:
 
     void displayCurrentState();
 
-    bool isComplete()
-    {
-        return current_state_->isFinalNode();
-//        return false;
-    }
+    bool isComplete() { return current_state_->isFinalNode(); }
 
 
     Network* clone();

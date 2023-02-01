@@ -11,7 +11,6 @@
 namespace procedural {
 
 class State;
-
 class Network;
 
 class Transition
@@ -60,4 +59,4 @@ private:
 
 } // namespace procedural
 
-#endif //PROCEDURAL_TRANSITION_H
+#endif // PROCEDURAL_TRANSITION_H

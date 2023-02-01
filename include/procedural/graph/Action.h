@@ -4,17 +4,17 @@
 #include <string>
 #include <vector>
 #include <map>
+
 #include "procedural/core/Types/FactPattern.h"
 #include "procedural/graph/Network.h"
 #include "procedural/core/Types/PatternRecognition.h"
-
 
 namespace procedural {
 
 class Action
 {
 public:
-    Action(const std::string& name);
+    explicit Action(const std::string& name);
 
     void addPatterns(const PatternRecognition_t& pattern);
 
@@ -49,6 +49,6 @@ private:
 //    std::vector<std::string> descriptions_;
 };
 
-} // procedural
+} // namespace procedural
 
-#endif //PROCEDURAL_ACTION_H
+#endif // PROCEDURAL_ACTION_H

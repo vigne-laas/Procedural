@@ -5,12 +5,7 @@ namespace procedural {
 
 Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id) : name_(name),
                                                                                                            id_(id),
-                                                                                                   current_state_(
-                                                                                                                   nullptr),
-                                                                                                           literal_variables_(
-                                                                                                                   {}),
-                                                                                                           variables_(
-                                                                                                                   {})
+                                                                                                           current_state_(nullptr)
 {
     for (auto index = 0; index < patterns.size() + 1; index++)
         graph_.emplace_back(name_, index);
@@ -149,5 +144,4 @@ Network::Network(const std::string& name,int id)
 }
 
 
-}
-
+} // namespace procedural
