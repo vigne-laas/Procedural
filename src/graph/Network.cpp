@@ -3,26 +3,20 @@
 
 namespace procedural {
 
-Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name) : name_(name),
+Network::Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id) : name_(name),
+                                                                                                           id_(id),
                                                                                                    current_state_(
-                                                                                                           nullptr),literal_variables_({}),variables_({})
+                                                                                                                   nullptr),
+                                                                                                           literal_variables_(
+                                                                                                                   {}),
+                                                                                                           variables_(
+                                                                                                                   {})
 {
     for (auto index = 0; index < patterns.size() + 1; index++)
         graph_.emplace_back(name_, index);
 
     buildNetwork(patterns);
     linkNetwork();
-
-
-//    for (auto& var: literal_variables_)
-//        std::cout << var << std::endl;
-//    for (auto& var: variables_)
-//        std::cout << var.toString() << std::endl;
-//    std::cout << "try print" << std::endl;
-
-    graph_.front().setInitialNode();
-    current_state_ = &graph_.front();
-
 }
 
 void Network::buildNetwork(const std::vector<std::vector<FactPattern>>& patterns)
@@ -45,11 +39,13 @@ void Network::buildNetwork(const std::vector<std::vector<FactPattern>>& patterns
 
 void Network::linkNetwork()
 {
-    for(auto& state : graph_)
+    for (auto& state: graph_)
     {
         state.link_transitions(variables_);
 //        state.expand_transitions();
     }
+    graph_.front().setInitialNode();
+    current_state_ = &(graph_.front());
 
 }
 void Network::checkVar(const FactPattern& pattern)
@@ -135,7 +131,22 @@ void Network::updateVariables(const Fact& fact, const Transition& update_transit
     }
 }
 
+Network* Network::clone()
+{
+    Network* N = new Network(name_, id_ + 1);
+    N->literal_variables_ = literal_variables_;
+    N->graph_ = graph_;
+    N->variables_ = variables_;
+    N->linkNetwork();
+    return N;
+}
 
+
+Network::Network(const std::string& name,int id)
+{
+    name_ = name;
+    id_ = id;
+}
 
 
 }
