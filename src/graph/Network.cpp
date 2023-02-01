@@ -36,8 +36,8 @@ void Network::linkNetwork()
 {
     for (auto& state: graph_)
     {
-        state.link_transitions(variables_);
-//        state.expand_transitions();
+        state.linkTransitions(variables_);
+//        state.expandTransitions();
     }
     graph_.front().setInitialNode();
     current_state_ = &(graph_.front());
