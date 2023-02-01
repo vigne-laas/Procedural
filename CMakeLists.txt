@@ -81,7 +81,8 @@ add_library(${PROJECT_NAME}_lib
         src/core/Types/FactPattern.cpp
         src/core/Types/WordTable.cpp
         src/core/Types/Fact.cpp
-        include/procedural/core/Types/Variable.h)
+        include/procedural/core/Types/Variable.h
+        include/procedural/core/Types/PatternRecognition.h)
 add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/Transition.cpp
         src/core/Graph/State.cpp
