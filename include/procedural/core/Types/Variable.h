@@ -23,7 +23,7 @@ struct Variable_t
 
     std::string toString() const
     {
-        return (this->getValue() ? std::to_string(value) : literal);
+        return (value ? std::to_string(value) : literal);
     }
 };
 

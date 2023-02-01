@@ -17,7 +17,7 @@ class State
 public:
     explicit State(const std::string& name, int id);
 
-    State* evolve(const Fact& fact) const;
+    State* evolve(const Fact& fact);
 
     void addTransition(const Transition& transition, State* pnext_state);
 

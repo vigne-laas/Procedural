@@ -3,31 +3,12 @@
 
 namespace procedural {
 
-Transition::Transition(const FactPattern& pattern) : subject_(nullptr),
-                                                     object_(nullptr)
+Transition::Transition(const FactPattern& pattern) : var_subject_(nullptr),
+                                                     var_object_(nullptr)
 {
-    var_subject_ = pattern.getVarSubject();
-    var_object_ = pattern.getVarObject();
+    var_subject_str_ = pattern.getVarSubject();
+    var_object_str_ = pattern.getVarObject();
     properties_.insert(pattern.getProperty());
-}
-
-
-bool Transition::matchFact(const Fact& fact) const
-{
-    bool match = true;
-//    match &= ((subject_->getValue()) || (fact.getSubject() == subject_->value));
-//    match &= ((object_->getValue()) || (fact.getObject() == object_->value));
-    if (subject_->getValue())
-        match = match && (fact.getSubject() == subject_->value);
-    if (object_->getValue())
-        match = match && (fact.getObject() == object_->value);
-
-    std::cout << "match :" << match << std::endl;
-
-    if (match)
-        match &= (properties_.find(fact.getProperty()) != properties_.end());
-
-    return match;
 }
 
 void Transition::expandProperty()
@@ -37,40 +18,49 @@ void Transition::expandProperty()
 
 void Transition::linkVariables(std::vector<Variable_t>& variables)
 {
-
     for (auto& variable: variables)
     {
-        if (variable.literal == var_object_)
-            object_ = &variable;
-        if (variable.literal == var_subject_)
-            subject_ = &variable;
+        if (variable.literal == var_object_str_)
+            var_object_ = &variable;
+        if (variable.literal == var_subject_str_)
+            var_subject_ = &variable;
     }
 }
 
 bool Transition::operator==(const Transition& other) const
 {
-    return (subject_ == other.subject_) &&
-           (object_ == other.object_) &&
+    return (var_subject_str_ == other.var_subject_str_) &&
+           (var_object_str_ == other.var_object_str_) &&
            (properties_ == other.properties_);
-//           (nextState_ == other.nextState_) &&
-//           && (properties_ == other.properties_);
+}
+
+bool Transition::matchFact(const Fact& fact)
+{
+    bool match = true;
+    if (var_subject_->getValue())
+        match = match && (fact.getSubject() == var_subject_->getValue());
+    else
+        setSubject(fact.getSubject());
+
+    if (var_object_->getValue())
+        match = match && (fact.getObject() == var_object_->getValue());
+    else
+        setObject(fact.getObject());
+
+    if (match)
+        match &= (properties_.find(fact.getProperty()) != properties_.end());
+
+    return match;
 }
 
 std::string Transition::toString() const
 {
-    std::string str = ((subject_->getValue()) ? std::to_string(subject_->value) : var_subject_) + " - (";
+    std::string str = var_subject_->toString() + " - (";
     for (auto property: properties_)
         str += " " + std::to_string(property);
-    str += ") - " + ((object_->getValue()) ? std::to_string(object_->value) : var_object_);
+    str += ") - " + var_object_->toString();
 
     return str;
 }
-
-//void Transition::checkUpdate(const Network* pNetwork)
-//{
-//    subject_ = pNetwork->variables_map_.at(var_subject_);
-//    object_ = pNetwork->variables_map_.at(var_object_);
-//}
-
 
 } // namespace procedural

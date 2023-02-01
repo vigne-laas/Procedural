@@ -8,7 +8,7 @@ State::State(const std::string& name, int id) : name_(name + "_" + std::to_strin
                                                 initial_node_(false), nexts_({})
 {}
 
-State* State::evolve(const Fact& fact) const
+State* State::evolve(const Fact& fact)
 {
 //    std::cout << "try evolve" << std::endl;
     for (auto& pair: nexts_)
@@ -16,8 +16,6 @@ State* State::evolve(const Fact& fact) const
 //        std::cout << pair.first.toString() << std::endl;
         if (pair.first.matchFact(fact))
         {
-            pair.first.subject_->value = fact.getSubject();
-            pair.first.object_->value = fact.getObject();
 //            std::cout << "evolition" << std::endl;
             return pair.second;
         }
