@@ -25,7 +25,9 @@ class Network
 {
     friend Transition;
 public:
-    Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name);
+
+    Network(const Network& mother) = delete;
+
 
     void addTransitionIndex(const FactPattern& pattern, int32_t index);
 
