@@ -44,7 +44,7 @@ int main()
         N.evolve(fact);
 //        N.displayVariables();
 //        N.displayNetwork();
-        N.displayCurrentState();
+        std::cout << N.getCurrentState()->toString() << std::endl;
     }
     N.displayNetwork();
     std::cout << "------------------- N2--------------------" << std::endl;

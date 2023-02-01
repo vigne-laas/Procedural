@@ -50,7 +50,7 @@ void Action::feed(const Fact& fact)
                 std::cout << "create network " << std::endl;
 //                if(networks_[i])
                 networks_[i].insert(newNetwork);
-                // newNetwork->displayCurrentState();
+                // std::cout << newNetwork->getCurrentState()->toString() << std::endl;;
             }
             else
                 delete newNetwork;
@@ -78,7 +78,7 @@ void Action::displayCurrentState()
     {
         for(auto net : network)
         {
-            net->displayCurrentState();
+            std::cout << net->getCurrentState()->toString() << std::endl;
         }
     }
 

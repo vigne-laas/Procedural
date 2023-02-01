@@ -34,7 +34,7 @@ void State::expandTransitions()
         next.first.expandProperty();
 }
 
-std::string State::toString()
+std::string State::toString() const
 {
     std::string msg = "State : " + name_ + "\n";
     msg += isFinalNode() ? "Final Node \n" : "";

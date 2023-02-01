@@ -29,7 +29,7 @@ public:
     void linkTransitions(std::vector<Variable_t>& variables_);
     void expandTransitions();
 
-    std::string toString();
+    std::string toString() const;
 
 private:
     std::string name_;

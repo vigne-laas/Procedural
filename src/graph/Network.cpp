@@ -89,13 +89,6 @@ void Network::displayNetwork()
     }
 }
 
-void Network::displayCurrentState()
-{
-
-    std::cout << current_state_->toString() << "\n\n" << std::endl;
-
-}
-
 void Network::displayVariables()
 {
     for (auto& var: variables_)

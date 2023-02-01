@@ -28,7 +28,6 @@ public:
 
     void updateVariables(const Fact& fact, const Transition& update_transition);
 
-    void displayCurrentState();
     const State* getCurrentState() { return current_state_; }
 
     bool isComplete() { return current_state_->isFinalNode(); }
