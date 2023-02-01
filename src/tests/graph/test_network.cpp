@@ -24,7 +24,8 @@ int main()
     list_facts[2].push_back(F3);
 
 
-    procedural::Network N = procedural::Network(list_facts, "pick");
+    procedural::Network N = procedural::Network(list_facts, "pick",0);
+    procedural::Network * N2 = N.clone();
 //    N.displayNetwork();
 //    N.displayVariables();
 
@@ -46,6 +47,10 @@ int main()
         N.displayCurrentState();
     }
     N.displayNetwork();
+    std::cout << "------------------- N2--------------------" << std::endl;
+    N2->displayNetwork();
+
+
 
     /*procedural::Fact Fp = procedural::Fact(true, "Bastien", "MoveThrought", "Cube");
     procedural::Fact Fp1 = procedural::Fact(true, "Bastien", "hasInHand", "Cube");
