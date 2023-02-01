@@ -128,11 +128,19 @@ target_link_libraries(test_reader
         yaml-cpp
         )
 
-add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
-add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_feeder
-        ${PROJECT_NAME}_feed_lib
+add_executable(test_action src/tests/test_action.cpp)
+add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_action
+        ${PROJECT_NAME}_lib
+        ${PROJECT_NAME}_network_lib
+        ${catkin_LIBRARIES}
         )
+
+#add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
+#add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_feeder
+#        ${PROJECT_NAME}_feed_lib
+#        )
 #add_executable(test_feeder src/tests/test_feeder.cpp)
 #add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_feeder
