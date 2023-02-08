@@ -14,7 +14,7 @@ public:
     FactPattern(bool is_insertion, const std::string& var_subject, const std::string& property,
                 const std::string& var_object, bool required);
 
-    int32_t getProperty() const { return (int32_t)property_ * (is_insertion_ ?  -1 : 1); } //FIXME change value to no negative form
+    int32_t getProperty() const { return (int32_t)property_ * (is_insertion_ ?  -1 : 1); } 
     const std::string& getStringProperty() const { return Fact::properties_table[property_]; };
 
     const std::string& getVarSubject() const { return var_subject_; }
