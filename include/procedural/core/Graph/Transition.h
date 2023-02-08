@@ -17,8 +17,8 @@ public:
     void setSubject(int32_t subject) { var_subject_->value = subject; }
     void setObject(int32_t object) { var_object_->value = object; }
 
-    const std::string& getVarSubject() const { return var_subject_str_; }
-    const std::string& getVarObject() const { return var_object_str_; }
+    const std::string& getVarSubject() const { return var_subject_->literal; }
+    const std::string& getVarObject() const { return var_object_->literal; }
 
     void expandProperty();
 
@@ -30,8 +30,6 @@ public:
     std::string toString() const;
 
 private:
-    std::string var_subject_str_;
-    std::string var_object_str_;
 
     Variable_t * var_subject_;
     Variable_t * var_object_;
