@@ -34,13 +34,20 @@ void Network::buildNetwork(const std::vector<std::vector<FactPattern>>& patterns
 
 void Network::linkNetwork()
 {
-    for (auto& state: graph_)
+    /* for (auto& state: graph_)
     {
         state.linkTransitions(variables_);
 //        state.expandTransitions();
     }
     graph_.front().setInitialNode();
-    current_state_ = &(graph_.front());
+    current_state_ = &(graph_.front()); */
+    for (auto& state: map_state)
+    {
+        state.second->linkTransitions(variables_);
+//        state.expandTransitions();
+    }
+    // graph_.front().setInitialNode();
+    // current_state_ = &(graph_.front());
 
 }
 void Network::checkVar(const FactPattern& pattern)
@@ -119,7 +126,40 @@ void Network::updateVariables(const Fact& fact, const Transition& update_transit
     }
 }
 
-Network* Network::clone()
+void Network::checkState(int id_state)
+{
+    if(map_state.find(id_state) == map_state.end() )
+    {
+        map_state.emplace(id_state,new State(name_,id_state));
+    }
+}
+
+void Network::addState(const PatternTransition_t& pattern)
+{  
+    checkState(pattern.origin_state);
+    checkState(pattern.next_state);
+    checkVar(*(pattern.fact));
+
+    if(pattern.is_initial_state)
+        current_state_=map_state[pattern.origin_state];
+
+    
+    Transition t = Transition(*(pattern.fact));
+    map_state[pattern.origin_state]->addTransition(t,map_state[pattern.next_state]);
+    linkNetwork();
+}
+
+std::string Network::map2String()
+{
+    std::string res;
+    for (auto& state : map_state)
+    {
+        res += "id : " + std::to_string(state.first) + " state :" + state.second->toString() +"\n";
+    }
+    return res;
+}
+
+Network *Network::clone()
 {
     Network* N = new Network(name_, id_ + 1);
     N->literal_variables_ = literal_variables_;
