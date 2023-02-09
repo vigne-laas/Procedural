@@ -16,7 +16,8 @@ class Network
 {
 public:
     Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id);
-    Network(const Network& mother) = delete;
+    Network(const std::string& name,int id);
+    // Network(const Network& mother) = delete;
 
     void addTransitionIndex(const FactPattern& pattern, int32_t index);
 
@@ -39,7 +40,7 @@ public:
     uint32_t id_;
 
 private:
-    Network(const std::string& name,int id);
+    
 
     void buildNetwork(const std::vector<std::vector<FactPattern>>& patterns);
 
