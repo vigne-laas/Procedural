@@ -31,6 +31,9 @@ public:
 
 private:
 
+    std::string var_subject_str_ ;
+    std::string var_object_str_;
+    
     Variable_t * var_subject_;
     Variable_t * var_object_;
 
