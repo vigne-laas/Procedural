@@ -8,6 +8,7 @@
 #include <string>
 
 #include "procedural/core/Graph/State.h"
+#include "procedural/core/Types/PatternTransition.h"
 
 
 namespace procedural {
@@ -33,6 +34,10 @@ public:
 
     bool isComplete() { return current_state_->isFinalNode(); }
 
+    void addState(const PatternTransition_t& pattern);
+    void checkState(int id_state);
+    std::string map2String();
+
 
     Network* clone();
 
@@ -55,6 +60,7 @@ private:
     std::vector<State> graph_;
 //    std::vector<Transition> initialTransition_;
     State* current_state_;
+    std::map<int,State*> map_state;
 
 //    void init_graph(int32_t vector_size);
 
