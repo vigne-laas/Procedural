@@ -16,7 +16,7 @@ struct Variable_t
     std::string literal;
     uint32_t value;
 
-    bool getValue() const
+    uint32_t getValue() const
     {
         return value;
     }
