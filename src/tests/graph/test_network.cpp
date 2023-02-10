@@ -51,7 +51,7 @@ int main()
 
 
     // procedural::Network N = procedural::Network(list_facts, "pick",0);
-    // procedural::Network * N2 = N.clone();
+    procedural::Network * N2 = N.clone();
 //    N.displayNetwork();
 //    N.displayVariables();
 
@@ -73,9 +73,15 @@ int main()
         std::cout << N.getCurrentState()->toString() << std::endl;
     }
     
-    std::cout << "------------------- N2--------------------" << std::endl;
-    // N2->displayNetwork();
+    std::cout << "------------------- N--------------------" << std::endl;
+    
     std::cout << N.map2String()<<"\n" << std::endl;
+ 
+    std::cout << "-------------------N2--------------------" << std::endl;
+    
+    std::cout << N2->map2String()<<"\n" << std::endl;
+    std::cout << N2->getCurrentState()->toString()<<"\n" << std::endl;
+
  
 
 
