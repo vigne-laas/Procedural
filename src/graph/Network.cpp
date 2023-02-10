@@ -43,7 +43,8 @@ void Network::linkNetwork()
     current_state_ = &(graph_.front()); */
     for (auto& state: map_state)
     {
-        state.second->linkTransitions(variables_);
+        state.second->linkVariables(variables_);
+        // std::cout << state.second->getId() << std::endl();
 //        state.expandTransitions();
     }
     // graph_.front().setInitialNode();
@@ -141,7 +142,11 @@ void Network::addState(const PatternTransition_t& pattern)
     checkVar(*(pattern.fact));
 
     if(pattern.is_initial_state)
+    {
         current_state_=map_state[pattern.origin_state];
+        id_initial_state_ = pattern.origin_state;
+    }
+        
 
     
     Transition t = Transition(*(pattern.fact));
@@ -161,11 +166,21 @@ std::string Network::map2String()
 
 Network *Network::clone()
 {
-    Network* N = new Network(name_, id_ + 1);
+    Network* N = new Network(name_+"_copy", id_ + 1);
     N->literal_variables_ = literal_variables_;
-    N->graph_ = graph_;
+    // N->graph_ = graph_;
+    for(auto& state : map_state)
+        N->checkState(state.first);
     N->variables_ = variables_;
+    
+    for(auto& state : N->map_state)
+    {
+        std::cout << "State id : " << state.second->getId() << std::endl;
+        state.second->linkTransitions(map_state,N->map_state);
+    }
     N->linkNetwork();
+    N->id_initial_state_ = id_initial_state_;
+    N->current_state_ = N->map_state.at(N->id_initial_state_);
     return N;
 }
 

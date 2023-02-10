@@ -61,6 +61,7 @@ private:
 //    std::vector<Transition> initialTransition_;
     State* current_state_;
     std::map<int,State*> map_state;
+    int id_initial_state_;
 
 //    void init_graph(int32_t vector_size);
 
