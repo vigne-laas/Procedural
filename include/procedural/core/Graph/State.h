@@ -26,12 +26,16 @@ public:
     bool isInitialNode() const { return initial_node_; }
     bool isFinalNode() const { return nexts_.empty(); }
 
-    void linkTransitions(std::vector<Variable_t>& variables_);
+    void linkVariables(std::vector<Variable_t>& variables_);
+    void linkTransitions(const std::map<int,State*>& map_state_mother,const std::map<int,State*>& map_state_me);
     void expandTransitions();
+
+    uint32_t getId(){return id_;};
 
     std::string toString() const;
 
 private:
+    uint32_t id_; 
     std::string name_;
     bool initial_node_;
     std::vector<std::pair<Transition, State*>> nexts_;
