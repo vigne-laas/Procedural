@@ -101,4 +101,39 @@ void Network::insertVariable(const std::string& variable)
     }
 }
 
+bool Network::processInitialState()
+{
+    std::vector<int> id_states;
+    std::vector<int> id_states_nexts;
+    for(auto& pair_states :states_)
+    {
+        if(std::find(id_states_nexts.begin(), id_states_nexts.end(), pair_states.first) == id_states_nexts.end())
+        {
+            id_states.push_back(pair_states.first);
+            for(auto& nexts_state : pair_states.second->getNexts())
+            {
+                id_states_nexts.push_back(nexts_state.second->getId());
+            }
+        }
+    }
+    int nb_initial_state  = id_states.size();
+    // std::cout << "Number of initial state : " << nb_initial_state << std::endl;
+    if(nb_initial_state!=1)
+    {
+        std::cerr << "Incorect number of initial state detected : " << nb_initial_state << " must be 1" << std::endl;
+        std::cerr << "State detected as initial : "<< std::endl;
+        for(auto& id : id_states)
+        {
+            std::cerr<< states_.at(id) << std::endl;
+        }
+        return false;
+    }
+    else
+    {
+        id_initial_state_ = id_states.front();
+        current_state_ = states_.at(id_initial_state_);
+        return true;
+        // std::cout << "Initial state find : " << current_state_->toString() << std::endl;
+    }
+}
 } // namespace procedural

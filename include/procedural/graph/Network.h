@@ -38,6 +38,8 @@ private:
 
     void insertVariable(const std::string& variable);
 
+    bool processInitialState();
+
     std::string name_;
     uint32_t id_;
 
