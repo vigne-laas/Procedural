@@ -16,15 +16,10 @@ void Transition::expandProperty()
     // TODO use ontology to expand the property
 }
 
-void Transition::linkVariables(std::vector<Variable_t>& variables)
+void Transition::linkVariables(std::map<std::string,Variable_t>& variables)
 {
-    for (auto& variable: variables)
-    {
-        if (variable.literal == var_object_str_)
-            var_object_ = &variable;
-        if (variable.literal == var_subject_str_)
-            var_subject_ = &variable;
-    }
+    var_object_ = &(variables.at(var_object_str_));
+    var_subject_ = &(variables.at(var_subject_str_));
 }
 
 bool Transition::operator==(const Transition& other) const

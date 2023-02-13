@@ -22,7 +22,7 @@ public:
 
     void expandProperty();
 
-    void linkVariables(std::vector<Variable_t>& variables);
+    void linkVariables(std::map<std::string,Variable_t>& variables);
 
     bool operator==(const Transition& other) const;
     bool matchFact(const Fact& fact);
