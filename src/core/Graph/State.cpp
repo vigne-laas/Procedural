@@ -58,4 +58,9 @@ std::string State::toString() const
     return msg;
 }
 
+const std::vector<std::pair<Transition, State *>> State::getNexts()
+{
+    return nexts_;
+}
+
 } // namespace procedural

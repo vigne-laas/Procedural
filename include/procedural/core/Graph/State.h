@@ -34,6 +34,9 @@ public:
 
     std::string toString() const;
 
+    const std::vector<std::pair<Transition, State*>> getNexts();
+
+
 private:
     uint32_t id_; 
     std::string name_;
