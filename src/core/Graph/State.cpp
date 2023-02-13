@@ -47,12 +47,12 @@ void State::expandTransitions()
 std::string State::toString() const
 {
     std::string msg = "State : " + name_ + "\n";
-    msg += isFinalNode() ? "Final Node \n" : "";
-    msg += initial_node_ ? "Initial Node \n" : "";
-    msg += "\tTransitions (" + std::to_string(nexts_.size()) + "):\n";
+    msg += isFinalNode() ? "\tFinal Node \n" : "";
+    msg += initial_node_ ? "\tInitial Node \n" : "";
+    msg += "\tTransitions (" + std::to_string(nexts_.size()) + "):";
     if (!nexts_.empty())
         for (auto& pair_transition_state: nexts_)
-            msg += "\t\t -  " + pair_transition_state.first.toString();
+            msg += "\t[" + pair_transition_state.first.toString() + "]";
 
     return msg;
 }
