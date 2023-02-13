@@ -4,8 +4,9 @@
 
 namespace procedural {
 
-State::State(const std::string& name, int id) : name_(name + "_" + std::to_string(id)),
-                                                initial_node_(false),id_(id)
+State::State(const std::string& name, int id) : id_(id),
+                                                name_(name + "_" + std::to_string(id)),
+                                                initial_node_(false)
 {}
 
 State* State::evolve(const Fact& fact)
@@ -28,21 +29,13 @@ void State::linkVariables(std::vector<Variable_t>& variables_)
         pair.first.linkVariables(variables_);
 }
 
-void State::linkTransitions(const std::map<int,State*>& map_state_mother,const std::map<int,State*>& map_state_me)
+void State::linkTransitions(const std::map<int, State*>& map_state_mother, const std::map<int, State*>& map_state_me)
 {
-    for(auto& pair_transition :map_state_mother.at(id_)->nexts_)
+    for(auto& pair_transition : map_state_mother.at(id_)->nexts_)
     {
         Transition t = pair_transition.first;
-        nexts_.emplace_back(t,map_state_me.at(pair_transition.second->getId()));
-    }
-    // for(auto& pair_transition : nexts_)
-    // {
-    //     std::cout << pair_transition.first.toString()<<std::endl;
-    //     std::cout << pair_transition.second->toString()<<std::endl;
-    //     pair_transition.second = map_state_mother.at(pair_transition.second->getId());
-
-    // }
-        
+        nexts_.emplace_back(t, map_state_me.at(pair_transition.second->getId()));
+    } 
 }
 
 void State::expandTransitions()
@@ -56,12 +49,11 @@ std::string State::toString() const
     std::string msg = "State : " + name_ + "\n";
     msg += isFinalNode() ? "Final Node \n" : "";
     msg += initial_node_ ? "Initial Node \n" : "";
-    msg += "\t nombre de transition : " + std::to_string(nexts_.size()) + "\n";
+    msg += "\tTransitions (" + std::to_string(nexts_.size()) + "):\n";
     if (!nexts_.empty())
         for (auto& pair_transition_state: nexts_)
-        {
             msg += "\t\t -  " + pair_transition_state.first.toString();
-        }
+
     return msg;
 }
 
