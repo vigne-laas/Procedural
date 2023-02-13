@@ -31,6 +31,7 @@ public:
 
     std::string toString(); 
 
+    Network* clone(int new_id);
     void displayVariables();
 
 private:
