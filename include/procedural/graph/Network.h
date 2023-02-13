@@ -29,7 +29,7 @@ public:
     void addState(int id_state);
     std::string map2String(); // change name
 
-    Network* clone();
+    std::string toString(); 
 
     void displayVariables();
 

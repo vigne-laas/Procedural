@@ -43,7 +43,7 @@ void Network::addState(int id_state)
         states_.emplace(id_state, new State(name_, id_state));
 }
 
-std::string Network::map2String()
+std::string Network::toString()
 {
     std::string res;
     for (auto& state : states_)
