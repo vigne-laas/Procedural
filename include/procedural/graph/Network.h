@@ -16,17 +16,10 @@ namespace procedural {
 class Network
 {
 public:
-    Network(const std::vector<std::vector<FactPattern>>& patterns, const std::string& name, int id);
     Network(const std::string& name,int id);
-    // Network(const Network& mother) = delete;
-
-    void addTransitionIndex(const FactPattern& pattern, int32_t index);
+    Network(const Network& other) = delete;
 
     bool evolve(const Fact& fact);
-
-    void displayNetwork();
-
-    void displayVariables();
 
     void updateVariables(const Fact& fact, const Transition& update_transition);
 
@@ -38,33 +31,26 @@ public:
     void checkState(int id_state);
     std::string map2String();
 
-
     Network* clone();
+
+    void displayNetwork();
+    void displayVariables();
 
     std::string name_;
     uint32_t id_;
 
 private:
-    
-
-    void buildNetwork(const std::vector<std::vector<FactPattern>>& patterns);
-
     void linkNetwork();
 
     void checkVar(const FactPattern& pattern);
 
-//    std::unordered_map<std::string, int32_t> variables_map_;
     std::vector<Variable_t> variables_;
     std::unordered_set<std::string> literal_variables_;
 
     std::vector<State> graph_;
-//    std::vector<Transition> initialTransition_;
     State* current_state_;
-    std::map<int,State*> map_state;
+    std::map<int, State*> states_;
     int id_initial_state_;
-
-//    void init_graph(int32_t vector_size);
-
 };
 
 } // procedural
