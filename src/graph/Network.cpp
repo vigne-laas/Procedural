@@ -18,24 +18,13 @@ bool Network::evolve(const Fact& fact)
     return true;
 }
 
-void Network::updateVariables(const Fact& fact, const Transition& update_transition)
-{
-//    variables_map_.at(update_transition.getVarObject()) = fact.getObject();
-//    variables_map_.at(update_transition.getVarSubject()) = fact.getSubject();
-    for (auto& state: graph_)
-    {
-//        for (auto& transition: state.getTransitions())
-//        {
-//            transition.checkUpdate(this);
-//        }
-    }
-}
-
 void Network::addTransition(const PatternTransition_t& pattern)
 {  
     addState(pattern.origin_state);
     addState(pattern.next_state);
-    checkVar(*(pattern.fact));
+
+    insertVariable(pattern.fact->getVarSubject());
+    insertVariable(pattern.fact->getVarObject());
 
     if(pattern.is_initial_state)
     {
@@ -68,28 +57,24 @@ std::string Network::map2String()
 
 Network *Network::clone()
 {
-    Network* N = new Network(name_+"_copy", id_ + 1);
+    Network* N = new Network(name_+"_copy", id_ + 1); // id_ + 1 will fail as we consider one mother creating all the childs
     N->literal_variables_ = literal_variables_;
-    // N->graph_ = graph_;
+    N->variables_ = variables_;
+
     for(auto& state : states_)
         N->addState(state.first);
-    N->variables_ = variables_;
     
     for(auto& state : N->states_)
     {
         std::cout << "State id : " << state.second->getId() << std::endl;
         state.second->linkTransitions(states_, N->states_);
     }
+
     N->linkNetwork();
     N->id_initial_state_ = id_initial_state_;
     N->current_state_ = N->states_.at(N->id_initial_state_);
+    
     return N;
-}
-
-void Network::displayNetwork()
-{
-    for (auto& state: graph_)
-        std::cout << state.toString() << "\n\n" << std::endl;
 }
 
 void Network::displayVariables()
@@ -100,40 +85,20 @@ void Network::displayVariables()
 
 void Network::linkNetwork()
 {
-    /* for (auto& state: graph_)
-    {
-        state.linkTransitions(variables_);
-//        state.expandTransitions();
-    }
-    graph_.front().setInitialNode();
-    current_state_ = &(graph_.front()); */
     for (auto& state: states_)
     {
         state.second->linkVariables(variables_);
-        // std::cout << state.second->getId() << std::endl();
-//        state.expandTransitions();
+        //state.expandTransitions();
     }
-    // graph_.front().setInitialNode();
-    // current_state_ = &(graph_.front());
-
 }
 
-void Network::checkVar(const FactPattern& pattern)
+void Network::insertVariable(const std::string& variable)
 {
-    if (literal_variables_.find(pattern.getVarSubject()) == literal_variables_.end())
+    if (literal_variables_.find(variable) == literal_variables_.end())
     {
-        literal_variables_.insert(pattern.getVarSubject());
-        variables_.emplace_back(pattern.getVarSubject());
-//        std::cout << "add var : " << pattern.getVarSubject() << std::endl;
+        literal_variables_.insert(variable);
+        variables_.emplace_back(variable);
     }
-    if (literal_variables_.find(pattern.getVarObject()) == literal_variables_.end())
-    {
-        literal_variables_.insert(pattern.getVarObject());
-        variables_.emplace_back(pattern.getVarObject());
-//        std::cout << "add var : " << pattern.getVarObject() << std::endl;
-
-    }
-
 }
 
 } // namespace procedural

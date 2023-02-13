@@ -21,33 +21,30 @@ public:
 
     bool evolve(const Fact& fact);
 
-    void updateVariables(const Fact& fact, const Transition& update_transition);
-
     const State* getCurrentState() { return current_state_; }
 
     bool isComplete() { return current_state_->isFinalNode(); }
 
     void addTransition(const PatternTransition_t& pattern);
     void addState(int id_state);
-    std::string map2String();
+    std::string map2String(); // change name
 
     Network* clone();
 
-    void displayNetwork();
     void displayVariables();
 
 private:
     void linkNetwork();
 
-    void checkVar(const FactPattern& pattern);
+    void insertVariable(const std::string& variable);
 
     std::string name_;
     uint32_t id_;
 
+    // TODO check if map could be used
     std::vector<Variable_t> variables_;
     std::unordered_set<std::string> literal_variables_;
 
-    std::vector<State> graph_;
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
