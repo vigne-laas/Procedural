@@ -67,7 +67,7 @@ Network *Network::clone(int new_id)
 {
     // Network* N = new Network(name_+"_copy", new_id); // id_ + 1 will fail as we consider one mother creating all the childs
     Network* N = new Network(name_+"_child", new_id); // id_ + 1 will fail as we consider one mother creating all the childs
-    N->literal_variables_ = literal_variables_;
+    // N->literal_variables_ = literal_variables_;
     N->variables_ = variables_;
 
     for(auto& state : states_)
@@ -91,7 +91,7 @@ Network *Network::clone(int new_id)
 void Network::displayVariables()
 {
     for (auto& var: variables_)
-        std::cout << "key : " << var.literal << " => " << std::to_string(var.value) << std::endl;
+        std::cout << "key : " << var.first << " => " << std::to_string(var.second.value) << std::endl;
 }
 
 void Network::linkNetwork()
@@ -105,11 +105,7 @@ void Network::linkNetwork()
 
 void Network::insertVariable(const std::string& variable)
 {
-    if (literal_variables_.find(variable) == literal_variables_.end())
-    {
-        literal_variables_.insert(variable);
-        variables_.emplace_back(variable);
-    }
+    variables_.emplace(variable,variable);
 }
 
 bool Network::processInitialState()

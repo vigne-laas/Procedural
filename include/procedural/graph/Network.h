@@ -44,9 +44,7 @@ private:
     std::string name_;
     uint32_t id_;
 
-    // TODO check if map could be used
-    std::vector<Variable_t> variables_;
-    std::unordered_set<std::string> literal_variables_;
+    std::map<std::string,Variable_t> variables_;
 
     State* current_state_;
     std::map<int, State*> states_;
