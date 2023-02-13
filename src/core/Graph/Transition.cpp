@@ -36,20 +36,33 @@ bool Transition::operator==(const Transition& other) const
 
 bool Transition::matchFact(const Fact& fact)
 {
-    bool match = true;
-    if (var_subject_->getValue())
-        match = match && (fact.getSubject() == var_subject_->getValue());
-    else
-        setSubject(fact.getSubject());
+    bool match = (properties_.find(fact.getProperty()) != properties_.end());
 
-    if (var_object_->getValue())
-        match = match && (fact.getObject() == var_object_->getValue());
-    else
-        setObject(fact.getObject());
+    if(match)
+    {
+        if (var_subject_->getValue())
+        {
+            match = match && (fact.getSubject() == var_subject_->getValue());
+            if(match)
+            {
+                if (var_object_->getValue())
+                    match = match && (fact.getObject() == var_object_->getValue());
+                else
+                    setObject(fact.getObject());
+            }
+        }
+        else
+        {
+            if (var_object_->getValue())
+                match = match && (fact.getObject() == var_object_->getValue());
+            else
+                setObject(fact.getObject());
 
-    if (match)
-        match &= (properties_.find(fact.getProperty()) != properties_.end());
-
+            if(match)
+                setSubject(fact.getSubject());
+        }       
+    }
+    
     return match;
 }
 
