@@ -12,26 +12,27 @@ int main()
     procedural::FactPattern F3 = procedural::FactPattern(true, "O", "inContainer", "S", true);
 
     std::vector<procedural::PatternTransition_t> list_test;
-    list_test.emplace_back(0, &F, 1, true); 
-    list_test.emplace_back(0, &F1, 2, true); 
-    list_test.emplace_back(1, &F1, 2, false); 
-    list_test.emplace_back(2, &F2, 3, false); 
-    list_test.emplace_back(1, &F2, 3, false); 
-    list_test.emplace_back(0, &F2, 3, true); 
+    list_test.emplace_back(0, &F, 1); 
+    list_test.emplace_back(0, &F1, 2); 
+    list_test.emplace_back(1, &F1, 2); 
+    list_test.emplace_back(2, &F2, 3); 
+    list_test.emplace_back(1, &F2, 3); 
+    list_test.emplace_back(0, &F2, 3); 
 
     procedural::Network N = procedural::Network("pick",0);
 
     for(const auto& pattern : list_test)
         N.addTransition(pattern);
+    N.closeNetwork();
 
     std::cout << "============= ORIGINAL NETWORK =============" << std::endl;
-    std::cout << N.map2String()<<"\n" << std::endl;
+    std::cout << N.toString()<<"\n" << std::endl;
     std::cout << "Current state is: " <<  N.getCurrentState()->toString() << std::endl << std::endl;
     N.displayVariables();
 
     std::cout << "============= CLONED NETWORK =============" << std::endl;
-    procedural::Network* N2 = N.clone();
-    std::cout << N2->map2String()<<"\n" << std::endl;
+    procedural::Network* N2 = N.clone(10);
+    std::cout << N2->toString()<<"\n" << std::endl;
     std::cout << "Current state is: " <<  N2->getCurrentState()->toString() << std::endl << std::endl;
     N2->displayVariables();
 
