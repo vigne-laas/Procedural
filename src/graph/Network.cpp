@@ -31,10 +31,10 @@ void Network::updateVariables(const Fact& fact, const Transition& update_transit
     }
 }
 
-void Network::addState(const PatternTransition_t& pattern)
+void Network::addTransition(const PatternTransition_t& pattern)
 {  
-    checkState(pattern.origin_state);
-    checkState(pattern.next_state);
+    addState(pattern.origin_state);
+    addState(pattern.next_state);
     checkVar(*(pattern.fact));
 
     if(pattern.is_initial_state)
@@ -42,20 +42,16 @@ void Network::addState(const PatternTransition_t& pattern)
         current_state_ = states_[pattern.origin_state];
         id_initial_state_ = pattern.origin_state;
     }
-        
-
     
     Transition t = Transition(*(pattern.fact));
     states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
     linkNetwork();
 }
 
-void Network::checkState(int id_state)
+void Network::addState(int id_state)
 {
-    if(states_.find(id_state) == states_.end() )
-    {
-        states_.emplace(id_state,new State(name_,id_state));
-    }
+    if(states_.find(id_state) == states_.end())
+        states_.emplace(id_state, new State(name_, id_state));
 }
 
 std::string Network::map2String()
@@ -63,7 +59,9 @@ std::string Network::map2String()
     std::string res;
     for (auto& state : states_)
     {
-        res += "id : " + std::to_string(state.first) + " state :" + state.second->toString() +"\n";
+        if(res != "")
+            res += "\n";
+        res += "id : " + std::to_string(state.first) + " state :" + state.second->toString();
     }
     return res;
 }
@@ -74,7 +72,7 @@ Network *Network::clone()
     N->literal_variables_ = literal_variables_;
     // N->graph_ = graph_;
     for(auto& state : states_)
-        N->checkState(state.first);
+        N->addState(state.first);
     N->variables_ = variables_;
     
     for(auto& state : N->states_)

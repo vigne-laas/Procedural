@@ -27,8 +27,8 @@ public:
 
     bool isComplete() { return current_state_->isFinalNode(); }
 
-    void addState(const PatternTransition_t& pattern);
-    void checkState(int id_state);
+    void addTransition(const PatternTransition_t& pattern);
+    void addState(int id_state);
     std::string map2String();
 
     Network* clone();
@@ -36,13 +36,13 @@ public:
     void displayNetwork();
     void displayVariables();
 
-    std::string name_;
-    uint32_t id_;
-
 private:
     void linkNetwork();
 
     void checkVar(const FactPattern& pattern);
+
+    std::string name_;
+    uint32_t id_;
 
     std::vector<Variable_t> variables_;
     std::unordered_set<std::string> literal_variables_;
