@@ -27,7 +27,7 @@ public:
 
     void addTransition(const PatternTransition_t& pattern);
     void addState(int id_state);
-    std::string map2String(); // change name
+    bool closeNetwork();
 
     std::string toString(); 
 
@@ -50,6 +50,7 @@ private:
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
+    bool closed_;
 };
 
 } // procedural

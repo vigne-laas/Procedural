@@ -3,7 +3,7 @@
 
 namespace procedural {
 
-Network::Network(const std::string& name,int id)
+Network::Network(const std::string& name,int id):closed_(false)
 {
     name_ = name;
     id_ = id;
@@ -20,27 +20,35 @@ bool Network::evolve(const Fact& fact)
 
 void Network::addTransition(const PatternTransition_t& pattern)
 {  
+    if(not closed_)
+    {
     addState(pattern.origin_state);
     addState(pattern.next_state);
 
     insertVariable(pattern.fact->getVarSubject());
     insertVariable(pattern.fact->getVarObject());
 
-    if(pattern.is_initial_state)
+        Transition t = Transition(*(pattern.fact));
+        states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
+    }
+    else
     {
-        current_state_ = states_[pattern.origin_state];
-        id_initial_state_ = pattern.origin_state;
+        std::cout << "Network closed impossible to add new transition" << std::endl;
     }
     
-    Transition t = Transition(*(pattern.fact));
-    states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
-    linkNetwork();
 }
 
 void Network::addState(int id_state)
 {
     if(states_.find(id_state) == states_.end())
         states_.emplace(id_state, new State(name_, id_state));
+}
+
+bool Network::closeNetwork()
+{
+    linkNetwork();
+    closed_ = processInitialState();   
+    return closed_;
 }
 
 std::string Network::toString()
