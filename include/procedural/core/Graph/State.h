@@ -26,7 +26,7 @@ public:
     bool isInitialNode() const { return initial_node_; }
     bool isFinalNode() const { return nexts_.empty(); }
 
-    void linkVariables(std::vector<Variable_t>& variables_);
+    void linkVariables(std::map<std::string,Variable_t>& variables_);
     void linkTransitions(const std::map<int, State*>& map_state_mother, const std::map<int, State*>& map_state_me);
     void expandTransitions();
 
