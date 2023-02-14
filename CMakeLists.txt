@@ -4,17 +4,13 @@ project(procedural)
 
 add_compile_options(-std=c++17)
 
-
-
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
         std_msgs
-
         )
+
 find_package(yaml-cpp REQUIRED)
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -67,15 +63,12 @@ catkin_package(
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
         ${YAML_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
         src/core/Types/FactPattern.cpp
         src/core/Types/WordTable.cpp
@@ -108,11 +101,13 @@ add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_facts
         ${PROJECT_NAME}_lib
         )
+
 add_executable(test_wordtable src/tests/core/test_wordtable.cpp)
 add_dependencies(test_wordtable ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_wordtable
         ${PROJECT_NAME}_lib
         )
+
 add_executable(test_network src/tests/graph/test_network.cpp)
 add_dependencies(test_network ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_network
