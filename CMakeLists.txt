@@ -80,6 +80,8 @@ add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
         src/graph/Action.cpp
+        src/core/Types/PatternRecognition.cpp
+
         )
 target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 
