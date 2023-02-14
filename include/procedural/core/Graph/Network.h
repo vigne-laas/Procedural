@@ -16,16 +16,19 @@ namespace procedural {
 class Network
 {
 public:
-    Network(const std::string& name,int id);
+    Network(const std::string& name, int id);
     Network(const Network& other) = delete;
 
     bool evolve(const Fact& fact);
 
     const State* getCurrentState() { return current_state_; }
+    std::string getName() { return full_name_; }
 
     bool isComplete() { return current_state_->isFinalNode(); }
+    bool isClosed() { return closed_; }
+    bool isValid() { return valid_; }
 
-    void addTransition(const PatternTransition_t& pattern);
+    bool addTransition(const PatternTransition_t& pattern);
     void addState(int id_state);
     bool closeNetwork();
 
@@ -43,13 +46,16 @@ private:
 
     std::string name_;
     uint32_t id_;
+    std::string full_name_;
 
     std::map<std::string,Variable_t> variables_;
 
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
+
     bool closed_;
+    bool valid_;
 };
 
 } // procedural

@@ -3,10 +3,12 @@
 
 namespace procedural {
 
-Network::Network(const std::string& name,int id):closed_(false)
+Network::Network(const std::string& name, int id) : name_(name),
+                                                    id_(id),
+                                                    closed_(false),
+                                                    valid_(false)
 {
-    name_ = name;
-    id_ = id;
+    full_name_ = name_ + " " + std::to_string(id);
 }
 
 bool Network::evolve(const Fact& fact)
@@ -18,7 +20,7 @@ bool Network::evolve(const Fact& fact)
     return true;
 }
 
-void Network::addTransition(const PatternTransition_t& pattern)
+bool Network::addTransition(const PatternTransition_t& pattern)
 {  
     if(not closed_)
     {
@@ -30,12 +32,14 @@ void Network::addTransition(const PatternTransition_t& pattern)
         
         Transition t = Transition(*(pattern.fact));
         states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
+        return true;
     }
     else
     {
+        // Maybe raise an error rather than printing text
         std::cout << "Network closed impossible to add new transition" << std::endl;
+        return false;
     }
-    
 }
 
 void Network::addState(int id_state)
@@ -47,8 +51,9 @@ void Network::addState(int id_state)
 bool Network::closeNetwork()
 {
     linkNetwork();
-    closed_ = processInitialState();   
-    return closed_;
+    valid_ = processInitialState();
+    closed_ = true;
+    return valid_;
 }
 
 std::string Network::toString()
@@ -65,9 +70,8 @@ std::string Network::toString()
 
 Network *Network::clone(int new_id)
 {
-    // Network* N = new Network(name_+"_copy", new_id); // id_ + 1 will fail as we consider one mother creating all the childs
-    Network* N = new Network(name_+"_child", new_id); // id_ + 1 will fail as we consider one mother creating all the childs
-    // N->literal_variables_ = literal_variables_;
+    // We may need to test if the original network is closed and valid first
+    Network* N = new Network(name_+"_child", new_id);
     N->variables_ = variables_;
 
     for(auto& state : states_)
@@ -75,13 +79,11 @@ Network *Network::clone(int new_id)
     
     for(auto& state : N->states_)
     {
-        std::cout << "State id : " << state.second->getId() << std::endl;
         for(auto& pair_transition : states_.at(state.first)->getNexts())
         {
             Transition t = pair_transition.first;
-            state.second->addTransition(t,N->states_.at(pair_transition.second->getId()));
+            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         } 
-        
     }
 
     N->closeNetwork();
@@ -110,41 +112,43 @@ void Network::insertVariable(const std::string& variable)
 
 bool Network::processInitialState()
 {
- std::vector<int> id_states;
     std::unordered_set<int> id_states_nexts;
-    for(auto& pair_states :states_)
+    for(auto& pair_states : states_)
     {
-        id_states.push_back(pair_states.first);
         for(auto& nexts_state : pair_states.second->getNexts())
-        {
             id_states_nexts.insert(nexts_state.second->getId());
-        }
     }
+
     std::unordered_set<int> result;
-    for(auto& id : id_states)
+    for(auto& state : states_)
     {
-        if(id_states_nexts.find(id) == id_states_nexts.end())
-            result.insert(id);
+        if(id_states_nexts.find(state.first) == id_states_nexts.end())
+            result.insert(state.first);
     }
 
     int nb_initial_state  = result.size();
-    // std::cout << "Number of initial state : " << nb_initial_state << std::endl;
-    if(nb_initial_state!=1)
+    if(result.size() == 0)
     {
-        std::cerr << "Incorect number of initial state detected : " << nb_initial_state << " must be 1" << std::endl;
-        std::cerr << "State detected as initial : "<< std::endl;
+        // Maybe raise an error rather than printing text
+        std::cerr << "No initial state detected." << std::endl;
+        return false;
+    }
+    else if(nb_initial_state > 1)
+    {
+        // Maybe raise an error rather than printing text
+        std::cerr << "Multiple initial states detected." << std::endl;
+        std::cerr << "State detected as initial are : " << std::endl;
         for(auto& id : result)
-        {
-            std::cerr<< states_.at(id)->toString() << std::endl;
-        }
+            std::cerr << states_.at(id)->toString() << std::endl;
+
         return false;
     }
     else
     {
-        id_initial_state_ = id_states.front();
+        id_initial_state_ = *result.begin();
         current_state_ = states_.at(id_initial_state_);
         return true;
-        // std::cout << "Initial state find : " << current_state_->toString() << std::endl;
     }
 }
+
 } // namespace procedural
