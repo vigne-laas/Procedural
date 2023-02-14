@@ -11,6 +11,39 @@ int main()
     procedural::FactPattern F2 = procedural::FactPattern(true, "O", "overSupport", "S", true);
     procedural::FactPattern F3 = procedural::FactPattern(true, "O", "inContainer", "S", true);
 
+    std::cout << "============= TEST BAD NETWORK no init =============" << std::endl;
+    std::vector<procedural::PatternTransition_t> list_test_bad_network;
+    list_test_bad_network.emplace_back(1, &F1, 2); 
+    list_test_bad_network.emplace_back(2, &F2, 3); 
+    list_test_bad_network.emplace_back(3, &F2, 1); 
+    
+    procedural::Network N_1 = procedural::Network("noInit",0);
+
+    for(const auto& pattern : list_test_bad_network)
+        N_1.addTransition(pattern);
+    N_1.closeNetwork();
+    
+    std::cout << "============= TEST BAD NETWORK multiple init =============" << std::endl;
+    std::vector<procedural::PatternTransition_t> list_test_bad_network_multi;
+    list_test_bad_network_multi.emplace_back(1, &F1, 2); 
+    list_test_bad_network_multi.emplace_back(3, &F2, 2); 
+    
+    procedural::Network N_2 = procedural::Network("multi",0);
+
+    for(const auto& pattern : list_test_bad_network_multi)
+        N_2.addTransition(pattern);
+    N_2.closeNetwork();
+    // std::cout << N_1.toString()<<"\n" << std::endl;
+    // std::cout << "Current state is: " <<  N_1.getCurrentState()->toString() << std::endl << std::endl;
+    // N_1.displayVariables();
+
+    // std::cout << "============= TEST CLOSE NETWORK =============" << std::endl;
+    // procedural::Network N_3 = procedural::Network("close",0);
+    // N_3.closeNetwork();
+    // N_3.addTransition(list_test_bad_network.front());
+
+    std::cout << "============= TEST CREATION NETWORK =============" << std::endl;
+
     std::vector<procedural::PatternTransition_t> list_test;
     list_test.emplace_back(0, &F, 1); 
     list_test.emplace_back(0, &F1, 2); 
@@ -24,6 +57,10 @@ int main()
     for(const auto& pattern : list_test)
         N.addTransition(pattern);
     N.closeNetwork();
+
+    std::cout << "============= TEST CLOSE NETWORK =============" << std::endl;
+
+    N.addTransition(list_test.front());
 
     std::cout << "============= ORIGINAL NETWORK =============" << std::endl;
     std::cout << N.toString()<<"\n" << std::endl;
