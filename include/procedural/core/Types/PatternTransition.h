@@ -1,3 +1,6 @@
+#ifndef PROCEDURAL_PATTERNTRANSITION_H
+#define PROCEDURAL_PATTERNTRANSITION_H
+
 #include "procedural/core/Types/FactPattern.h"
 
 namespace procedural 
@@ -19,3 +22,4 @@ struct PatternTransition_t
 
 
 } // namespace procedural
+#endif //PROCEDURAL_PATTERNTRANSITION_H
