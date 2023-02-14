@@ -79,7 +79,7 @@ add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/Transition.cpp
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
-        #src/graph/Action.cpp
+        src/graph/Action.cpp
         )
 target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 
@@ -122,13 +122,13 @@ target_link_libraries(test_reader
         yaml-cpp
         )
 
-#add_executable(test_action src/tests/test_action.cpp)
-#add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(test_action
-#        ${PROJECT_NAME}_lib
-#        ${PROJECT_NAME}_network_lib
-#        ${catkin_LIBRARIES}
-#        )
+add_executable(test_action src/tests/test_action.cpp)
+add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_action
+       ${PROJECT_NAME}_lib
+       ${PROJECT_NAME}_network_lib
+       ${catkin_LIBRARIES}
+       )
 
 #add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
 #add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
