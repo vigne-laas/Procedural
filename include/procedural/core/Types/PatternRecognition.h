@@ -8,12 +8,10 @@
 
 namespace procedural {
 
-struct PatternRecognition_t
+class PatternRecognition
 {
-    
-    PatternRecognition_t(const std::string& name_in,std::vector<procedural::PatternTransition_t>& patterns_in,std::vector<std::string>& descriptions_in):patterns(patterns_in),name(name_in),descriptions(descriptions_in)
-    {    
-    };
+    public:
+    PatternRecognition(const std::string& name_in,std::vector<procedural::PatternTransition_t>& patterns_in,std::vector<std::string>& descriptions_in);
     std::string name;
     std::vector<procedural::PatternTransition_t>  patterns;
     Network* root_Network; //issue when i try without *
@@ -21,58 +19,14 @@ struct PatternRecognition_t
     std::unordered_set<Network *> complete_networks;
     std::vector<std::string> descriptions;
 
-    bool buildNetwork()
-    {
-        root_Network = new Network(name,0);
-        for(auto&  pattern : patterns)
-            root_Network->addTransition(pattern);
-        return root_Network->closeNetwork();
-    }
+    bool buildNetwork();
 
-    int getNextId()
-    {   
-        // random + check on onto if already done 
-        return 10;
-    }
-    void checkNetwork()
-    {
-        for(auto& net : networks_)
-        {
-            checkNetworkComplete(net);
-        }
-    }
+    int getNextId();
+    void checkNetwork();
 
-    void checkNetworkComplete(Network * net)
-    {
-        if(net->isComplete())
-        {
-            complete_networks.insert(net);
-            networks_.erase(net);
-        }
-    }
-
-    void feed(const Fact& fact)
-    {
-        bool evolve = false;
-        for(auto& net : networks_)
-        {
-            if(net->evolve(fact));
-            {
-                evolve = true;
-                // checkNetworkComplete(net);
-            }
-        }
-        if(not evolve)
-        {
-            Network* new_net = root_Network->clone(getNextId());
-            if(new_net->evolve(fact))
-            {
-                networks_.insert(new_net);
-                // checkNetworkComplete(new_net);
-            }                
-        }
-
-    }
+    void checkNetworkComplete(Network * net);
+    
+    void feed(const Fact& fact);
 
 
      
