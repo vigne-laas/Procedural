@@ -1,7 +1,3 @@
-//
-// Created by avigne on 25/01/23.
-//
-
 #ifndef PROCEDURAL_VARIABLE_H
 #define PROCEDURAL_VARIABLE_H
 
