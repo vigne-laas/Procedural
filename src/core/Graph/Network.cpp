@@ -110,28 +110,32 @@ void Network::insertVariable(const std::string& variable)
 
 bool Network::processInitialState()
 {
-    std::vector<int> id_states;
-    std::vector<int> id_states_nexts;
+ std::vector<int> id_states;
+    std::unordered_set<int> id_states_nexts;
     for(auto& pair_states :states_)
     {
-        if(std::find(id_states_nexts.begin(), id_states_nexts.end(), pair_states.first) == id_states_nexts.end())
+        id_states.push_back(pair_states.first);
+        for(auto& nexts_state : pair_states.second->getNexts())
         {
-            id_states.push_back(pair_states.first);
-            for(auto& nexts_state : pair_states.second->getNexts())
-            {
-                id_states_nexts.push_back(nexts_state.second->getId());
-            }
+            id_states_nexts.insert(nexts_state.second->getId());
         }
     }
-    int nb_initial_state  = id_states.size();
+    std::unordered_set<int> result;
+    for(auto& id : id_states)
+    {
+        if(id_states_nexts.find(id) == id_states_nexts.end())
+            result.insert(id);
+    }
+
+    int nb_initial_state  = result.size();
     // std::cout << "Number of initial state : " << nb_initial_state << std::endl;
     if(nb_initial_state!=1)
     {
         std::cerr << "Incorect number of initial state detected : " << nb_initial_state << " must be 1" << std::endl;
         std::cerr << "State detected as initial : "<< std::endl;
-        for(auto& id : id_states)
+        for(auto& id : result)
         {
-            std::cerr<< states_.at(id) << std::endl;
+            std::cerr<< states_.at(id)->toString() << std::endl;
         }
         return false;
     }
