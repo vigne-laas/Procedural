@@ -1,5 +1,5 @@
 #include "procedural/core/Types/FactPattern.h"
-#include "procedural/graph/Network.h"
+#include "procedural/core/Graph/Network.h"
 #include <iostream>
 #include <vector>
 #include <set>

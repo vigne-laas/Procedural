@@ -1,5 +1,5 @@
 #include <iostream>
-#include "procedural/graph/Network.h"
+#include "procedural/core/Graph/Network.h"
 
 namespace procedural {
 
