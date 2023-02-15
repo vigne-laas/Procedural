@@ -38,15 +38,27 @@ namespace procedural
 
     void PatternRecognition::checkNetwork()
     {
-        for(auto& net : networks_)
+        for(auto net : networks_)
+        {
+            // std::cout << " check : " << net->getName()<<std::endl;
             checkNetworkComplete(net);
+        }
+            
+        for(auto& net : complete_networks)
+        {
+            std::cout << "network finish :" << net->getName() << std::endl;
+            std::cout << "explanation : " << net->explain() << std::endl;
+            networks_.erase(net);
+            for(auto& msg : descriptions)
+                std::cout << "\t" << msg << std::endl;
+        }
     }
     void PatternRecognition::checkNetworkComplete(Network * net)
     {
         if(net->isComplete())
         {
             complete_networks.insert(net);
-            networks_.erase(net);
+            
         }
     }
 
