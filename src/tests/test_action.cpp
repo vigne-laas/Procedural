@@ -34,14 +34,13 @@ int main(int argc, char **argv)
     list_pick2.emplace_back(1, &F3, 3); 
     list_pick2.emplace_back(0, &F3, 3); 
 
-    list_pattern.emplace_back("pick_in",list_pick1,description1);
-    list_pattern.emplace_back("pick_over",list_pick2,description2);
+    list_pattern.emplace_back("pick_in", list_pick1, description1);
+    list_pattern.emplace_back("pick_over", list_pick2, description2);
 
     procedural::Action A("pick");
     for(auto& pattern : list_pattern)
         A.addPatterns(pattern);
 
-    A.close();
     std::cout << "======================= Display action : =========================================="<<std::endl;
     std::cout << A.toString() << std::endl;
     std::cout << "======================= Feed action : =========================================="<<std::endl;
