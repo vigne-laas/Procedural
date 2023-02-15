@@ -10,17 +10,12 @@ namespace procedural {
 
 class PatternRecognition
 {
-    public:
-    PatternRecognition(const std::string& name_in,std::vector<procedural::PatternTransition_t>& patterns_in,std::vector<std::string>& descriptions_in);
-    std::string name;
-    std::vector<procedural::PatternTransition_t>  patterns;
-    Network* root_Network; //issue when i try without *
-    std::unordered_set<Network *> networks_;
-    std::unordered_set<Network *> complete_networks;
-    std::vector<std::string> descriptions;
+public:
+    PatternRecognition(const std::string& name,
+                      std::vector<procedural::PatternTransition_t>& patterns,
+                      std::vector<std::string>& descriptions);
 
-    bool buildNetwork();
-
+    bool isValid() const { return is_valid_; }
     int getNextId();
     void checkNetwork();
 
@@ -32,7 +27,13 @@ class PatternRecognition
 private:
     static std::unordered_set<int> set_id;
 
-     
+    std::string name_;
+    Network* root_network_; //issue when i try without *
+    std::unordered_set<Network *> networks_;
+    std::unordered_set<Network *> complete_networks_;
+    std::vector<std::string> descriptions_;
+
+    bool is_valid_;
 };
 
 } // namespace procedural
