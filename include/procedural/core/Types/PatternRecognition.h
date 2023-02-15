@@ -28,6 +28,7 @@ class PatternRecognition
     
     void feed(const Fact& fact);
 
+    std::string toString();
 private:
     static std::unordered_set<int> set_id;
 
