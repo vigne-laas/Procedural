@@ -73,6 +73,16 @@ namespace procedural
             }                
         }
 
+    std::string PatternRecognition::toString()
+    {
+        std::string res;
+        res += "Pattern Recognition of : " +name+"\n";
+        res += "\t nb of active networks : " +std::to_string(networks_.size())+"\n";
+        res += "\t active networks : ";
+        for(auto& net : networks_)
+            res+= net->toString()+"\n";
+        // std::cout<<res<<std::endl;
+        return res;
     }
     
     
