@@ -66,24 +66,31 @@ namespace procedural
     {
         bool evolve = false;
         for(auto& net : networks_)
-        {
-            if(net->evolve(fact));
+        {   
+            // std::cout <<" try evolve" << net->getName() << std::endl; 
+            // bool local_evolve = net->evolve(fact);
+            // std::cout<<"local_evolve :"<< local_evolve << std::endl;
+            if(net->evolve(fact))
             {
-                std::cout << "evolve of " << net->getName() << std::endl;
+                // std::cout << "\t succes of evolution" << std::endl;
                 evolve = true;
                 // checkNetworkComplete(net);
             }
         }
         if(not evolve)
         {
-            std::cout << "create new network "<< std::endl;
+            std::cout << "create new network of "<<name<< std::endl;
             Network* new_net = root_Network->clone(getNextId());
             if(new_net->evolve(fact))
             {
                 networks_.insert(new_net);
                 // checkNetworkComplete(new_net);
-            }                
+            }
+            else
+                delete new_net;              
         }
+
+    }
 
     std::string PatternRecognition::toString()
     {
