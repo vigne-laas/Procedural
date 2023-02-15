@@ -17,6 +17,7 @@ bool Network::evolve(const Fact& fact)
     if (evolution == nullptr)
         return false;
     current_state_ = evolution;
+    list_facts_valid.push_back(fact);
     return true;
 }
 
@@ -94,6 +95,14 @@ void Network::displayVariables()
 {
     for (auto& var: variables_)
         std::cout << "key : " << var.first << " => " << std::to_string(var.second.value) << std::endl;
+}
+
+std::string Network::explain()
+{
+    std::string msg = "\t";
+    for(auto& fact : list_facts_valid)
+        msg+=fact.toString()+" | ";
+    return msg;
 }
 
 void Network::linkNetwork()
