@@ -30,6 +30,8 @@ public:
 
     void displayCurrentState();
 
+    std::string toString();
+
 //    const std::vector<std::string>& getDescriptions();
 
 //    const std::vector<std::string>& getVariables();

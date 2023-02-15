@@ -46,6 +46,14 @@ void Action::displayCurrentState()
     }
 
 }
+std::string Action::toString()
+{
+    std::string res;
+    for(auto& pattern : patterns_)
+        res += pattern.toString()+"\n";
+    return res;
+
+}
 // const std::vector<std::vector<FactPattern>>& Action::getFacts()
 //{
 //     return facts_;
