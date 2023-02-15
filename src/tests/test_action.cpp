@@ -9,7 +9,7 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "test_action");
-    std::vector<procedural::PatternRecognition_t> list_pattern;
+    std::vector<procedural::PatternRecognition> list_pattern;
     // procedural::PatternRecognition_t pattern;
     std::vector<std::string> description1 {"hello pick1","pick1","1"};
     std::vector<std::string> description2 {"hello pick2","pick2","2"};
@@ -27,38 +27,45 @@ int main(int argc, char **argv)
     list_pick1.emplace_back(0, &F2, 3); 
 
     std::vector<procedural::PatternTransition_t> list_pick2;
-    list_pick1.emplace_back(0, &F, 1); 
-    list_pick1.emplace_back(0, &F1, 2); 
-    list_pick1.emplace_back(1, &F1, 2); 
-    list_pick1.emplace_back(2, &F3, 3); 
-    list_pick1.emplace_back(1, &F3, 3); 
-    list_pick1.emplace_back(0, &F3, 3); 
+    list_pick2.emplace_back(0, &F, 1); 
+    list_pick2.emplace_back(0, &F1, 2); 
+    list_pick2.emplace_back(1, &F1, 2); 
+    list_pick2.emplace_back(2, &F3, 3); 
+    list_pick2.emplace_back(1, &F3, 3); 
+    list_pick2.emplace_back(0, &F3, 3); 
 
-    list_pattern.emplace_back("pick1",list_pick1,description1);
-    list_pattern.emplace_back("pick2",list_pick2,description2);
+    list_pattern.emplace_back("pick_in",list_pick1,description1);
+    list_pattern.emplace_back("pick_over",list_pick2,description2);
 
     procedural::Action A("pick");
     for(auto& pattern : list_pattern)
         A.addPatterns(pattern);
 
     A.close();
+    std::cout << "======================= Display action : =========================================="<<std::endl;
+    std::cout << A.toString() << std::endl;
+    std::cout << "======================= Feed action : =========================================="<<std::endl;
 
-    // std::vector<procedural::Fact> facts;
-    // facts.emplace_back(true, "Bastien", "MoveThrought", "Cube");
-    // facts.emplace_back(true, "Bob", "hasInHand", "Cube2");
+    std::vector<procedural::Fact> facts;
+    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube");
+   
+    facts.emplace_back(true, "Bastien", "hasInHand", "Cube");
+    facts.emplace_back(false, "Cube", "overSupport", "Table");
+     facts.emplace_back(true, "Bob", "hasInHand", "Cube2");
     // facts.emplace_back(true, "Cube", "hasInHand", "Cube");
-    // facts.emplace_back(true, "Bastien", "hasInHand", "Cube");
     // facts.emplace_back(true, "Cube", "overSupport", "Table");
-    // facts.emplace_back(false, "Cube", "overSupport", "Table");
-    // facts.emplace_back(false, "Cube2", "overSupport", "Table");
-    // for (auto& fact:facts)
-    // {
-    //     std::cout << "--------------" << std::endl;
-    //     std::cout << "fact : " << fact.toString() << std::endl;
-    //     A.feed(fact);
-    //     A.displayCurrentState();
-    // }
-
+  
+    facts.emplace_back(false, "Cube2", "overSupport", "Table");
+    for (auto& fact:facts)
+    {
+        std::cout << "--------------" << std::endl;
+        std::cout << "fact : " << fact.toString() << std::endl;
+        A.feed(fact);
+        // A.displayCurrentState();
+        // A.checkCompleteNetworks();
+    }
+    A.displayCurrentState();
+    A.checkCompleteNetworks();
     ros::shutdown();
 
     return 0;
