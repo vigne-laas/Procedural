@@ -7,7 +7,7 @@ Action::Action(const std::string& name) : name_(name)
 {
 
 }
-void Action::addPatterns(PatternRecognition_t& pattern)
+void Action::addPatterns(PatternRecognition& pattern)
 {
     pattern.buildNetwork();
     patterns_.push_back(pattern);
