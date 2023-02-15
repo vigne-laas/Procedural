@@ -1,9 +1,12 @@
 #include "procedural/core/Types/PatternRecognition.h"
-
+#include <cmath>
 #include <iostream>
+
 
 namespace procedural
 {
+    std::unordered_set<int> PatternRecognition::set_id;
+
     PatternRecognition::PatternRecognition(const std::string& name_in,std::vector<procedural::PatternTransition_t>& patterns_in,std::vector<std::string>& descriptions_in):patterns(patterns_in),name(name_in),descriptions(descriptions_in)
     {
     
