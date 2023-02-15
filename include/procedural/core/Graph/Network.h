@@ -36,6 +36,7 @@ public:
 
     Network* clone(int new_id);
     void displayVariables();
+    std::string explain();
 
 private:
     void linkNetwork();
@@ -43,6 +44,7 @@ private:
     void insertVariable(const std::string& variable);
 
     bool processInitialState();
+
 
     std::string name_;
     uint32_t id_;
@@ -53,6 +55,8 @@ private:
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
+
+    std::vector<Fact> list_facts_valid;
 
     bool closed_;
     bool valid_;
