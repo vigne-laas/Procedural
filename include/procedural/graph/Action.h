@@ -10,7 +10,6 @@
 
 namespace procedural {
 
-struct PatternRecognition_t;
 
 class Action
 {
@@ -19,7 +18,7 @@ public:
 
     
 
-    void addPatterns(PatternRecognition_t& pattern);
+    void addPatterns(PatternRecognition & pattern);
     void close();
 
 //    const std::vector<std::vector<FactPattern>>& getFacts();
@@ -46,7 +45,7 @@ private:
 
 //    bool ordered_ = false;
     // std::vector<uint32_t> flags;
-    std::vector<PatternRecognition_t> patterns_;
+    std::vector<PatternRecognition> patterns_;
 //    std::vector<std::string> descriptions_;
 };
 
