@@ -19,7 +19,21 @@ namespace procedural
 
     int PatternRecognition::getNextId()
     {
-        return 10;
+        int iter = 1;
+        std::srand(time(NULL));
+        int id = std::rand() % (int)(std::pow(10, iter));
+        
+        while(set_id.find(id)!=set_id.end())
+        {
+            iter++;
+            id = std::rand() % (int)std::pow(10, iter);
+        }
+        set_id.insert(id);
+        // std::cout << "final id generated : " + std::to_string(id) << std::endl;
+        // std::cout << "id already done : " << std::endl;
+        // for(auto id : set_id)
+            // std::cout << "\t " << std::to_string(id) << std::endl;
+        return id;
     }
 
     void PatternRecognition::checkNetwork()
