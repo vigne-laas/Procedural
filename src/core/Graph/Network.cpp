@@ -46,7 +46,7 @@ bool Network::addTransition(const PatternTransition_t& pattern)
 void Network::addState(int id_state)
 {
     if(states_.find(id_state) == states_.end())
-        states_.emplace(id_state, new State(name_, id_state));
+        states_.emplace(id_state, new State(getName(), id_state));
 }
 
 bool Network::closeNetwork()
