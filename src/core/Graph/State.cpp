@@ -29,16 +29,6 @@ void State::linkVariables(std::map<std::string,Variable_t>& variables_)
         pair.first.linkVariables(variables_);
 }
 
-void State::linkTransitions(const std::map<int, State*>& map_state_mother, const std::map<int, State*>& map_state_me)
-{
-    // TODO pass it to Network
-    for(auto& pair_transition : map_state_mother.at(id_)->nexts_)
-    {
-        Transition t = pair_transition.first;
-        nexts_.emplace_back(t, map_state_me.at(pair_transition.second->getId()));
-    } 
-}
-
 void State::expandTransitions()
 {
     for(auto& next : nexts_)
