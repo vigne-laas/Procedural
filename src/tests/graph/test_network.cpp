@@ -1,6 +1,7 @@
 #include "procedural/core/Types/FactPattern.h"
 #include "procedural/core/Graph/Network.h"
 #include <iostream>
+#include <exception>
 #include <vector>
 #include <set>
 
@@ -21,7 +22,14 @@ int main()
 
     for(const auto& pattern : list_test_bad_network)
         N_1.addTransition(pattern);
-    N_1.closeNetwork();
+    try 
+    {
+        N_1.closeNetwork();
+    } catch(std::exception& e)
+    {
+        std::cerr<< e.what() << std::endl;
+    }
+
 
     std::cout << N_1.getName() << " is " << (N_1.isClosed() ? "" : "NOT ") << "close" << std::endl;
     std::cout << N_1.getName() << " is " << (N_1.isValid() ? "" : "NOT ") << "valid" << std::endl;
@@ -36,7 +44,14 @@ int main()
 
     for(const auto& pattern : list_test_bad_network_multi)
         N_2.addTransition(pattern);
-    N_2.closeNetwork();
+    try
+    {
+        N_2.closeNetwork();
+    }
+    catch(std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 
     std::cout << N_2.getName() << " is " << (N_2.isClosed() ? "" : "NOT ") << "close" << std::endl;
     std::cout << N_2.getName() << " is " << (N_2.isValid() ? "" : "NOT ") << "valid" << std::endl;
