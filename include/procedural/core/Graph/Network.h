@@ -63,7 +63,7 @@ public:
     bool isValid() { return valid_; }
 
     bool addTransition(const PatternTransition_t& pattern);
-    void addState(int id_state);
+    
     bool closeNetwork();
 
     std::string toString(); 
@@ -73,6 +73,9 @@ public:
     std::string explain();
 
 private:
+    
+    void addState(int id_state);
+    
     void linkNetwork();
 
     void insertVariable(const std::string& variable);

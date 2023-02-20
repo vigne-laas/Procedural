@@ -105,6 +105,12 @@ std::string Network::explain()
     return msg;
 }
 
+void Network::addState(int id_state)
+{
+    if(states_.find(id_state) == states_.end())
+        states_.emplace(id_state, new State(getName(), id_state));
+}
+
 void Network::linkNetwork()
 {
     for (auto& state: states_)
