@@ -10,6 +10,7 @@
 
 #include "procedural/core/Graph/State.h"
 #include "procedural/core/Types/PatternTransition.h"
+#include "procedural/core/Types/Description.h"
 
 
 namespace procedural {
@@ -63,6 +64,7 @@ public:
     bool isValid() { return valid_; }
 
     bool addTransition(const PatternTransition_t& pattern);
+    bool addDescription(std::string subject,std::string property,std::string object);
     
     bool closeNetwork();
 
@@ -89,11 +91,13 @@ private:
 
     std::map<std::string,Variable_t> variables_;
 
+    std::vector<Description_t> descriptions;
+
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
 
-    std::vector<Fact> list_facts_valid;
+    std::vector<uint32_t> id_facts_involve;
 
     bool closed_;
     bool valid_;

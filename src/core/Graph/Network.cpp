@@ -10,7 +10,9 @@ Network::Network(const std::string& name, int id) : name_(name),
                                                     closed_(false),
                                                     valid_(false)
 {
-    full_name_ = name_ + " " + std::to_string(id);
+    full_name_ = name_ + " " + std::to_string(id); 
+    variables_.emplace("this",full_name_);
+
 }
 
 bool Network::evolve(const Fact& fact)
@@ -31,7 +33,7 @@ bool Network::evolve(const Fact& fact)
 
 bool Network::addTransition(const PatternTransition_t& pattern)
 {  
-    if(not closed_)
+    if(closed_ == false)
     {
         addState(pattern.origin_state);
         addState(pattern.next_state);
@@ -46,6 +48,30 @@ bool Network::addTransition(const PatternTransition_t& pattern)
     else
         return false;
 
+}
+
+bool Network::addDescription(std::string subject,std::string property,std::string object)
+{
+    if(variables_.find(subject) != variables_.end())
+    {
+        if(variables_.find(object) != variables_.end())
+        {
+            descriptions.emplace_back(subject,property,object);
+            descriptions.back().linkVariables(variables_);
+            return true;
+        } 
+        else
+        {
+            throw NetworkException("Variable "+object+ " not found invalid description");
+            return false;
+        }       
+    }
+    else
+    {
+        throw NetworkException("Variable "+subject+ " not found invalid description");
+        return false;
+    }
+   
 }
 
 bool Network::closeNetwork()
@@ -76,6 +102,7 @@ Network *Network::clone(int new_id)
 
     Network* N = new Network(name_+"_child", new_id);
     N->variables_ = variables_;
+    N->variables_.at("this").literal = N->getName();
 
     for(auto& state : states_)
         N->addState(state.first);
@@ -96,7 +123,7 @@ Network *Network::clone(int new_id)
 void Network::displayVariables()
 {
     for (auto& var: variables_)
-        std::cout << "key : " << var.first << " => " << std::to_string(var.second.value) << std::endl;
+        std::cout << "key : " << var.first << " => " << var.second.toString() << std::endl;
 }
 
 std::string Network::explain()
@@ -104,8 +131,8 @@ std::string Network::explain()
     if((valid_ && closed_) == false)
         return "";
     std::string msg = "\t";
-    for(auto& id : id_facts_involve)
-        msg+=std::to_string(id)+" | ";
+    for(auto& description : descriptions)
+        msg+=description.explain()+" | ";
     return msg;
 }
 
