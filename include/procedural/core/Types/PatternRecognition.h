@@ -25,7 +25,7 @@ public:
 
     std::string toString();
 private:
-    static std::unordered_set<int> set_id;
+    static int id_;
 
     std::string name_;
     Network* root_network_; //issue when i try without *

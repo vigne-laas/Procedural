@@ -6,7 +6,7 @@
 namespace procedural
 {
 
-std::unordered_set<int> PatternRecognition::set_id;
+int PatternRecognition::id_ = 0;
 
 PatternRecognition::PatternRecognition(const std::string& name,
                                         std::vector<procedural::PatternTransition_t>& patterns,
@@ -22,19 +22,7 @@ PatternRecognition::PatternRecognition(const std::string& name,
 
 int PatternRecognition::getNextId()
 {
-    // TODO do we need random generation ?
-    int iter = 1;
-    std::srand(time(NULL));
-    int id = std::rand() % (int)(std::pow(10, iter));
-    
-    while(set_id.find(id)!=set_id.end())
-    {
-        iter++;
-        id = std::rand() % (int)std::pow(10, iter);
-    }
-    set_id.insert(id);
-
-    return id;
+    return id_++;
 }
 
 void PatternRecognition::checkNetwork()
