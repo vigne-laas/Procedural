@@ -80,7 +80,7 @@ private:
 
     void insertVariable(const std::string& variable);
 
-    bool processInitialState();
+    void processInitialState();
 
 
     std::string name_;

@@ -3,6 +3,8 @@
 
 namespace procedural {
 
+
+
 Network::Network(const std::string& name, int id) : name_(name),
                                                     id_(id),
                                                     closed_(false),
@@ -13,11 +15,17 @@ Network::Network(const std::string& name, int id) : name_(name),
 
 bool Network::evolve(const Fact& fact)
 {
+    if((valid_ && closed_) == false)
+        return false;
+    
     auto evolution = current_state_->evolve(fact);
+
     if (evolution == nullptr)
         return false;
+    
     current_state_ = evolution;
-    list_facts_valid.push_back(fact);
+    // id_facts_involve.push_back(fact.id); // prepare to id on facts.
+
     return true;
 }
 
@@ -36,24 +44,16 @@ bool Network::addTransition(const PatternTransition_t& pattern)
         return true;
     }
     else
-    {
-        // Maybe raise an error rather than printing text
-        std::cout << "Network closed impossible to add new transition" << std::endl;
         return false;
-    }
-}
 
-void Network::addState(int id_state)
-{
-    if(states_.find(id_state) == states_.end())
-        states_.emplace(id_state, new State(getName(), id_state));
 }
 
 bool Network::closeNetwork()
 {
     linkNetwork();
-    valid_ = processInitialState();
     closed_ = true;
+    processInitialState();
+    valid_ = true;
     return valid_;
 }
 
@@ -71,7 +71,9 @@ std::string Network::toString()
 
 Network *Network::clone(int new_id)
 {
-    // We may need to test if the original network is closed and valid first
+    if((valid_ && closed_) == false)
+        return nullptr;
+
     Network* N = new Network(name_+"_child", new_id);
     N->variables_ = variables_;
 
@@ -99,9 +101,11 @@ void Network::displayVariables()
 
 std::string Network::explain()
 {
+    if((valid_ && closed_) == false)
+        return "";
     std::string msg = "\t";
-    for(auto& fact : list_facts_valid)
-        msg+=fact.toString()+" | ";
+    for(auto& id : id_facts_involve)
+        msg+=std::to_string(id)+" | ";
     return msg;
 }
 
@@ -125,7 +129,7 @@ void Network::insertVariable(const std::string& variable)
     variables_.emplace(variable,variable);
 }
 
-bool Network::processInitialState()
+void Network::processInitialState()
 {
     std::unordered_set<int> id_states_nexts;
     for(auto& pair_states : states_)
