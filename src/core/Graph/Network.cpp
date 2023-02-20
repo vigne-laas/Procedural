@@ -138,25 +138,22 @@ bool Network::processInitialState()
     int nb_initial_state  = result.size();
     if(result.size() == 0)
     {
-        // Maybe raise an error rather than printing text
-        std::cerr << "No initial state detected." << std::endl;
-        return false;
+        throw NoInitialStateNetworkException();
     }
     else if(nb_initial_state > 1)
     {
         // Maybe raise an error rather than printing text
-        std::cerr << "Multiple initial states detected." << std::endl;
-        std::cerr << "State detected as initial are : " << std::endl;
-        for(auto& id : result)
-            std::cerr << states_.at(id)->toString() << std::endl;
-
-        return false;
+        std::unordered_set<State*> invalid_states;
+        for (auto res: result)
+        {
+            invalid_states.insert(states_.at(res));
+        }
+        throw MultiInitialStateNetworkException(invalid_states);
     }
     else
     {
         id_initial_state_ = *result.begin();
         current_state_ = states_.at(id_initial_state_);
-        return true;
     }
 }
 

@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <map>
+#include <exception>
 #include <vector>
 #include <string>
 
@@ -12,6 +13,39 @@
 
 
 namespace procedural {
+
+
+struct NetworkException : public std::exception
+{
+    std::string msg_;
+    NetworkException(){}; // Pb de compilation et link sans ca 
+    explicit NetworkException(const std::string& msg) : msg_(msg) {}
+    const char * what () const throw () {
+    return msg_.c_str();
+    }
+};
+
+struct NoInitialStateNetworkException : public NetworkException {
+    NoInitialStateNetworkException(){}; // Pb de compilation et link sans ca 
+    const char * what() const throw ()
+    {
+        return "Invalid Network due to no initial State detected";
+    }
+};
+
+struct MultiInitialStateNetworkException : public NetworkException {
+    std::string msg_ = "Invalid Network due to no initial State detected\n";
+    explicit MultiInitialStateNetworkException(const std::unordered_set<State*>& invalid_states)
+    {
+        msg_ += " State detected as initial are : " ;
+        for(auto& state : invalid_states)
+            msg_+= state->toString()+"\n";
+    }
+    const char * what() const throw ()
+    {        
+        return msg_.c_str();
+    }
+};
 
 class Network
 {
