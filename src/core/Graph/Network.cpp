@@ -11,7 +11,7 @@ Network::Network(const std::string& name, int id) : name_(name),
                                                     valid_(false)
 {
     full_name_ = name_ + " " + std::to_string(id); 
-    variables_.emplace("this",full_name_);
+    variables_.emplace("self",full_name_);
 
 }
 
@@ -50,28 +50,10 @@ bool Network::addTransition(const PatternTransition_t& pattern)
 
 }
 
-bool Network::addDescription(std::string subject,std::string property,std::string object)
-{
-    if(variables_.find(subject) != variables_.end())
-    {
-        if(variables_.find(object) != variables_.end())
-        {
-            descriptions.emplace_back(subject,property,object);
-            descriptions.back().linkVariables(variables_);
-            return true;
-        } 
-        else
-        {
-            throw NetworkException("Variable "+object+ " not found invalid description");
-            return false;
-        }       
-    }
-    else
-    {
-        throw NetworkException("Variable "+subject+ " not found invalid description");
-        return false;
-    }
-   
+bool Network::addDescription(const ActionDescription_t& des)
+{   
+    descriptions_.emplace_back(des,variables_);
+    return true;  
 }
 
 bool Network::closeNetwork()
@@ -102,7 +84,8 @@ Network *Network::clone(int new_id)
 
     Network* N = new Network(name_+"_child", new_id);
     N->variables_ = variables_;
-    N->variables_.at("this").literal = N->getName();
+    N->variables_.at("self").literal = N->getName();
+    N->descriptions_ = descriptions_;
 
     for(auto& state : states_)
         N->addState(state.first);
@@ -126,13 +109,20 @@ void Network::displayVariables()
         std::cout << "key : " << var.first << " => " << var.second.toString() << std::endl;
 }
 
-std::string Network::explain()
+std::string Network::explain(bool expl)
 {
     if((valid_ && closed_) == false)
         return "";
     std::string msg = "\t";
-    for(auto& description : descriptions)
-        msg+=description.explain()+" | ";
+    for(auto& description : descriptions_)
+    {
+        if(expl)
+            msg+=description.explainExplicit()+" / ";
+        else
+            msg+=description.explain()+" / ";
+    }
+        
+
     return msg;
 }
 
@@ -149,6 +139,8 @@ void Network::linkNetwork()
         state.second->linkVariables(variables_);
         //state.expandTransitions();
     }
+    for (auto& des : descriptions_)
+        des.linkVariables(variables_);
 }
 
 void Network::insertVariable(const std::string& variable)

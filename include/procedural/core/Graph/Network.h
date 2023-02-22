@@ -11,6 +11,7 @@
 #include "procedural/core/Graph/State.h"
 #include "procedural/core/Types/PatternTransition.h"
 #include "procedural/core/Types/Description.h"
+#include "procedural/core/Types/ActionDescription.h"
 
 
 namespace procedural {
@@ -64,7 +65,7 @@ public:
     bool isValid() { return valid_; }
 
     bool addTransition(const PatternTransition_t& pattern);
-    bool addDescription(std::string subject,std::string property,std::string object);
+    bool addDescription(const ActionDescription_t& des);
     
     bool closeNetwork();
 
@@ -72,7 +73,7 @@ public:
 
     Network* clone(int new_id);
     void displayVariables();
-    std::string explain();
+    std::string explain(bool expl = false);
 
 private:
     
@@ -91,7 +92,7 @@ private:
 
     std::map<std::string,Variable_t> variables_;
 
-    std::vector<Description_t> descriptions;
+    std::vector<Description_t> descriptions_;
 
     State* current_state_;
     std::map<int, State*> states_;
