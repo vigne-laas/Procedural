@@ -25,7 +25,7 @@ public:
     void linkVariables(std::map<std::string,Variable_t>& variables);
 
     bool operator==(const Transition& other) const;
-    bool matchFact(const Fact& fact);
+    bool matchFact(Fact* fact);
 
     std::string toString() const;
 

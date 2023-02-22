@@ -29,32 +29,32 @@ bool Transition::operator==(const Transition& other) const
            (properties_ == other.properties_);
 }
 
-bool Transition::matchFact(const Fact& fact)
+bool Transition::matchFact(Fact* fact)
 {
-    bool match = (properties_.find(fact.getProperty()) != properties_.end());
+    bool match = (properties_.find(fact->getProperty()) != properties_.end());
 
     if(match)
     {
         if (var_subject_->getValue())
         {
-            match = match && (fact.getSubject() == var_subject_->getValue());
+            match = match && (fact->getSubject() == var_subject_->getValue());
             if(match)
             {
                 if (var_object_->getValue())
-                    match = match && (fact.getObject() == var_object_->getValue());
+                    match = match && (fact->getObject() == var_object_->getValue());
                 else
-                    setObject(fact.getObject());
+                    setObject(fact->getObject());
             }
         }
         else
         {
             if (var_object_->getValue())
-                match = match && (fact.getObject() == var_object_->getValue());
+                match = match && (fact->getObject() == var_object_->getValue());
             else
-                setObject(fact.getObject());
+                setObject(fact->getObject());
 
             if(match)
-                setSubject(fact.getSubject());
+                setSubject(fact->getSubject());
         }       
     }
     
