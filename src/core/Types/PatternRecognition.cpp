@@ -46,7 +46,7 @@ void PatternRecognition::checkNetworkComplete(Network * net)
         complete_networks_.insert(net);
 }
 
-void PatternRecognition::feed(const Fact& fact)
+void PatternRecognition::feed(Fact* fact)
 {
     bool evolve = false;
     for(auto& net : networks_)

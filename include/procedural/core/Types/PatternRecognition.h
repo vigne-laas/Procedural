@@ -21,7 +21,7 @@ public:
 
     void checkNetworkComplete(Network * net);
     
-    void feed(const Fact& fact);
+    void feed(Fact* fact);
 
     std::string toString();
 private:
