@@ -81,6 +81,8 @@ add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/Network.cpp
         src/graph/Action.cpp
         src/core/Types/PatternRecognition.cpp
+        include/procedural/core/Types/ActionDescription.h
+        include/procedural/core/Types/Description.h
 
         )
 target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
