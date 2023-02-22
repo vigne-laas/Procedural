@@ -15,7 +15,7 @@ Network::Network(const std::string& name, int id) : name_(name),
 
 }
 
-bool Network::evolve(const Fact& fact)
+bool Network::evolve(Fact* fact)
 {
     if((valid_ && closed_) == false)
         return false;
@@ -26,7 +26,7 @@ bool Network::evolve(const Fact& fact)
         return false;
     
     current_state_ = evolution;
-    // id_facts_involve.push_back(fact.id); // prepare to id on facts.
+    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
 
     return true;
 }

@@ -55,7 +55,7 @@ public:
     Network(const std::string& name, int id);
     Network(const Network& other) = delete;
 
-    bool evolve(const Fact& fact);
+    bool evolve(Fact* fact);
 
     const State* getCurrentState() { return current_state_; }
     std::string getName() { return full_name_; }
