@@ -9,7 +9,7 @@ State::State(const std::string& name, int id) : id_(id),
                                                 initial_node_(false)
 {}
 
-State* State::evolve(const Fact& fact)
+State* State::evolve(Fact* fact)
 {
     for (auto& pair: nexts_)
         if (pair.first.matchFact(fact))
