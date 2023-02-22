@@ -13,13 +13,14 @@ namespace procedural {
 class Fact
 {
 public:
-    Fact(bool add, const std::string& subject, const std::string& property, const std::string& object);
+    Fact(bool add, const std::string& subject, const std::string& property, const std::string& object, uint32_t id);
 
     bool isValid() const { return property_ != 0; }
 
     int32_t getProperty() const { return (int32_t)property_ * (add_ ? 1 : -1); }
     uint32_t getSubject() const { return subject_; }
     uint32_t getObject() const { return object_; }
+    uint32_t getId() const { return id_; }
 
     std::string getStringProperty() const { return properties_table[property_]; }
     std::string getStringSubject() const { return individuals_table[subject_]; }
@@ -37,6 +38,8 @@ private:
     uint32_t subject_;
     uint32_t property_;
     uint32_t object_;
+
+    uint32_t id_;
 };
 
 } // procedural
