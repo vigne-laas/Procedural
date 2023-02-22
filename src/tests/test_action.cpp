@@ -46,20 +46,19 @@ int main(int argc, char **argv)
     std::cout << "======================= Feed action : =========================================="<<std::endl;
 
     std::vector<procedural::Fact> facts;
-    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube");
-   
-    facts.emplace_back(true, "Bastien", "hasInHand", "Cube");
-    facts.emplace_back(false, "Cube", "overSupport", "Table");
-     facts.emplace_back(true, "Bob", "hasInHand", "Cube2");
-    // facts.emplace_back(true, "Cube", "hasInHand", "Cube");
-    // facts.emplace_back(true, "Cube", "overSupport", "Table");
-  
-    facts.emplace_back(false, "Cube2", "overSupport", "Table");
+    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube",1);
+    facts.emplace_back(true, "Bastien", "hasInHand", "Cube",2);
+    facts.emplace_back(false, "Cube", "overSupport", "Table",3);
+     facts.emplace_back(true, "Bob", "hasInHand", "Cube2",4);
+    // facts.emplace_back(true, "Cube", "hasInHand", "Cube",5);
+    // facts.emplace_back(true, "Cube", "overSupport", "Table",6);
+    facts.emplace_back(false, "Cube2", "overSupport", "Table",7);
+
     for (auto& fact:facts)
     {
         std::cout << "--------------" << std::endl;
         std::cout << "fact : " << fact.toString() << std::endl;
-        A.feed(fact);
+        A.feed(&fact);
         // A.displayCurrentState();
         // A.checkCompleteNetworks();
     }

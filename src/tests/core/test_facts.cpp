@@ -7,7 +7,7 @@ int main()
     procedural::Fact::properties_table.add("isA");
     procedural::Fact::properties_table.add("isUnder");
 
-    procedural::Fact fact_1 = procedural::Fact(false, "plop", "isA", "kyoto_floor");
+    procedural::Fact fact_1 = procedural::Fact(false, "plop", "isA", "kyoto_floor",1);
     std::cout << "fact_1 = " << fact_1.toString() << std::endl;
 
     if(fact_1.isValid())
@@ -15,7 +15,7 @@ int main()
     else
         std::cout << "fact_1 is INVALID" << std::endl;
 
-    procedural::Fact fact_2 = procedural::Fact(true, "plop", "is", "kyoto_floor");
+    procedural::Fact fact_2 = procedural::Fact(true, "plop", "is", "kyoto_floor",2);
     std::cout << "fact_2 = " << fact_2.toString() << std::endl;
 
     if(fact_2.isValid())

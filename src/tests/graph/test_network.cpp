@@ -108,17 +108,17 @@ int main()
 
     std::cout << "======== CLONED NETWORK EVOLUTION ========" << std::endl;
     std::vector<procedural::Fact> facts;
-    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube");
-    facts.emplace_back(true, "Bob", "hasInHand", "Cube");
-    // facts.emplace_back(true, "Cube", "hasInHand", "Cube");
-    facts.emplace_back(true, "Bastien", "hasInHand", "Cube");
-    // facts.emplace_back(true, "Cube", "overSupport", "Table");
-    facts.emplace_back(false, "Cube", "overSupport", "Table");
+    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube",1);
+    facts.emplace_back(true, "Bob", "hasInHand", "Cube",2);
+    // facts.emplace_back(true, "Cube", "hasInHand", "Cube",3);
+    facts.emplace_back(true, "Bastien", "hasInHand", "Cube",4);
+    // facts.emplace_back(true, "Cube", "overSupport", "Table",5);
+    facts.emplace_back(false, "Cube", "overSupport", "Table",6);
 
     for(auto& fact : facts)
     {
         std::cout << "fact : " << fact.toString() << std::endl;
-        N2->evolve(fact);
+        N2->evolve(&fact);
         std::cout << N2->getCurrentState()->toString() << std::endl;
         N2->displayVariables();
         std::cout << "--------------" << std::endl;
