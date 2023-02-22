@@ -17,7 +17,7 @@ public:
 
     bool addPatterns(const PatternRecognition & pattern);
 
-    void feed(const Fact& fact);
+    void feed(Fact* fact);
 
     void checkCompleteNetworks();
 
