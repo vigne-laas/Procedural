@@ -1,4 +1,5 @@
 #include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Graph/Network.h"
 #include <iostream>
 #include <exception>
@@ -67,10 +68,19 @@ int main()
     list_test.emplace_back(1, &F2, 3); 
     list_test.emplace_back(0, &F2, 3); 
 
+    std::cout << "======== TEST ADD NETWORK =======" << std::endl;
+    std::vector<procedural::ActionDescription_t> file_descriptions;
+    file_descriptions.emplace_back("??","isA","PlaceAction");
+    file_descriptions.emplace_back("??","isPerformedBy","?A");
+    file_descriptions.emplace_back("??","isPerformedOn","?O");
+    file_descriptions.emplace_back("??","isPerformedFrom","?S");
+    
     procedural::Network N = procedural::Network("pick",0);
 
     for(const auto& pattern : list_test)
         N.addTransition(pattern);
+    for(const auto& des : file_descriptions)
+        N.addDescription(des);
     N.closeNetwork();
 
     std::cout << N.getName() << " is " << (N.isClosed() ? "" : "NOT ") << "close" << std::endl;
@@ -121,6 +131,8 @@ int main()
     std::cout << "============= CLONED NETWORK =============" << std::endl;
     std::cout << "Current state is: " <<  N2->getCurrentState()->toString() << std::endl << std::endl;
     N2->displayVariables();
+    std::cout<< N2->explain() << std::endl;
+    std::cout<< N2->explain(true) << std::endl;
 
     return 0;
 }
