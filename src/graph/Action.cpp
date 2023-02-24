@@ -25,8 +25,17 @@ void Action::feed(Fact* fact)
 
 void Action::checkCompleteNetworks()
 {
+    std::vector<std::vector<uint32_t>> list_valid_facts;
     for(auto& pattern : patterns_)
-        pattern.checkNetwork();
+        for(auto& list : pattern.checkNetwork())
+        {
+            list_valid_facts.push_back(list);
+        }
+    for(auto& id_facts : list_valid_facts)
+    {
+        for(auto& pattern : patterns_)
+            pattern.cleanInvolve(id_facts);
+    }
 }
 
 void Action::displayCurrentState()
