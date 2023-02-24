@@ -126,6 +126,16 @@ std::string Network::describe(bool expl)
     return msg;
 }
 
+bool Network::involveFacts(const std::vector<uint32_t>& facts)
+{
+    for(auto id_fact : id_facts_involve)
+        if(std::find(facts.begin(),facts.end(),id_fact)==facts.end())
+            return false;
+    return true;
+}
+
+/* ------------------------------ private part ------------------------------ */
+
 void Network::addState(int id_state)
 {
     if(states_.find(id_state) == states_.end())

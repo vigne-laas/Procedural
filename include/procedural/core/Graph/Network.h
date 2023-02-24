@@ -74,6 +74,9 @@ public:
     Network* clone(int new_id);
     void displayVariables();
     std::string describe(bool expl = false);
+    std::vector<uint32_t> getIdsFacts(){return id_facts_involve;};
+
+    bool involveFacts(const std::vector<uint32_t>& facts);
 
 private:
     
