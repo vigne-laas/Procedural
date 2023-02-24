@@ -25,19 +25,44 @@ int PatternRecognition::getNextId()
     return id_++;
 }
 
-void PatternRecognition::checkNetwork()
+std::vector<std::vector<uint32_t>> PatternRecognition::checkNetwork()
 {
+    std::vector<std::vector<uint32_t>> list_valid_facts;
     for(auto net : networks_)
         checkNetworkComplete(net);
         
     for(auto& net : complete_networks_)
     {
         std::cout << "network finish :" << net->getName() << std::endl;
-        std::cout << "explanation : " << net->explain() << std::endl;
+        std::cout << "explanation : " << net->describe() << std::endl;
+        std::cout << "facts involved : ";
+        for(auto& id : net->getIdsFacts())
+            std::cout << std::to_string(id) << "|"; 
+        list_valid_facts.push_back(net->getIdsFacts());
+        std::cout << std::endl;
         networks_.erase(net);
-        for(auto& msg : descriptions_)
-            std::cout << "\t" << msg << std::endl;
     }
+    std::vector<Network*> network_to_deletes;
+    // std::cout << "Pattern : "<< this->name_<< std::endl;
+    // std::cout << "size net : "<< networks_.size()<< std::endl;
+    for(auto& list : list_valid_facts)
+    {
+        for(auto& net: networks_)
+        {
+            if(net->involveFacts(list))
+            {
+                std::cout << "may delete this network" << net->getName() << std::endl;
+                network_to_deletes.push_back(net);
+            }
+        }
+    }
+    for(auto net : network_to_deletes)
+    {
+        // delete net;
+        networks_.erase(net);
+    }
+
+    return list_valid_facts;
 }
 
 void PatternRecognition::checkNetworkComplete(Network * net)
@@ -46,7 +71,27 @@ void PatternRecognition::checkNetworkComplete(Network * net)
         complete_networks_.insert(net);
 }
 
-void PatternRecognition::feed(Fact* fact)
+void PatternRecognition::cleanInvolve(const std::vector<uint32_t>& list_valid_facts)
+{
+    std::vector<Network*> network_to_deletes;
+
+    for(auto& net: networks_)
+    {
+        if(net->involveFacts(list_valid_facts))
+        {
+            std::cout << "may delete this network" << net->getName() << std::endl;
+            network_to_deletes.push_back(net);
+        }
+    }
+    for(auto net : network_to_deletes)
+    {
+        // delete net;
+        networks_.erase(net);
+    }
+
+
+}
+void PatternRecognition::feed(Fact *fact)
 {
     bool evolve = false;
     for(auto& net : networks_)

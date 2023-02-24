@@ -17,9 +17,10 @@ public:
 
     bool isValid() const { return is_valid_; }
     int getNextId();
-    void checkNetwork();
+    std::vector<std::vector<uint32_t>> checkNetwork();
 
     void checkNetworkComplete(Network * net);
+    void cleanInvolve(const std::vector<uint32_t>& list_valid_facts);
     
     void feed(Fact* fact);
 
