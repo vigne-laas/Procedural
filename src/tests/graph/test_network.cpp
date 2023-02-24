@@ -131,8 +131,8 @@ int main()
     std::cout << "============= CLONED NETWORK =============" << std::endl;
     std::cout << "Current state is: " <<  N2->getCurrentState()->toString() << std::endl << std::endl;
     N2->displayVariables();
-    std::cout<< N2->explain() << std::endl;
-    std::cout<< N2->explain(true) << std::endl;
+    std::cout<< N2->describe() << std::endl;
+    std::cout<< N2->describe(true) << std::endl;
 
     return 0;
 }
