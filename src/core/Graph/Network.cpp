@@ -109,7 +109,7 @@ void Network::displayVariables()
         std::cout << "key : " << var.first << " => " << var.second.toString() << std::endl;
 }
 
-std::string Network::explain(bool expl)
+std::string Network::describe(bool expl)
 {
     if((valid_ && closed_) == false)
         return "";

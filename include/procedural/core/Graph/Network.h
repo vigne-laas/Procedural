@@ -73,7 +73,7 @@ public:
 
     Network* clone(int new_id);
     void displayVariables();
-    std::string explain(bool expl = false);
+    std::string describe(bool expl = false);
 
 private:
     
