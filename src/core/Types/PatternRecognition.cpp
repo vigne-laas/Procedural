@@ -10,13 +10,13 @@ int PatternRecognition::id_ = 0;
 
 PatternRecognition::PatternRecognition(const std::string& name,
                                         std::vector<procedural::PatternTransition_t>& patterns,
-                                        std::vector<std::string>& descriptions) : name_(name),
-                                                                                  descriptions_(descriptions),
-                                                                                  is_valid_(false)
+                                        std::vector<ActionDescription_t>& descriptions) : name_(name),is_valid_(false)
 {
     root_network_ = new Network(name_, 0);
     for(auto& pattern : patterns)
         root_network_->addTransition(pattern);
+    for(auto& des : descriptions)
+        root_network_->addDescription(des);
     is_valid_ = root_network_->closeNetwork();
 }
 

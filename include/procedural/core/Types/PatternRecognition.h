@@ -12,8 +12,8 @@ class PatternRecognition
 {
 public:
     PatternRecognition(const std::string& name,
-                      std::vector<procedural::PatternTransition_t>& patterns,
-                      std::vector<std::string>& descriptions);
+                      std::vector<PatternTransition_t>& patterns,
+                      std::vector<ActionDescription_t>& descriptions);
 
     bool isValid() const { return is_valid_; }
     int getNextId();
@@ -31,8 +31,6 @@ private:
     Network* root_network_; //issue when i try without *
     std::unordered_set<Network *> networks_;
     std::unordered_set<Network *> complete_networks_;
-    std::vector<std::string> descriptions_;
-
     bool is_valid_;
 };
 
