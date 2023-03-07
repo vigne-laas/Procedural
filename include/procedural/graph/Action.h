@@ -19,11 +19,15 @@ public:
 
     void feed(Fact* fact);
 
-    void checkCompleteNetworks();
+    std::set<uint32_t> checkCompleteNetworks();
 
     void displayCurrentState();
 
+    void cleanPatterns(std::set<uint32_t> set_id);
+
     std::string toString();
+
+    std::string currentState(bool shortVersion = true);
 
 private:
     std::string name_;
