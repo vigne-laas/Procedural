@@ -1,14 +1,12 @@
-//
-// Created by avigne on 18/01/23.
-//
-
-#include "test_wordtable.h"
+#include "procedural/core/Types/WordTable.h"
 #include <iostream>
 
-int main() {
+int main()
+{
     procedural::WordTable Table = procedural::WordTable();
+
     Table.add("coucou");
-    //std::cout << "index : " << index << std::endl;
+
     std::unordered_set<std::string> list;
     list.insert("test");
     list.insert("ajout");
@@ -17,17 +15,21 @@ int main() {
     list.insert("liste");
     list.insert("ajout");
     Table.add(list);
+
     Table.add("coucou");
-    Table.printAll();
-    uint32_t index = Table["bonjour"];
-    uint32_t index2 = Table["coucou"];
-    std::cout << index << " " << index2 << std::endl;
-    std::string txt = Table[0];
-    std::string txt2 = Table[1];
-    std::cout << txt << " " << txt2 << std::endl;
-    Table.printAll();
 
+    std::cout << Table.toString() << std::endl;
 
+    std::cout << "bonjour = " << Table["bonjour"] << std::endl;
+    std::cout << "coucou = " << Table["coucou"] << std::endl;
+
+    std::cout << "0 = " << Table[0] << std::endl;
+    std::cout << "1 = " << Table[1] << std::endl;
+
+    std::cout << Table.toString() << std::endl;
+
+    std::cout << "get plop = " << Table.get("plop") << std::endl;
+    std::cout << "getConst plip = " << Table.getConst("plip") << std::endl;
 
     return 0;
 }

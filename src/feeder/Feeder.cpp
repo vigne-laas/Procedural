@@ -27,9 +27,9 @@ procedural::Fact* Feeder::parse(const std::string& fact)
 //
 //        }
         if (matches[1].str() == "DEL")
-            return new Fact(false, matches[2], matches[3], matches[4]);
+            return new Fact(false, matches[2], matches[3], matches[4],0); // adapt to take into account id 
         else
-            return new Fact(true, matches[2], matches[3], matches[4]);
+            return new Fact(true, matches[2], matches[3], matches[4],0);
 
     }
     return nullptr;

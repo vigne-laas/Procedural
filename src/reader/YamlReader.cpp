@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
-#include <experimental/filesystem>
+#include <filesystem>
 
 namespace procedural {
 //
@@ -158,103 +158,103 @@ namespace procedural {
 //
 //  return nb;
 //}
-
-Action::Action(const YAML::Node& yamlAction, const std::string name) : patternDescription(
-        R"(\s*\?([^\s]*)\s+([^\s]*)\s+\??([^\s]*)\s*)"), patternFacts(
-        R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)"), name_(name)
-{
-//    name_ = name;
-//    patternFacts = "\\s*(NOT)?\\s*\\?([^\\s]*)\\s+([^\\s]*)\\s+\\?([^\\s]*)\\s*(REQUIRED)?";
-    std::cout << "Create Action : " << name_ << std::endl;
-    if (yamlAction["ordered_facts"])
-    {
-        ordered_ = true;
-        readFacts(yamlAction["ordered_facts"]);
-    } else
-    {
-        if (yamlAction["unordered_facts"])
-            readFacts(yamlAction["unordered_facts"]);
-        else
-            std::cerr << " Action without facts" << std::endl;
-    }
-    if (yamlAction["description"])
-        readDescriptions(yamlAction["description"]);
-    else
-        std::cerr << " Action without description" << std::endl;
-}
-
-const std::vector<std::string>& Action::getFacts()
-{
-    return facts_;
-}
-
-const std::vector<std::string>& Action::getDescriptions()
-{
-    return descriptions_;
-}
-
-const std::vector<std::string>& Action::getVariables()
-{
-    return variables_;
-}
-
-void Action::readDescriptions(const YAML::Node& yamlDescriptions)
-{
-    std::cout << "Description of  " << name_ << " : " << std::endl;
-    if (yamlDescriptions.IsSequence())
-    {
-        for (auto i = 0; i < yamlDescriptions.size(); i++)
-        {
-            std::cout << yamlDescriptions[i].as<std::string>() << std::endl;
-        }
-    }
-
-}
-
-void Action::readFacts(const YAML::Node& yamlFacts)
-{
-    if (yamlFacts.IsSequence())
-    {
-        for (const auto & yamlFact : yamlFacts)
-        {
-            if (yamlFact.IsScalar())
-                std::cout << yamlFact.as<std::string>() << std::endl;
-
-            else if (yamlFact["or_facts"])
-            {
-                std::cout << "or facts : " << std::endl;
-                for (auto j = 0; j < yamlFact["or_facts"].size(); j++)
-                {
-                    std::cout << "      " << yamlFact["or_facts"][j].as<std::string>() << std::endl;
-                }
-
-            } else
-                std::cerr << "invalid synthax" << std::endl;
-//                std::cout << "other type : sequence " << yamlFacts[i].IsSequence() << " map " << yamlFacts[i].IsMap() << " name : " << yamlFacts[i] << std::endl;
-        }
-    }
-
-}
-
-void Action::parseFact(const std::string& fact)
-{
-//    std::smatch matches;
-//    if(std::regex_search(fact,matches,patternFacts))
-//    {
 //
+//Action::Action(const YAML::Node& yamlAction, const std::string name) : patternDescription(
+//        R"(\s*\?([^\s]*)\s+([^\s]*)\s+\??([^\s]*)\s*)"), patternFacts(
+//        R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)"), name_(name)
+//{
+////    name_ = name;
+////    patternFacts = "\\s*(NOT)?\\s*\\?([^\\s]*)\\s+([^\\s]*)\\s+\\?([^\\s]*)\\s*(REQUIRED)?";
+//    std::cout << "Create Action : " << name_ << std::endl;
+//    if (yamlAction["ordered_facts"])
+//    {
+//        ordered_ = true;
+//        readFacts(yamlAction["ordered_facts"]);
+//    } else
+//    {
+//        if (yamlAction["unordered_facts"])
+//            readFacts(yamlAction["unordered_facts"]);
+//        else
+//            std::cerr << " Action without facts" << std::endl;
 //    }
-}
+//    if (yamlAction["description"])
+//        readDescriptions(yamlAction["description"]);
+//    else
+//        std::cerr << " Action without description" << std::endl;
+//}
+//
+//const std::vector<std::string>& Action::getFacts()
+//{
+//    return facts_;
+//}
+//
+//const std::vector<std::string>& Action::getDescriptions()
+//{
+//    return descriptions_;
+//}
+//
+//const std::vector<std::string>& Action::getVariables()
+//{
+//    return variables_;
+//}
+//
+//void Action::readDescriptions(const YAML::Node& yamlDescriptions)
+//{
+//    std::cout << "Description of  " << name_ << " : " << std::endl;
+//    if (yamlDescriptions.IsSequence())
+//    {
+//        for (auto i = 0; i < yamlDescriptions.size(); i++)
+//        {
+//            std::cout << yamlDescriptions[i].as<std::string>() << std::endl;
+//        }
+//    }
+//
+//}
+//
+//void Action::readFacts(const YAML::Node& yamlFacts)
+//{
+//    if (yamlFacts.IsSequence())
+//    {
+//        for (const auto & yamlFact : yamlFacts)
+//        {
+//            if (yamlFact.IsScalar())
+//                std::cout << yamlFact.as<std::string>() << std::endl;
+//
+//            else if (yamlFact["or_facts"])
+//            {
+//                std::cout << "or facts : " << std::endl;
+//                for (auto j = 0; j < yamlFact["or_facts"].size(); j++)
+//                {
+//                    std::cout << "      " << yamlFact["or_facts"][j].as<std::string>() << std::endl;
+//                }
+//
+//            } else
+//                std::cerr << "invalid synthax" << std::endl;
+////                std::cout << "other type : sequence " << yamlFacts[i].IsSequence() << " map " << yamlFacts[i].IsMap() << " name : " << yamlFacts[i] << std::endl;
+//        }
+//    }
+//
+//}
+//
+//void Action::parseFact(const std::string& fact)
+//{
+////    std::smatch matches;
+////    if(std::regex_search(fact,matches,patternFacts))
+////    {
+////
+////    }
+//}
 
 bool YamlReader::read(const std::string& path)
 {
-    if (std::experimental::filesystem::exists(path)) //TODO demander pour l'import de experimental
+    if (std::filesystem::exists(path)) //TODO demander pour l'import de experimental
     {
-    YAML::Node yamlFile = YAML::LoadFile(path);
-    for (YAML::const_iterator it = yamlFile.begin(); it != yamlFile.end(); ++it)
-    {
-        std::cout << "Action find " << it->first.as<std::string>() << std::endl;
-        Action(yamlFile[it->first.as<std::string>()], it->first.as<std::string>());
-    }
+        YAML::Node yamlFile = YAML::LoadFile(path);
+        for (YAML::const_iterator it = yamlFile.begin(); it != yamlFile.end(); ++it)
+        {
+            std::cout << "Action find " << it->first.as<std::string>() << std::endl;
+    //        Action(yamlFile[it->first.as<std::string>()], it->first.as<std::string>());
+        }
     }
     return true;
 }

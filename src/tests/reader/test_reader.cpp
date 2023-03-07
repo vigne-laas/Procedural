@@ -1,5 +1,3 @@
-#include "test_reader.h"
-
 #include "procedural/reader/YamlReader.h"
 #include <iostream>
 #include "yaml.h"

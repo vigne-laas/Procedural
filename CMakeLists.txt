@@ -1,19 +1,16 @@
 cmake_minimum_required(VERSION 3.0.2)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 project(procedural)
 
 add_compile_options(-std=c++17)
-
-
 
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
         std_msgs
-
         )
+
 find_package(yaml-cpp REQUIRED)
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -66,25 +63,29 @@ catkin_package(
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
         ${YAML_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
-        src/core/FactPattern.cpp
-        src/core/WordTable.cpp
-        src/core/Fact.cpp
+        src/core/Types/FactPattern.cpp
+        src/core/Types/WordTable.cpp
+        src/core/Types/Fact.cpp
         )
+
 add_library(${PROJECT_NAME}_network_lib
-        src/graph/Transition.cpp
-        src/graph/State.cpp
-        src/graph/Network.cpp
+        src/core/Graph/Transition.cpp
+        src/core/Graph/State.cpp
+        src/core/Graph/Network.cpp
+        src/graph/Action.cpp
+        src/core/Types/PatternRecognition.cpp
+        include/procedural/core/Types/ActionDescription.h
+        include/procedural/core/Types/Description.h
+
         )
+target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 
 add_library(${PROJECT_NAME}_reader_lib
         src/reader/YamlReader.cpp
@@ -95,16 +96,22 @@ add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp
         )
 
+##################################
+##      Test executables        ##
+##################################
+
 add_executable(test_facts src/tests/core/test_facts.cpp)
 add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_facts
         ${PROJECT_NAME}_lib
         )
+
 add_executable(test_wordtable src/tests/core/test_wordtable.cpp)
 add_dependencies(test_wordtable ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_wordtable
         ${PROJECT_NAME}_lib
         )
+
 add_executable(test_network src/tests/graph/test_network.cpp)
 add_dependencies(test_network ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_network
@@ -119,11 +126,19 @@ target_link_libraries(test_reader
         yaml-cpp
         )
 
-add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
-add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_feeder
-        ${PROJECT_NAME}_feed_lib
-        )
+add_executable(test_action src/tests/test_action.cpp)
+add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_action
+       ${PROJECT_NAME}_lib
+       ${PROJECT_NAME}_network_lib
+       ${catkin_LIBRARIES}
+       )
+
+#add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
+#add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_feeder
+#        ${PROJECT_NAME}_feed_lib
+#        )
 #add_executable(test_feeder src/tests/test_feeder.cpp)
 #add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_feeder

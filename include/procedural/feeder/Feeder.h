@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 namespace procedural {
 

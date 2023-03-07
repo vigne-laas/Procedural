@@ -1,27 +1,29 @@
-#include "test_facts.h"
-
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 #include <iostream>
 
-int main(){
-    procedural::Fact::table_properties_.add("isA");
-    procedural::Fact::table_properties_.add("isUnder");
-    procedural::Fact F1 = procedural::Fact(false, "plop", "isA", "kyoto_floor");
-    std::cout <<"object : " <<F1.getObject() << ":" <<F1.getStringObject() <<std::endl;
-    std::cout << F1.toString() << std::endl;
-    F1.printSubjectsObjects();
-    procedural::Fact F2 = procedural::Fact(true, "plop", "is", "kyoto_floor");
-    std::cout << F2.toString() << std::endl;
+int main()
+{
+    procedural::Fact::properties_table.add("isA");
+    procedural::Fact::properties_table.add("isUnder");
 
+    procedural::Fact fact_1 = procedural::Fact(false, "plop", "isA", "kyoto_floor",1);
+    std::cout << "fact_1 = " << fact_1.toString() << std::endl;
 
-    if(!F2.isValid()){
-        std::cout << "F2 is invalid" << std::endl;
-    }
+    if(fact_1.isValid())
+        std::cout << "fact_1 is VALID" << std::endl;
+    else
+        std::cout << "fact_1 is INVALID" << std::endl;
 
+    procedural::Fact fact_2 = procedural::Fact(true, "plop", "is", "kyoto_floor",2);
+    std::cout << "fact_2 = " << fact_2.toString() << std::endl;
 
+    if(fact_2.isValid())
+        std::cout << "fact_2 is VALID" << std::endl;
+    else
+        std::cout << "fact_2 is INVALID" << std::endl;
 
-
+    std::cout << procedural::Fact::individuals_table.toString() << std::endl;
 
     return 0;
 }

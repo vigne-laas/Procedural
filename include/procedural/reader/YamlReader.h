@@ -14,33 +14,33 @@
 namespace procedural {
 
 class YamlReader;
-
-class Action
-{
-public:
-    Action(const YAML::Node& yamlAction, const std::string name);
-
-    const std::vector<std::string>& getFacts();
-
-    const std::vector<std::string>& getDescriptions();
-
-    const std::vector<std::string>& getVariables();
-
-private:
-    std::string name_;
-    std::regex patternDescription;
-    std::regex patternFacts;
-
-    void readDescriptions(const YAML::Node& yamlDescriptions);
-    void readFacts(const YAML::Node& yamlFacts);
-    void parseFact(const std::string& fact);
-
-    bool ordered_ = false;
-    std::vector<std::string> variables_;
-    std::vector<std::string> facts_;
-    std::vector<std::string> descriptions_;
-
-};
+//
+//class Action
+//{
+//public:
+//    Action(const YAML::Node& yamlAction, const std::string name);
+//
+//    const std::vector<std::string>& getFacts();
+//
+//    const std::vector<std::string>& getDescriptions();
+//
+//    const std::vector<std::string>& getVariables();
+//
+//private:
+//    std::string name_;
+//    std::regex patternDescription;
+//    std::regex patternFacts;
+//
+//    void readDescriptions(const YAML::Node& yamlDescriptions);
+//    void readFacts(const YAML::Node& yamlFacts);
+//    void parseFact(const std::string& fact);
+//
+//    bool ordered_ = false;
+//    std::vector<std::string> variables_;
+//    std::vector<std::string> facts_;
+//    std::vector<std::string> descriptions_;
+//
+//};
 
 //class YamlElement
 //{

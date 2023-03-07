@@ -1,0 +1,3 @@
+<launch>
+    <node name="test_action" pkg="procedural" type="test_action" />
+</launch>
