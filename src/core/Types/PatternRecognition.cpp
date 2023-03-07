@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <set>
 
 namespace procedural
 {
@@ -25,9 +26,9 @@ int PatternRecognition::getNextId()
     return id_++;
 }
 
-std::vector<std::vector<uint32_t>> PatternRecognition::checkNetwork()
+std::set<uint32_t> PatternRecognition::checkNetwork()
 {
-    std::vector<std::vector<uint32_t>> list_valid_facts;
+    std::set<uint32_t> set_valid_facts;
     for(auto net : networks_)
         checkNetworkComplete(net);
         
@@ -37,32 +38,32 @@ std::vector<std::vector<uint32_t>> PatternRecognition::checkNetwork()
         std::cout << "explanation : " << net->describe() << std::endl;
         std::cout << "facts involved : ";
         for(auto& id : net->getIdsFacts())
-            std::cout << std::to_string(id) << "|"; 
-        list_valid_facts.push_back(net->getIdsFacts());
+        {
+            std::cout << std::to_string(id) << "|";
+            set_valid_facts.insert(id);
+        }
         std::cout << std::endl;
         networks_.erase(net);
     }
     std::vector<Network*> network_to_deletes;
     // std::cout << "Pattern : "<< this->name_<< std::endl;
     // std::cout << "size net : "<< networks_.size()<< std::endl;
-    for(auto& list : list_valid_facts)
-    {
         for(auto& net: networks_)
         {
-            if(net->involveFacts(list))
+            if(net->involveFacts(set_valid_facts))
             {
                 std::cout << "may delete this network" << net->getName() << std::endl;
                 network_to_deletes.push_back(net);
             }
         }
-    }
+
     for(auto net : network_to_deletes)
     {
         // delete net;
         networks_.erase(net);
     }
-
-    return list_valid_facts;
+    complete_networks_ = {};
+    return set_valid_facts;
 }
 
 void PatternRecognition::checkNetworkComplete(Network * net)
@@ -71,7 +72,7 @@ void PatternRecognition::checkNetworkComplete(Network * net)
         complete_networks_.insert(net);
 }
 
-void PatternRecognition::cleanInvolve(const std::vector<uint32_t>& list_valid_facts)
+void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
 {
     std::vector<Network*> network_to_deletes;
 
@@ -79,13 +80,15 @@ void PatternRecognition::cleanInvolve(const std::vector<uint32_t>& list_valid_fa
     {
         if(net->involveFacts(list_valid_facts))
         {
-            std::cout << "may delete this network" << net->getName() << std::endl;
+//            std::cout << "may delete this network" << net->getName() << std::endl;
             network_to_deletes.push_back(net);
         }
     }
+
     for(auto net : network_to_deletes)
     {
         // delete net;
+        std::cout << "delete network  : " << net->getName() << std::endl;
         networks_.erase(net);
     }
 
@@ -98,7 +101,7 @@ void PatternRecognition::feed(Fact *fact)
     {   
         if(net->evolve(fact))
         {
-            // std::cout << "\t succes of evolution" << std::endl;
+            std::cout << "\t succes of evolution  : "<<net->getName() << std::endl;
             evolve = true;
             // checkNetworkComplete(net);
         }
@@ -106,10 +109,10 @@ void PatternRecognition::feed(Fact *fact)
 
     if(evolve == false)
     {
-        std::cout << "create new network of " << name_ << std::endl;
         Network* new_net = root_network_->clone(getNextId());
         if(new_net->evolve(fact))
         {
+            std::cout << "create new network " << new_net->getName() << std::endl;
             networks_.insert(new_net);
             // checkNetworkComplete(new_net);
         }
@@ -123,10 +126,27 @@ std::string PatternRecognition::toString()
     std::string res;
     res += "Pattern Recognition of : " + name_ + "\n";
     res += "\t nb of active networks : " +std::to_string(networks_.size())+"\n";
-    res += "\t active networks : ";
+    res += "\t active networks : \n";
     for(auto& net : networks_)
         res+= net->toString()+"\n";
     return res;
 }
-    
+
+std::string PatternRecognition::currentState(bool shortVersion)
+{
+    std::string res;
+    res += "Pattern Recognition of : " + name_ + "\t";
+    res += "\t nb of networks : " +std::to_string(networks_.size())+"\n";
+    for(auto& net : networks_)
+    {
+        if (shortVersion)
+            res+= net->getCurrentState()->toString()+"\t";
+        else
+            res+= net->toString()+"\n";
+    }
+
+    res += "\n";
+    return res;
+}
+
 } // namespace procedural

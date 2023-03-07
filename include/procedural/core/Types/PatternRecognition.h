@@ -17,14 +17,17 @@ public:
 
     bool isValid() const { return is_valid_; }
     int getNextId();
-    std::vector<std::vector<uint32_t>> checkNetwork();
+    std::set<uint32_t> checkNetwork();
 
     void checkNetworkComplete(Network * net);
-    void cleanInvolve(const std::vector<uint32_t>& list_valid_facts);
+    void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
     
     void feed(Fact* fact);
 
     std::string toString();
+
+    std::string currentState(bool shortVersion = true);
+
 private:
     static int id_;
 
