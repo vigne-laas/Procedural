@@ -7,6 +7,7 @@
 #include <exception>
 #include <vector>
 #include <string>
+#include <set>
 
 #include "procedural/core/Graph/State.h"
 #include "procedural/core/Types/PatternTransition.h"
@@ -46,7 +47,7 @@ struct MultiInitialStateNetworkException : public NetworkException {
     const char * what() const throw ()
     {        
         return msg_.c_str();
-    }
+}
 };
 
 class Network
@@ -69,14 +70,14 @@ public:
     
     bool closeNetwork();
 
-    std::string toString(); 
-
+    std::string toString();
+    
     Network* clone(int new_id);
     void displayVariables();
     std::string describe(bool expl = false);
     std::vector<uint32_t> getIdsFacts(){return id_facts_involve;};
 
-    bool involveFacts(const std::vector<uint32_t>& facts);
+    bool involveFacts(const std::set<uint32_t>& facts);
 
 private:
     
