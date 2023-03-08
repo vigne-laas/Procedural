@@ -45,8 +45,8 @@ int main(int argc, char** argv)
     list_pick2.emplace_back(0, &F3, 3);
 
     std::vector <procedural::PatternRecognition> list_pattern_pick;
-    list_pattern_pick.emplace_back("pick_over", list_pick1, over_descriptions);
-    list_pattern_pick.emplace_back("pick_in", list_pick2, in_descriptions);
+    list_pattern_pick.emplace_back("pick_over", list_pick1, over_descriptions,4);
+    list_pattern_pick.emplace_back("pick_in", list_pick2, in_descriptions,4);
 
     std::cout << "============================ Create data for place =============================" << std::endl;
     std::vector <procedural::ActionDescription_t> over_place_descriptions;
@@ -78,8 +78,8 @@ int main(int argc, char** argv)
     list_place2.emplace_back(2, &Fp3, 3);
 
     std::vector <procedural::PatternRecognition> list_pattern_place;
-    list_pattern_place.emplace_back("place_over", list_place2, over_place_descriptions);
-    list_pattern_place.emplace_back("place_in", list_place1, in_place_descriptions);
+    list_pattern_place.emplace_back("place_over", list_place2, over_place_descriptions,4);
+    list_pattern_place.emplace_back("place_in", list_place1, in_place_descriptions,4);
 
     std::cout << "====================================== Create 2 actions ================================"
               << std::endl;
@@ -131,10 +131,10 @@ int main(int argc, char** argv)
 
     std::vector <procedural::Fact> facts_multi;
     facts_multi.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1);
-//     facts_multi.emplace_back(true, "Bob", "hasInHand", "Cube2",4);
-    // facts_multi.emplace_back(true, "Charly", "hasInHand", "Cube",5);
-//     facts_multi.emplace_back(true, "Cube", "overSupport", "Table",6);
-    // facts_multi.emplace_back(false, "Cube2", "overSupport", "Table",7);
+     facts_multi.emplace_back(true, "Bob", "hasInHand", "Cube4",4);
+     facts_multi.emplace_back(true, "Charly", "hasInHand", "Cube7",5);
+     facts_multi.emplace_back(true, "Cube", "overSupport", "Table",6);
+     facts_multi.emplace_back(false, "Cube2", "overSupport", "Table",7);
     facts_multi.emplace_back(true, "Bastien", "hasInHand", "Cube", 2);
     facts_multi.emplace_back(false, "Cube", "overSupport", "Table", 3);
 
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
     facts_multi.emplace_back(true, "Cube", "isInContainer", "Box", 9);
     facts_multi.emplace_back(false, "Bastien", "hasInHand", "Cube", 10);
 
-    // facts_multi.emplace_back(false, "Cube", "overSupport", "Table",11);
+     facts_multi.emplace_back(false, "Cube", "overSupport", "Table",11);
 
 
     for (auto& fact: facts_multi)
