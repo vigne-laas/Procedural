@@ -1,5 +1,5 @@
 #include <iostream>
-#include "procedural/graph/Action.h"
+#include "procedural/core/Types/Action.h"
 
 namespace procedural {
 

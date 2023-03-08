@@ -79,7 +79,7 @@ add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/Transition.cpp
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
-        src/graph/Action.cpp
+        src/core/Types/Action.cpp
         src/core/Types/PatternRecognition.cpp
         include/procedural/core/Types/ActionDescription.h
         include/procedural/core/Types/Description.h

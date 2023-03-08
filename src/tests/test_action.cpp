@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include "procedural/core/Types/PatternRecognition.h"
-#include "procedural/graph/Action.h"
+#include "procedural/core/Types/Action.h"
 
 #include "ros/ros.h"
 
