@@ -67,6 +67,7 @@ public:
     bool isComplete(){ return current_state_->isFinalNode(); }
     bool isClosed(){ return closed_; }
     bool isValid(){ return valid_; }
+    uint32_t getAge() { return age_; }
 
     bool addTransition(const PatternTransition_t& pattern);
     bool addDescription(const ActionDescription_t& des);
@@ -107,6 +108,7 @@ private:
 
     bool closed_;
     bool valid_;
+    uint32_t age_;
 };
 
 } // procedural

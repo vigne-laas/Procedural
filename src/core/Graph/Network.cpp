@@ -8,7 +8,8 @@ namespace procedural {
 Network::Network(const std::string& name, int id) : name_(name),
                                                     id_(id),
                                                     closed_(false),
-                                                    valid_(false)
+                                                    valid_(false),
+                                                    age_(0)
 {
     full_name_ = name_ + " " + std::to_string(id);
     variables_.emplace("self", full_name_);
@@ -19,7 +20,7 @@ bool Network::evolve(Fact* fact)
 {
     if ((valid_ && closed_) == false)
         return false;
-
+    age_++;
     auto evolution = current_state_->evolve(fact);
 
     if (evolution == nullptr)
