@@ -29,7 +29,7 @@ public:
     std::string currentState(bool shortVersion = true);
 
 private:
-    static int id_;
+    int id_;
 
     std::string name_;
     Network* root_network_; //issue when i try without *

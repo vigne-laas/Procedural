@@ -6,7 +6,6 @@
 
 namespace procedural {
 
-int PatternRecognition::id_ = 0;
 
 PatternRecognition::PatternRecognition(const std::string& name,
                                        std::vector<procedural::PatternTransition_t>& patterns,
