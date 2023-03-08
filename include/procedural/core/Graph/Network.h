@@ -21,33 +21,36 @@ namespace procedural {
 struct NetworkException : public std::exception
 {
     std::string msg_;
-    NetworkException(){}; // Pb de compilation et link sans ca 
-    explicit NetworkException(const std::string& msg) : msg_(msg) {}
-    const char * what () const throw () {
-    return msg_.c_str();
+    NetworkException(){}; // Pb de compilation et link sans ca
+    explicit NetworkException(const std::string& msg) : msg_(msg){}
+    const char* what() const throw()
+    {
+        return msg_.c_str();
     }
 };
 
-struct NoInitialStateNetworkException : public NetworkException {
-    NoInitialStateNetworkException(){}; // Pb de compilation et link sans ca 
-    const char * what() const throw ()
+struct NoInitialStateNetworkException : public NetworkException
+{
+    NoInitialStateNetworkException(){}; // Pb de compilation et link sans ca
+    const char* what() const throw()
     {
         return "Invalid Network due to no initial State detected";
     }
 };
 
-struct MultiInitialStateNetworkException : public NetworkException {
+struct MultiInitialStateNetworkException : public NetworkException
+{
     std::string msg_ = "Invalid Network due to no initial State detected\n";
     explicit MultiInitialStateNetworkException(const std::unordered_set<State*>& invalid_states)
     {
-        msg_ += " State detected as initial are : " ;
-        for(auto& state : invalid_states)
-            msg_+= state->toString()+"\n";
+        msg_ += " State detected as initial are : ";
+        for (auto& state: invalid_states)
+            msg_ += state->toString() + "\n";
     }
-    const char * what() const throw ()
-    {        
+    const char* what() const throw()
+    {
         return msg_.c_str();
-}
+    }
 };
 
 class Network
@@ -58,33 +61,31 @@ public:
 
     bool evolve(Fact* fact);
 
-    const State* getCurrentState() { return current_state_; }
-    std::string getName() { return full_name_; }
+    const State* getCurrentState(){ return current_state_; }
+    std::string getName(){ return full_name_; }
 
-    bool isComplete() { return current_state_->isFinalNode(); }
-    bool isClosed() { return closed_; }
-    bool isValid() { return valid_; }
+    bool isComplete(){ return current_state_->isFinalNode(); }
+    bool isClosed(){ return closed_; }
+    bool isValid(){ return valid_; }
 
     bool addTransition(const PatternTransition_t& pattern);
     bool addDescription(const ActionDescription_t& des);
-    
+
     bool closeNetwork();
 
     std::string toString();
-    
+
     Network* clone(int new_id);
     void displayVariables();
     std::string describe(bool expl = false);
-    std::vector<uint32_t> getIdsFacts(){return id_facts_involve;};
+    std::vector<uint32_t> getIdsFacts(){ return id_facts_involve; };
 
     bool involveFacts(const std::set<uint32_t>& facts);
 
 private:
-    
-    void addState(int id_state);
-    
-    void linkNetwork();
 
+    void addState(int id_state);
+    void linkNetwork();
     void insertVariable(const std::string& variable);
 
     void processInitialState();
@@ -94,7 +95,7 @@ private:
     uint32_t id_;
     std::string full_name_;
 
-    std::map<std::string,Variable_t> variables_;
+    std::map<std::string, Variable_t> variables_;
 
     std::vector<Description_t> descriptions_;
 
