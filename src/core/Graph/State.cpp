@@ -23,7 +23,7 @@ void State::addTransition(const Transition& transition, State* next_state)
     nexts_.emplace_back(transition, next_state);
 }
 
-void State::linkVariables(std::map<std::string,Variable_t>& variables_)
+void State::linkVariables(std::map<std::string, Variable_t>& variables_)
 {
     for (auto& pair: nexts_)
         pair.first.linkVariables(variables_);
@@ -31,7 +31,7 @@ void State::linkVariables(std::map<std::string,Variable_t>& variables_)
 
 void State::expandTransitions()
 {
-    for(auto& next : nexts_)
+    for (auto& next: nexts_)
         next.first.expandProperty();
 }
 
@@ -48,9 +48,5 @@ std::string State::toString() const
     return msg;
 }
 
-const std::vector<std::pair<Transition, State *>> State::getNexts()
-{
-    return nexts_;
-}
 
 } // namespace procedural

@@ -20,24 +20,19 @@ public:
     State* evolve(Fact* fact);
 
     void addTransition(const Transition& transition, State* next_state);
+    void linkVariables(std::map<std::string, Variable_t>& variables_);
 
-    void setInitialNode() { initial_node_ = true; }
 
-    bool isInitialNode() const { return initial_node_; }
-    bool isFinalNode() const { return nexts_.empty(); }
-
-    void linkVariables(std::map<std::string,Variable_t>& variables_);
     void expandTransitions();
-
-    uint32_t getId(){return id_;};
-
+    bool isFinalNode() const{ return nexts_.empty(); }
+    uint32_t getId(){ return id_; };
     std::string toString() const;
 
-    const std::vector<std::pair<Transition, State*>> getNexts();
+    const std::vector<std::pair<Transition, State*>> getNexts(){ return nexts_; };
 
 
 private:
-    uint32_t id_; 
+    uint32_t id_;
     std::string name_;
     bool initial_node_;
     std::vector<std::pair<Transition, State*>> nexts_;
