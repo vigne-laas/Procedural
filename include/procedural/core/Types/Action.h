@@ -15,7 +15,7 @@ class Action
 public:
     explicit Action(const std::string& name);
 
-    bool addPatterns(const PatternRecognition & pattern);
+    bool addPatterns(const PatternRecognition& pattern);
 
     void feed(Fact* fact);
 
