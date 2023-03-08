@@ -9,7 +9,11 @@ namespace procedural {
 
 PatternRecognition::PatternRecognition(const std::string& name,
                                        std::vector<procedural::PatternTransition_t>& patterns,
-                                       std::vector<ActionDescription_t>& descriptions) : name_(name), is_valid_(false)
+                                       std::vector<ActionDescription_t>& descriptions, uint32_t ttl) : name_(name),
+                                                                                                       is_valid_(false),
+                                                                                                       time_to_live_(
+                                                                                                               ttl),
+                                                                                                       id_(0)
 {
     root_network_ = new Network(name_, 0);
     for (auto& pattern: patterns)
@@ -28,7 +32,11 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
 {
     std::set<uint32_t> set_valid_facts;
     for (auto net: networks_)
+    {
         checkNetworkComplete(net);
+        checkNetworkAge(net);
+    }
+
 
     for (auto& net: complete_networks_)
     {
@@ -43,7 +51,6 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
         std::cout << std::endl;
         networks_.erase(net);
     }
-    std::vector<Network*> network_to_deletes;
     // std::cout << "Pattern : "<< this->name_<< std::endl;
     // std::cout << "size net : "<< networks_.size()<< std::endl;
     for (auto& net: networks_)
@@ -51,11 +58,11 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
         if (net->involveFacts(set_valid_facts))
         {
             std::cout << "may delete this network" << net->getName() << std::endl;
-            network_to_deletes.push_back(net);
+            networks_to_del_.insert(net);
         }
     }
 
-    for (auto net: network_to_deletes)
+    for (auto net: networks_to_del_)
     {
         // delete net;
         networks_.erase(net);
@@ -68,6 +75,16 @@ void PatternRecognition::checkNetworkComplete(Network* net)
 {
     if (net->isComplete())
         complete_networks_.insert(net);
+}
+
+void PatternRecognition::checkNetworkAge(Network* net)
+{
+    if (net->getAge() > time_to_live_)
+    {
+        networks_to_del_.insert(net);
+        std::cout << "Del net due to age " << net->getName() << std::endl;
+    }
+
 }
 
 void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
@@ -145,5 +162,6 @@ std::string PatternRecognition::currentState(bool shortVersion)
     res += "\n";
     return res;
 }
+
 
 } // namespace procedural
