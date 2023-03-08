@@ -12,16 +12,16 @@ class PatternRecognition
 {
 public:
     PatternRecognition(const std::string& name,
-                      std::vector<PatternTransition_t>& patterns,
-                      std::vector<ActionDescription_t>& descriptions);
+                       std::vector<PatternTransition_t>& patterns,
+                       std::vector<ActionDescription_t>& descriptions);
 
     bool isValid() const { return is_valid_; }
     int getNextId();
     std::set<uint32_t> checkNetwork();
 
-    void checkNetworkComplete(Network * net);
+    void checkNetworkComplete(Network* net);
     void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
-    
+
     void feed(Fact* fact);
 
     std::string toString();
@@ -33,8 +33,8 @@ private:
 
     std::string name_;
     Network* root_network_; //issue when i try without *
-    std::unordered_set<Network *> networks_;
-    std::unordered_set<Network *> complete_networks_;
+    std::unordered_set<Network*> networks_;
+    std::unordered_set<Network*> complete_networks_;
     bool is_valid_;
 };
 
