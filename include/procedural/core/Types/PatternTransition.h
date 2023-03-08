@@ -3,8 +3,7 @@
 
 #include "procedural/core/Types/FactPattern.h"
 
-namespace procedural 
-{
+namespace procedural {
 
 struct PatternTransition_t
 {
