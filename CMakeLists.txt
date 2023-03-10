@@ -90,7 +90,11 @@ target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 add_library(${PROJECT_NAME}_reader_lib
         src/reader/YamlReader.cpp
         )
-target_link_libraries(${PROJECT_NAME}_reader_lib yaml-cpp)
+target_link_libraries(${PROJECT_NAME}_reader_lib
+        yaml-cpp
+        ${PROJECT_NAME}_network_lib
+        ${PROJECT_NAME}_lib
+        )
 
 add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp
