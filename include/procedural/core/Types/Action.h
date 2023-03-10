@@ -29,6 +29,7 @@ public:
 
     std::string currentState(bool shortVersion = true);
 
+    std::string getName() {return name_;};
 private:
     std::string name_;
 
