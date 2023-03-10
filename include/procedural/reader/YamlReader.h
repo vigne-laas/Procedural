@@ -5,131 +5,55 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <experimental/optional>
 //#include <yaml.h>
 #include <yaml-cpp/yaml.h>
 #include <regex>
+#include <unordered_set>
+#include "procedural/core/Types/Action.h"
+#include "procedural/core/Types/PatternTransition.h"
+#include "procedural/core/Types/ActionDescription.h"
 
 
 namespace procedural {
 
-class YamlReader;
-//
-//class Action
-//{
-//public:
-//    Action(const YAML::Node& yamlAction, const std::string name);
-//
-//    const std::vector<std::string>& getFacts();
-//
-//    const std::vector<std::string>& getDescriptions();
-//
-//    const std::vector<std::string>& getVariables();
-//
-//private:
-//    std::string name_;
-//    std::regex patternDescription;
-//    std::regex patternFacts;
-//
-//    void readDescriptions(const YAML::Node& yamlDescriptions);
-//    void readFacts(const YAML::Node& yamlFacts);
-//    void parseFact(const std::string& fact);
-//
-//    bool ordered_ = false;
-//    std::vector<std::string> variables_;
-//    std::vector<std::string> facts_;
-//    std::vector<std::string> descriptions_;
-//
-//};
-
-//class YamlElement
-//{
-//  friend YamlReader;
-//public:
-//  YamlElement operator[](const std::string& name)
-//  {
-//    if(subelem)
-//    {
-//      if(subelem.value().find(name) != subelem.value().end())
-//        return subelem.value()[name];
-//      else
-//        return YamlElement();
-//    }
-//    else
-//      return YamlElement();
-//  }
-//
-//  std::vector<std::string> value()
-//  {
-//    if(data)
-//      return data.value();
-//    else
-//      return {};
-//  }
-//
-//  std::vector<std::string> getElementsKeys()
-//  {
-//    std::vector<std::string> res;
-//    if(subelem)
-//      std::transform(subelem.value().cbegin(), subelem.value().cend(),
-//                     std::back_inserter(res),
-//                     [](const std::pair<std::string, YamlElement>& elem){ return elem.first;});
-//    return res;
-//  }
-//
-//  bool keyExists(const std::string& key)
-//  {
-//    if(subelem)
-//      return (subelem.value().find(key) != subelem.value().end());
-//    else
-//      return false;
-//  }
-//
-//private:
-//  std::experimental::optional<std::vector<std::string>> data;
-//  std::experimental::optional<std::map<std::string, YamlElement>> subelem;
-//};
-
 class YamlReader
 {
 public:
+    YamlReader();
     bool read(const std::string& path);
+    std::vector<Action*> getActions() { return actions_; };
 
-    void display();
-
-//    YamlElement operator[](const std::string& name)
-//    {
-//        if (elements_.find(name) != elements_.end())
-//            return elements_[name];
-//        else
-//            return YamlElement();
-//    }
-//
-//    std::vector<std::string> getKeys()
-//    {
-//        std::vector<std::string> res;
-//        std::transform(elements_.cbegin(), elements_.cend(),
-//                       std::back_inserter(res),
-//                       [](const std::pair<std::string, YamlElement>& elem) { return elem.first; });
-//        return res;
-//    }
+    std::string actionsCreatedString();
 
 private:
-//    std::map<std::string, YamlElement> elements_;
-//
-//    std::map<std::string, YamlElement> read(const std::vector<std::string>& lines, size_t& current_line);
-//
-//    YamlElement readList(const std::vector<std::string>& lines, size_t& current_line);
-//
-//    void display(const std::map<std::string, YamlElement>& config, size_t nb = 0);
-//
-//    void displayElement(const std::pair<std::string, YamlElement>& it, size_t nb);
-//
-//    void displayTab(size_t nb);
-//
-//    void removeComment(std::string& line);
-//
-//    size_t countSpaces(const std::string& line);
+    std::regex pattern_facts_;
+    std::regex pattern_description_;
+    std::unordered_set<std::string> compose_action_;
+    YAML::Node yaml_file_;
+    std::vector<Action*> actions_;
+
+
+    Action* createAction(const std::string& name, const YAML::Node& node);
+    Action* createComposeAction(const std::string& name, const YAML::Node& node);
+
+    uint32_t readParameters(const YAML::Node& node);
+    std::vector<PatternTransition_t> readFacts(const YAML::Node& node);
+    std::vector<ActionDescription_t> readDescription(const YAML::Node& node);
+
+    bool isPrimitiveAction(const YAML::Node& node) { return node["ordered_facts"] && node["description"]; };
+    bool isComposeAction(const YAML::Node& node)
+    {
+        return (static_cast<bool>(node["ordered_facts"]) == false) &&
+               (static_cast<bool>(node["description"]) == false) and node.size() >= 1;
+    };
+
+    FactPattern* parseFact(const std::string& str_fact);
+    procedural::ActionDescription_t parseDescription(const std::string& str_description);
+
+    PatternRecognition createPattern(const std::string& name, const YAML::Node& node, uint32_t ttl = 4);
+
 };
 
 } // namespace procedural

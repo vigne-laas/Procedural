@@ -1,261 +1,176 @@
 #include "procedural/reader/YamlReader.h"
 
+
 #include <fstream>
 #include <iostream>
 #include <regex>
 #include <filesystem>
 
 namespace procedural {
-//
-//bool YamlReader::read(const std::string& path)
-//{
-//  std::ifstream config_file(path);
-//  if(config_file.is_open())
-//  {
-//
-//    std::vector<std::string> file;
-//    std::string line;
-//    while(std::getline(config_file,line))
-//    {
-//      removeComment(line);
-//      file.push_back(line);
-//    }
-//
-//    size_t current_line = 0;
-//
-//    elements_ = read(file, current_line);
-//
-//    config_file.close();
-//    return true;
-//  }
-//  else
-//    return false;
-//}
-//
-//std::map<std::string, YamlElement> YamlReader::read(const std::vector<std::string>& lines, size_t& current_line)
-//{
-//  std::map<std::string, YamlElement> res;
-//
-//  std::regex element_regex(R"(^\s*([^\s]*)\s*:\s*([^\n]*)\s*$)"); // in case of bug, previous regex was (^\s*([^\s]*)\s*:\s*([^\n\s]*)\s*$)
-//  std::regex list_regex(R"(^\s*-\s*(.*)\s*$)");
-//  std::smatch match;
-//
-//  std::string config_name;
-//
-//  size_t nb_spaces_base = countSpaces(lines[current_line]);
-//
-//  do
-//  {
-//    if(countSpaces(lines[current_line]) < nb_spaces_base)
-//      return res;
-//
-//    if(std::regex_match(lines[current_line], match, element_regex))
-//    {
-//      if(match[2].str() == "")
-//      {
-//        config_name = match[1].str();
-//        res[config_name] = YamlElement();
-//        size_t next_nb_spaces = countSpaces(lines[current_line + 1]);
-//        if(next_nb_spaces > nb_spaces_base)
-//        {
-//          if(std::regex_match(lines[current_line + 1], match, list_regex))
-//          {
-//            res[config_name].data = std::vector<std::string>();
-//
-//            do
-//            {
-//              current_line++;
-//              res[config_name].data->push_back(match[1].str());
-//            }
-//            while((current_line + 1 < lines.size()) && (std::regex_match(lines[current_line + 1], match, list_regex)));
-//          }
-//          else
-//          {
-//            current_line++;
-//            res[config_name].subelem = read(lines, current_line);
-//            current_line--;
-//          }
-//        }
-//      }
-//      else
-//      {
-//        config_name = match[1].str();
-//        res[config_name] = YamlElement();
-//        res[config_name].data = std::vector<std::string>();
-//        res[config_name].data->push_back(match[2].str());
-//      }
-//    }
-//
-//    current_line++;
-//  }
-//  while(current_line < lines.size());
-//
-//  return res;
-//}
-//
-//void YamlReader::display()
-//{
-//  display(elements_);
-//}
-//
-//void YamlReader::display(const std::map<std::string, YamlElement>& config, size_t nb)
-//{
-//  if((nb == 0) && (config.find("modules") != config.end()))
-//    displayElement(*config.find("modules"), nb);
-//
-//  for(auto& c : config)
-//  {
-//    if((nb == 0) && (c.first == "modules"))
-//      continue;
-//
-//    displayElement(c, nb);
-//  }
-//}
-//
-//void YamlReader::displayElement(const std::pair<std::string, YamlElement>& it, size_t nb)
-//{
-//  displayTab(nb);
-//  std::cout << "\e[1m" << it.first << "\e[0m : ";
-//  if(it.second.data)
-//  {
-//    if(it.second.data.value().size() > 1)
-//    {
-//      std::cout << std::endl;
-//      for(auto& d : it.second.data.value())
-//      {
-//        displayTab(nb+1);
-//        std::cout << "- " << d << std::endl;
-//      }
-//    }
-//    else
-//      std::cout << it.second.data.value().front() << std::endl;
-//  }
-//  else if(it.second.subelem)
-//  {
-//    std::cout << std::endl;
-//    display(it.second.subelem.value(), nb+1);
-//  }
-//}
-//
-//void YamlReader::displayTab(size_t nb)
-//{
-//  for(size_t i = 0; i < nb; i++)
-//    std::cout << "\t";
-//}
-//
-//void YamlReader::removeComment(std::string& line)
-//{
-//  size_t pose = line.find('#');
-//  if(pose != std::string::npos)
-//    line = line.substr(0, pose);
-//}
-//
-//size_t YamlReader::countSpaces(const std::string& line)
-//{
-//  size_t nb = 0;
-//  while((nb < line.size()) && ((line[nb] == ' ') || (line[nb] == '\t')) )
-//    nb++;
-//
-//  return nb;
-//}
-//
-//Action::Action(const YAML::Node& yamlAction, const std::string name) : patternDescription(
-//        R"(\s*\?([^\s]*)\s+([^\s]*)\s+\??([^\s]*)\s*)"), patternFacts(
-//        R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)"), name_(name)
-//{
-////    name_ = name;
-////    patternFacts = "\\s*(NOT)?\\s*\\?([^\\s]*)\\s+([^\\s]*)\\s+\\?([^\\s]*)\\s*(REQUIRED)?";
-//    std::cout << "Create Action : " << name_ << std::endl;
-//    if (yamlAction["ordered_facts"])
-//    {
-//        ordered_ = true;
-//        readFacts(yamlAction["ordered_facts"]);
-//    } else
-//    {
-//        if (yamlAction["unordered_facts"])
-//            readFacts(yamlAction["unordered_facts"]);
-//        else
-//            std::cerr << " Action without facts" << std::endl;
-//    }
-//    if (yamlAction["description"])
-//        readDescriptions(yamlAction["description"]);
-//    else
-//        std::cerr << " Action without description" << std::endl;
-//}
-//
-//const std::vector<std::string>& Action::getFacts()
-//{
-//    return facts_;
-//}
-//
-//const std::vector<std::string>& Action::getDescriptions()
-//{
-//    return descriptions_;
-//}
-//
-//const std::vector<std::string>& Action::getVariables()
-//{
-//    return variables_;
-//}
-//
-//void Action::readDescriptions(const YAML::Node& yamlDescriptions)
-//{
-//    std::cout << "Description of  " << name_ << " : " << std::endl;
-//    if (yamlDescriptions.IsSequence())
-//    {
-//        for (auto i = 0; i < yamlDescriptions.size(); i++)
-//        {
-//            std::cout << yamlDescriptions[i].as<std::string>() << std::endl;
-//        }
-//    }
-//
-//}
-//
-//void Action::readFacts(const YAML::Node& yamlFacts)
-//{
-//    if (yamlFacts.IsSequence())
-//    {
-//        for (const auto & yamlFact : yamlFacts)
-//        {
-//            if (yamlFact.IsScalar())
-//                std::cout << yamlFact.as<std::string>() << std::endl;
-//
-//            else if (yamlFact["or_facts"])
-//            {
-//                std::cout << "or facts : " << std::endl;
-//                for (auto j = 0; j < yamlFact["or_facts"].size(); j++)
-//                {
-//                    std::cout << "      " << yamlFact["or_facts"][j].as<std::string>() << std::endl;
-//                }
-//
-//            } else
-//                std::cerr << "invalid synthax" << std::endl;
-////                std::cout << "other type : sequence " << yamlFacts[i].IsSequence() << " map " << yamlFacts[i].IsMap() << " name : " << yamlFacts[i] << std::endl;
-//        }
-//    }
-//
-//}
-//
-//void Action::parseFact(const std::string& fact)
-//{
-////    std::smatch matches;
-////    if(std::regex_search(fact,matches,patternFacts))
-////    {
-////
-////    }
-//}
+
+YamlReader::YamlReader() : pattern_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)"),
+                           pattern_description_(R"(\s*\?([^\s]*)\s+([^\s]*)\s+\??([^\s]*)\s*)")
+{
+
+}
+
 
 bool YamlReader::read(const std::string& path)
 {
-    if (std::filesystem::exists(path)) //TODO demander pour l'import de experimental
+    if (std::filesystem::exists(path))
     {
-        YAML::Node yamlFile = YAML::LoadFile(path);
-        for (YAML::const_iterator it = yamlFile.begin(); it != yamlFile.end(); ++it)
+        yaml_file_ = YAML::LoadFile(path);
+        for (YAML::const_iterator it = yaml_file_.begin(); it != yaml_file_.end(); ++it)
         {
             std::cout << "Action find " << it->first.as<std::string>() << std::endl;
-    //        Action(yamlFile[it->first.as<std::string>()], it->first.as<std::string>());
+            if (isPrimitiveAction(it->second))
+                actions_.push_back(createAction(it->first.as<std::string>(), it->second));
+            if (isComposeAction(it->second))
+                actions_.push_back(createComposeAction(it->first.as<std::string>(), it->second));
         }
-    }
+    } else
+        return false;
     return true;
 }
+
+std::string YamlReader::actionsCreatedString()
+{
+    std::string res;
+    for (auto& action: actions_)
+        res += action->toString();
+    return res;
+}
+
+// Private Part
+
+Action* YamlReader::createAction(const std::string& name, const YAML::Node& node)
+{
+
+    PatternRecognition pattern = createPattern(name, node);
+    Action* action = new Action(name);
+    action->addPatterns(pattern);
+    return action;
+
+}
+
+Action* YamlReader::createComposeAction(const std::string& name, const YAML::Node& node)
+{
+    uint32_t ttl = 4;
+    std::vector<PatternRecognition> vect_pat;
+
+    for (auto it: node)
+    {
+        std::string key = it.first.as<std::string>();
+        if (key == "parameters")
+            ttl = readParameters(it.second);
+        else
+            vect_pat.push_back(createPattern(name + "_" + key, it.second, ttl));
+    }
+
+    Action* action = new Action(name);
+    for (auto& pat: vect_pat)
+        action->addPatterns(pat);
+    return action;
+}
+
+uint32_t YamlReader::readParameters(const YAML::Node& node)
+{
+//    std::cout << node["ttl"] << std::endl;
+    if (node["ttl"])
+        return 10; // FIXME issue to fix bad conversion of node["ttl"].as<uint32_t>
+    else
+        return 4;
+
+}
+std::vector<PatternTransition_t> YamlReader::readFacts(const YAML::Node& node)
+{
+    std::vector<PatternTransition_t> net;
+    uint32_t current_state_id = 0;
+    uint32_t last_required = 0;
+    for (auto it = 0; it != node.size(); it++)
+    {
+        if (node[it].IsScalar())
+        {
+            FactPattern* fact_pattern = parseFact(
+                    node[it].as<std::string>()); // Pas terrible voir pour faire un fonction mais un peu trop de parametres ... net*,fact_pattern*,last_required*,current_id*
+            if (fact_pattern->isRequired())
+            {
+                for (auto index = last_required; index <= current_state_id; index++)
+                    net.emplace_back(index, fact_pattern, current_state_id + 1);
+                last_required = current_state_id;
+            } else
+                net.emplace_back(current_state_id, fact_pattern, current_state_id + 1);
+        } else
+        {
+            if (node[it]["or_facts"])
+            {
+                YAML::Node subnode = node[it]["or_facts"];
+                FactPattern* fact_pattern;
+                for (auto indexSub = 0; indexSub != subnode.size(); indexSub++)
+                {
+                    fact_pattern = parseFact(subnode[indexSub].as<std::string>());
+                    if (fact_pattern->isRequired())
+                    {
+                        for (auto index = last_required; index <= current_state_id; index++)
+                            net.emplace_back(index, fact_pattern, current_state_id + 1);
+                        last_required = current_state_id;
+                    } else
+                        net.emplace_back(current_state_id, fact_pattern, current_state_id + 1);
+                }
+            }
+
+        }
+        current_state_id++;
+    }
+    for (auto& trans: net)
+        std::cout << trans.origin_state << "==" << trans.fact->toString() << "==>" << trans.next_state << std::endl;
+    return net;
+}
+std::vector<ActionDescription_t> YamlReader::readDescription(const YAML::Node& node)
+{
+    std::vector<ActionDescription_t> descriptions;
+    for (auto id = 0; id != node.size(); id++)
+    {
+        descriptions.push_back(parseDescription(node[id].as<std::string>()));
+    }
+    return descriptions;
+}
+
+
+FactPattern* YamlReader::parseFact(const std::string& str_fact)
+{
+    std::smatch results;
+    std::regex_search(str_fact, results, pattern_facts_);
+    auto* fact = new FactPattern(results[1] != "NOT", results[2], results[3], results[4], results[5] == "REQUIRED");
+    return fact;
+}
+
+
+procedural::ActionDescription_t YamlReader::parseDescription(const std::string& str_description)
+{
+    std::smatch match;
+    std::regex_search(str_description, match, pattern_description_);
+    return {match[1], match[2], match[3]};
+}
+
+PatternRecognition YamlReader::createPattern(const std::string& name, const YAML::Node& node, uint32_t ttl)
+{
+    std::vector<PatternTransition_t> net;
+    std::vector<ActionDescription_t> descriptions;
+    for (auto iter_node: node)
+    {
+        std::string key = iter_node.first.as<std::string>();
+        if (key == "parameters")
+            ttl = readParameters(iter_node.second);
+        if (key == "ordered_facts")
+            net = readFacts(iter_node.second);
+        if (key == "description")
+            descriptions = readDescription(iter_node.second);
+
+    }
+    PatternRecognition pattern = PatternRecognition(name, net, descriptions, ttl);
+    return pattern;
+}
+
+
 } // namespace procedural
