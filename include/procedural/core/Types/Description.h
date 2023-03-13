@@ -14,22 +14,22 @@ struct Description_t
     Description_t(const ActionDescription_t& des, std::map<std::string, Variable_t>& variables) : var_subject_(nullptr),
                                                                                                   var_object_(nullptr)
     {
-        var_subject_str_ = des.subject_str_;
-        var_object_str_ = des.object_str_;
+        var_subject_str_ = des.subject_;
+        var_object_str_ = des.object_;
         property_ = des.property_;
         if (des.subject_is_var_)
         {
-            if (variables.find(des.subject_str_) != variables.end())
-                var_subject_ = &(variables.at(des.subject_str_));
+            if (variables.find(des.subject_) != variables.end())
+                var_subject_ = &(variables.at(des.subject_));
             // else
-            // throw NetworkException("Variable "+des.subject_str_+ " not found invalid description");
+            // throw NetworkException("Variable "+des.subject_+ " not found invalid description");
         }
         if (des.object_is_var_)
         {
-            if (variables.find(des.object_str_) != variables.end())
-                var_object_ = &(variables.at(des.object_str_));
+            if (variables.find(des.object_) != variables.end())
+                var_object_ = &(variables.at(des.object_));
             // else
-            // throw NetworkException("Variable "+des.object_str_+ " not found invalid description");
+            // throw NetworkException("Variable "+des.object_+ " not found invalid description");
         }
     }
 

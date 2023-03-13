@@ -7,62 +7,59 @@
 namespace procedural {
 struct ActionDescription_t
 {
-    ActionDescription_t(std::string subject, std::string property, std::string object) : subject_is_var_(false),
-                                                                                         object_is_var_(false)
+    ActionDescription_t(const std::string& subject,
+                        const std::string& property,
+                        const std::string& object) : subject_(subject),
+                                                     property_(property),
+                                                     object_(object),
+                                                     subject_is_var_(false),
+                                                     object_is_var_(false)
     {
-        subject_str_ = subject;
-        object_str_ = object;
-        property_ = property;
-        verifVar();
+        verifyVar();
     }
 
-    void verifVar()
+    void verifyVar()
     {
-        if (subject_str_[0] == '?')
+        if (subject_[0] == '?')
         {
-            if (subject_str_.length() == 2 && subject_str_[1] == '?')
+            if (subject_.length() == 2 && subject_[1] == '?')
             {
-                subject_str_ = "self";
+                subject_ = "self";
                 // subject_is_var_ = true;
             } else
             {
                 subject_is_var_ = true;
-                subject_str_ = subject_str_.substr(1);
+                subject_ = subject_.substr(1);
             }
 
         }
-        if (object_str_[0] == '?')
+        if (object_[0] == '?')
         {
-            if (object_str_.length() == 2 && object_str_[1] == '?')
-                object_str_ = "self";
+            if (object_.length() == 2 && object_[1] == '?')
+                object_ = "self";
             else
             {
                 object_is_var_ = true;
-                object_str_ = object_str_.substr(1);
+                object_ = object_.substr(1);
             }
         }
-
     }
-
 
     std::string toString()
     {
         std::string res = "[Description Action]";
-        res += subject_str_ + "|";
+        res += subject_ + "|";
         res += property_ + "|";
-        res += object_str_;
+        res += object_;
         return res;
-
     }
 
-    std::string subject_str_;
-    std::string object_str_;
+    std::string subject_;
+    std::string property_;
+    std::string object_;
 
     bool subject_is_var_;
     bool object_is_var_;
-
-
-    std::string property_;
 };
 
 } // namespace procedural
