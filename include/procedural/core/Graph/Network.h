@@ -92,6 +92,7 @@ private:
     void processInitialState();
 
 
+
     std::string name_;
     uint32_t id_;
     std::string full_name_;
