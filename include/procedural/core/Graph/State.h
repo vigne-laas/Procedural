@@ -9,9 +9,6 @@
 
 namespace procedural {
 
-class Transition;
-class Fact;
-
 class State
 {
 public:
@@ -22,14 +19,12 @@ public:
     void addTransition(const Transition& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
-
     void expandTransitions();
-    bool isFinalNode() const{ return nexts_.empty(); }
-    uint32_t getId(){ return id_; };
+    bool isFinalNode() const { return nexts_.empty(); }
+    uint32_t getId() const { return id_; };
     std::string toString() const;
 
-    const std::vector<std::pair<Transition, State*>> getNexts(){ return nexts_; };
-
+    const std::vector<std::pair<Transition, State*>> getNexts() const { return nexts_; };
 
 private:
     uint32_t id_;
