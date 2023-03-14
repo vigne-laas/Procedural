@@ -8,12 +8,12 @@ namespace procedural {
 
 
 PatternRecognition::PatternRecognition(const std::string& name,
-                                       std::vector<procedural::PatternTransition_t>& patterns,
-                                       std::vector<ActionDescription_t>& descriptions, uint32_t ttl) : name_(name),
-                                                                                                       is_valid_(false),
-                                                                                                       time_to_live_(
-                                                                                                               ttl),
-                                                                                                       id_(0)
+                                       const std::vector<procedural::PatternTransition_t>& patterns,
+                                       const std::vector<ActionDescription_t>& descriptions,
+                                       uint32_t ttl) : name_(name),
+                                                       is_valid_(false),
+                                                       time_to_live_(ttl),
+                                                       id_(0)
 {
     root_network_ = new Network(name_, 0);
     for (auto& pattern: patterns)
@@ -30,15 +30,22 @@ int PatternRecognition::getNextId()
 
 std::set<uint32_t> PatternRecognition::checkNetwork()
 {
+    std::unordered_set<Network*> complete_networks;
+    std::unordered_set<Network*> networks_to_del;
+
     std::set<uint32_t> set_valid_facts;
     for (auto net: networks_)
     {
-        checkNetworkComplete(net);
-        checkNetworkAge(net);
+        if (net->isComplete())
+            complete_networks.insert(net);
+        if (net->getAge() > time_to_live_)
+        {
+            networks_to_del.insert(net);
+            std::cout << "Del net due to age " << net->getName() << std::endl;
+        }
     }
 
-
-    for (auto& net: complete_networks_)
+    for (auto& net: complete_networks)
     {
         std::cout << "network finish :" << net->getName() << std::endl;
         std::cout << "explanation : " << net->describe() << std::endl;
@@ -50,6 +57,7 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
         }
         std::cout << std::endl;
         networks_.erase(net);
+        delete net; // Check if Guillaume is right
     }
     // std::cout << "Pattern : "<< this->name_<< std::endl;
     // std::cout << "size net : "<< networks_.size()<< std::endl;
@@ -58,33 +66,17 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
         if (net->involveFacts(set_valid_facts))
         {
             std::cout << "may delete this network" << net->getName() << std::endl;
-            networks_to_del_.insert(net);
+            networks_to_del.insert(net);
         }
     }
 
-    for (auto net: networks_to_del_)
+    for (auto net: networks_to_del)
     {
-        // delete net;
         networks_.erase(net);
+        delete net;
     }
-    complete_networks_ = {};
+
     return set_valid_facts;
-}
-
-void PatternRecognition::checkNetworkComplete(Network* net)
-{
-    if (net->isComplete())
-        complete_networks_.insert(net);
-}
-
-void PatternRecognition::checkNetworkAge(Network* net)
-{
-    if (net->getAge() > time_to_live_)
-    {
-        networks_to_del_.insert(net);
-        std::cout << "Del net due to age " << net->getName() << std::endl;
-    }
-
 }
 
 void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
@@ -102,13 +94,12 @@ void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts
 
     for (auto net: network_to_deletes)
     {
-        // delete net;
         std::cout << "delete network  : " << net->getName() << std::endl;
         networks_.erase(net);
+        delete net;
     }
-
-
 }
+
 void PatternRecognition::feed(Fact* fact)
 {
     bool evolve = false;
@@ -162,6 +153,5 @@ std::string PatternRecognition::currentState(bool shortVersion)
     res += "\n";
     return res;
 }
-
 
 } // namespace procedural

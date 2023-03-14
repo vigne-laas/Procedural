@@ -12,15 +12,14 @@ class PatternRecognition
 {
 public:
     PatternRecognition(const std::string& name,
-                       std::vector<PatternTransition_t>& patterns,
-                       std::vector<ActionDescription_t>& descriptions, uint32_t ttl);
+                       const std::vector<PatternTransition_t>& patterns,
+                       const std::vector<ActionDescription_t>& descriptions,
+                       uint32_t ttl);
 
     bool isValid() const { return is_valid_; }
     int getNextId();
     std::set<uint32_t> checkNetwork();
 
-    void checkNetworkComplete(Network* net);
-    void checkNetworkAge(Network* net);
     void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
 
     void feed(Fact* fact);
@@ -36,8 +35,6 @@ private:
     Network* root_network_; //issue when i try without *
 
     std::unordered_set<Network*> networks_;
-    std::unordered_set<Network*> complete_networks_;
-    std::unordered_set<Network*> networks_to_del_;
 
     bool is_valid_;
     uint32_t time_to_live_;
