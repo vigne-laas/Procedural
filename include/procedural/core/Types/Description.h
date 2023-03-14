@@ -11,12 +11,12 @@ namespace procedural {
 
 struct Description_t
 {
-    Description_t(const ActionDescription_t& des, std::map<std::string, Variable_t>& variables) : var_subject_(nullptr),
-                                                                                                  var_object_(nullptr)
+    Description_t(const ActionDescription_t& des, std::map<std::string, Variable_t>& variables) : var_subject_str_(des.subject_),
+                                                                                                  var_object_str_(des.object_),
+                                                                                                  var_subject_(nullptr),
+                                                                                                  var_object_(nullptr),
+                                                                                                  property_(des.property_)
     {
-        var_subject_str_ = des.subject_;
-        var_object_str_ = des.object_;
-        property_ = des.property_;
         if (des.subject_is_var_)
         {
             if (variables.find(des.subject_) != variables.end())

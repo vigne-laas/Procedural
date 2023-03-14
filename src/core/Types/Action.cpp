@@ -12,7 +12,8 @@ bool Action::addPatterns(const PatternRecognition& pattern)
     {
         patterns_.push_back(pattern);
         return true;
-    } else
+    }
+    else
         return false;
 }
 

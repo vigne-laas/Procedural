@@ -19,6 +19,6 @@ struct PatternTransition_t
     int next_state;
 };
 
-
 } // namespace procedural
+
 #endif //PROCEDURAL_PATTERNTRANSITION_H
