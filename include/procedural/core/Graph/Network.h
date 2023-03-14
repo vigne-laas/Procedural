@@ -49,13 +49,13 @@ public:
 
     bool evolve(Fact* fact);
 
-    const State* getCurrentState(){ return current_state_; }
-    std::string getName(){ return full_name_; }
+    const State* getCurrentState() const { return current_state_; }
+    std::string getName() const { return full_name_; }
 
-    bool isComplete(){ return current_state_->isFinalNode(); }
-    bool isClosed(){ return closed_; }
-    bool isValid(){ return valid_; }
-    uint32_t getAge() { return age_; }
+    bool isComplete() const { return current_state_->isFinalNode(); }
+    bool isClosed() const { return closed_; }
+    bool isValid() const { return valid_; }
+    uint32_t getAge() const { return age_; }
 
     bool addTransition(const PatternTransition_t& pattern);
     bool addDescription(const ActionDescription_t& des);
@@ -67,7 +67,7 @@ public:
     Network* clone(int new_id);
     void displayVariables();
     std::string describe(bool expl = false);
-    std::vector<uint32_t> getIdsFacts(){ return id_facts_involve; };
+    std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; };
 
     bool involveFacts(const std::set<uint32_t>& facts);
 
@@ -78,8 +78,6 @@ private:
     void insertVariable(const std::string& variable);
 
     void processInitialState();
-
-
 
     std::string name_;
     uint32_t id_;
