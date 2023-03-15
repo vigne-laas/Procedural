@@ -17,7 +17,7 @@ bool Action::addPatterns(const PatternRecognition& pattern)
         return false;
 }
 
-void Action::feed(const Fact& fact)
+void Action::feed(Fact* fact)
 {
     for(auto& pattern : patterns_)
         pattern.feed(fact);

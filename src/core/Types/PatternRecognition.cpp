@@ -18,8 +18,8 @@ PatternRecognition::PatternRecognition(const std::string& name,
     root_network_ = new Network(name_, 0);
     for (auto& pattern: patterns)
         root_network_->addTransition(pattern);
-    for (auto& des: descriptions)
-        root_network_->addDescription(des);
+    for (auto& description: descriptions)
+        root_network_->addDescription(description);
     is_valid_ = root_network_->closeNetwork();
 }
 
@@ -34,46 +34,46 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
     std::unordered_set<Network*> networks_to_del;
 
     std::set<uint32_t> set_valid_facts;
-    for (auto net: networks_)
+    for (auto network: networks_)
     {
-        if (net->isComplete())
-            complete_networks.insert(net);
-        if (net->getAge() > time_to_live_)
+        if (network->isComplete())
+            complete_networks.insert(network);
+        else if (network->getAge() > time_to_live_)
         {
-            networks_to_del.insert(net);
-            std::cout << "Del net due to age " << net->getName() << std::endl;
+            networks_to_del.insert(network);
+            std::cout << "Del network due to age " << network->getName() << std::endl;
         }
     }
 
-    for (auto& net: complete_networks)
+    for (auto& complete_network : complete_networks)
     {
-        std::cout << "network finish :" << net->getName() << std::endl;
-        std::cout << "explanation : " << net->describe() << std::endl;
+        std::cout << "network finish :" << complete_network->getName() << std::endl;
+        std::cout << "explanation : " << complete_network->describe() << std::endl;
         std::cout << "facts involved : ";
-        for (auto& id: net->getIdsFacts())
+        for (auto& id: complete_network->getIdsFacts())
         {
             std::cout << std::to_string(id) << "|";
             set_valid_facts.insert(id);
         }
         std::cout << std::endl;
-        networks_.erase(net);
-        delete net; // Check if Guillaume is right
+        networks_.erase(complete_network);
+        delete complete_network; // Check if Guillaume is right
     }
     // std::cout << "Pattern : "<< this->name_<< std::endl;
     // std::cout << "size net : "<< networks_.size()<< std::endl;
-    for (auto& net: networks_)
+    for (auto& network : networks_)
     {
-        if (net->involveFacts(set_valid_facts))
+        if (network->involveFacts(set_valid_facts))
         {
-            std::cout << "may delete this network" << net->getName() << std::endl;
-            networks_to_del.insert(net);
+            std::cout << "may delete this network" << network->getName() << std::endl;
+            networks_to_del.insert(network);
         }
     }
 
-    for (auto net: networks_to_del)
+    for (auto network_to_del : networks_to_del)
     {
-        networks_.erase(net);
-        delete net;
+        networks_.erase(network_to_del);
+        delete network_to_del;
     }
 
     return set_valid_facts;
@@ -83,33 +83,33 @@ void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts
 {
     std::vector<Network*> network_to_deletes;
 
-    for (auto& net: networks_)
+    for (auto& network : networks_)
     {
-        if (net->involveFacts(list_valid_facts))
+        if (network->involveFacts(list_valid_facts))
         {
 //            std::cout << "may delete this network" << net->getName() << std::endl;
-            network_to_deletes.push_back(net);
+            network_to_deletes.push_back(network);
         }
     }
 
-    for (auto net: network_to_deletes)
+    for (auto network : network_to_deletes)
     {
-        std::cout << "delete network  : " << net->getName() << std::endl;
-        networks_.erase(net);
-        delete net;
+        std::cout << "delete network  : " << network->getName() << std::endl;
+        networks_.erase(network);
+        delete network;
     }
 }
 
 void PatternRecognition::feed(Fact* fact)
 {
     bool evolve = false;
-    for (auto& net: networks_)
+    for (auto& network : networks_)
     {
-        if (net->evolve(fact))
+        if (network->evolve(fact))
         {
-            std::cout << "\t succes of evolution  : " << net->getName() << std::endl;
+            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
             evolve = true;
-            // checkNetworkComplete(net);
+            // checkNetworkComplete(network);
         }
     }
 

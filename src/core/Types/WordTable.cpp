@@ -51,7 +51,6 @@ const std::string& WordTable::operator[](uint32_t index)
     return get(index);
 }
 
-
 uint32_t WordTable::operator[](const std::string& word)
 {
     return get(word);
