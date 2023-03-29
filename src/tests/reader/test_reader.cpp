@@ -40,19 +40,19 @@ int main()
 
     std::vector <procedural::Fact> facts_multi;
     facts_multi.emplace_back(true, "Bastien", "hasHandMovingToward", "Cube", 1);
-//    facts_multi.emplace_back(true, "Bob", "hasInHand", "Cube4",4);
-//    facts_multi.emplace_back(true, "Charly", "hasInHand", "Cube7",5);
-//    facts_multi.emplace_back(true, "Cube", "isOnTopOf", "Table",6);
+    facts_multi.emplace_back(true, "Bob", "hasInHand", "Cube4",4);
+    facts_multi.emplace_back(true, "Charly", "hasInHand", "Cube7",5);
+    facts_multi.emplace_back(true, "Cube", "isOnTopOf", "Table",6);
 //    facts_multi.emplace_back(false, "Cube2", "isOnTopOf", "Table",7);
     facts_multi.emplace_back(true, "Bastien", "hasInHand", "Cube", 2);
     facts_multi.emplace_back(false, "Cube", "isOnTopOf", "Table", 3);
 
     facts_multi.emplace_back(true, "Bastien", "hasHandMovingToward", "Box", 8);
-    facts_multi.emplace_back(true, "Cube", "isInContainer", "Box", 9);
-    facts_multi.emplace_back(false, "Bastien", "hasInHand", "Cube", 10);
+    facts_multi.emplace_back(true, "Cube8", "isInContainer", "Box", 9);
+    facts_multi.emplace_back(false, "Bastien", "hasInHand", "Cube8", 10);
 
 //    facts_multi.emplace_back(false, "Cube", "isOnTopOf", "Table",11);
-
+//
 
     for (auto& fact: facts_multi)
     {
