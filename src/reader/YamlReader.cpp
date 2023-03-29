@@ -9,7 +9,7 @@
 namespace procedural {
 
 YamlReader::YamlReader() : pattern_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)"),
-                           pattern_description_(R"(\s*\?([^\s]*)\s+([^\s]*)\s+\??([^\s]*)\s*)")
+                           pattern_description_(R"(\s*([^\s]*)\s+([^\s]*)\s+([^\s]*)\s*)")
 {
 
 }
@@ -93,13 +93,11 @@ std::vector<PatternTransition_t> YamlReader::readFacts(const YAML::Node& node)
         {
             FactPattern* fact_pattern = parseFact(
                     node[it].as<std::string>()); // Pas terrible voir pour faire un fonction mais un peu trop de parametres ... net*,fact_pattern*,last_required*,current_id*
+            for (auto index = last_required; index <= current_state_id; index++)
+                net.emplace_back(index, fact_pattern, current_state_id + 1);
             if (fact_pattern->isRequired())
-            {
-                for (auto index = last_required; index <= current_state_id; index++)
-                    net.emplace_back(index, fact_pattern, current_state_id + 1);
-                last_required = current_state_id;
-            } else
-                net.emplace_back(current_state_id, fact_pattern, current_state_id + 1);
+                last_required = current_state_id + 1;
+
         } else
         {
             if (node[it]["or_facts"])
@@ -109,21 +107,18 @@ std::vector<PatternTransition_t> YamlReader::readFacts(const YAML::Node& node)
                 for (auto indexSub = 0; indexSub != subnode.size(); indexSub++)
                 {
                     fact_pattern = parseFact(subnode[indexSub].as<std::string>());
+                    for (auto index = last_required; index <= current_state_id; index++)
+                        net.emplace_back(index, fact_pattern, current_state_id + 1);
                     if (fact_pattern->isRequired())
-                    {
-                        for (auto index = last_required; index <= current_state_id; index++)
-                            net.emplace_back(index, fact_pattern, current_state_id + 1);
-                        last_required = current_state_id;
-                    } else
-                        net.emplace_back(current_state_id, fact_pattern, current_state_id + 1);
+                        last_required = current_state_id + 1;
                 }
             }
 
         }
         current_state_id++;
     }
-    for (auto& trans: net)
-        std::cout << trans.origin_state << "==" << trans.fact->toString() << "==>" << trans.next_state << std::endl;
+//    for (auto& trans: net)
+//        std::cout << trans.origin_state << "==" << trans.fact->toString() << "==>" << trans.next_state << std::endl;
     return net;
 }
 std::vector<ActionDescription_t> YamlReader::readDescription(const YAML::Node& node)
@@ -150,6 +145,8 @@ procedural::ActionDescription_t YamlReader::parseDescription(const std::string& 
 {
     std::smatch match;
     std::regex_search(str_description, match, pattern_description_);
+//    for(auto& sub_value :match)
+//        std::cout << sub_value << std::endl;
     return {match[1], match[2], match[3]};
 }
 
