@@ -27,6 +27,7 @@ bool Network::evolve(Fact* fact)
         return false;
 
     current_state_ = evolution;
+    age_ = 0;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
 
     return true;
