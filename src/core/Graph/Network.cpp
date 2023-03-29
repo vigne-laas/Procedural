@@ -33,6 +33,7 @@ bool Network::evolve(Fact* fact)
     last_update_ = fact->getTimeStamp();
 
     current_state_ = evolution;
+    age_ = 0;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
     new_explanations_ = checkIncompletsNetworks();
     return true;
