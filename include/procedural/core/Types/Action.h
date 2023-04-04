@@ -24,15 +24,21 @@ public:
     void displayCurrentState();
 
     void cleanPatterns(std::set<uint32_t> set_id);
+    void clean();
 
     std::string toString();
 
     std::string currentState(bool shortVersion = true);
 
+    bool checkSubAction(Action* action);
+
+    std::unordered_set<Network*> getCompleteNetworks() { return complete_networks_;};
 private:
     std::string name_;
+    std::unordered_set<Network*>  complete_networks_;
 
     std::vector<PatternRecognition> patterns_;
+
 };
 
 } // namespace procedural
