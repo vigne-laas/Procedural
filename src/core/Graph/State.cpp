@@ -11,27 +11,44 @@ State::State(const std::string& name, int id) : id_(id),
 
 State* State::evolve(Fact* fact)
 {
-    for (auto& pair: nexts_)
-        if (pair.first.matchFact(fact))
+    for (auto& pair: nexts_facts_)
+        if (pair.first.match(fact))
             return pair.second;
 
     return nullptr;
 }
 
-void State::addTransition(const Transition& transition, State* next_state)
+State* State::checkSubAction(Network* network)
 {
-    nexts_.emplace_back(transition, next_state);
+    if(nexts_networks_.empty())
+        return nullptr;
+    for (auto& pair: nexts_networks_)
+        if (pair.first.match(network))
+            return pair.second;
+    return nullptr;
+}
+
+void State::addTransition(const TransitionFact& transition, State* next_state)
+{
+    nexts_facts_.emplace_back(transition, next_state);
+}
+
+void State::addNetwork(const NetworkTransition& transition, State* next_state)
+{
+    nexts_networks_.emplace_back(transition, next_state);
 }
 
 void State::linkVariables(std::map<std::string, Variable_t>& variables_)
 {
-    for (auto& pair: nexts_)
+    for (auto& pair: nexts_facts_)
+        pair.first.linkVariables(variables_);
+    for (auto& pair: nexts_networks_)
         pair.first.linkVariables(variables_);
 }
 
 void State::expandTransitions()
 {
-    for (auto& next: nexts_)
+    for (auto& next: nexts_facts_)
         next.first.expandProperty();
 }
 
@@ -40,10 +57,13 @@ std::string State::toString() const
     std::string msg = "State : " + name_ + "\n";
     msg += isFinalNode() ? "\tFinal Node \n" : "";
     msg += initial_node_ ? "\tInitial Node \n" : "";
-    msg += "\tTransitions (" + std::to_string(nexts_.size()) + "):";
-    if (!nexts_.empty())
-        for (auto& pair_transition_state: nexts_)
+    msg += "\tTransitions (" + std::to_string(nexts_facts_.size() + nexts_networks_.size()) + "):";
+    if (!nexts_facts_.empty())
+        for (auto& pair_transition_state: nexts_facts_)
             msg += "\t[" + pair_transition_state.first.toString() + "]";
+    if (!nexts_networks_.empty())
+        for (auto& pair_transition_state: nexts_networks_)
+            msg += "\t" + pair_transition_state.first.toString() + "]\n";
 
     return msg;
 }

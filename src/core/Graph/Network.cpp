@@ -1,15 +1,17 @@
 #include <iostream>
 #include <set>
 #include "procedural/core/Graph/Network.h"
+#include "procedural/core/Graph/NetworkTransition.h"
 
 namespace procedural {
 
 
-Network::Network(const std::string& name, int id) : name_(name),
+Network::Network(const std::string& name, int id, uint32_t level) : name_(name),
                                                     id_(id),
                                                     closed_(false),
                                                     valid_(false),
-                                                    age_(0)
+                                                    age_(0),
+                                                    level_(level)
 {
     full_name_ = name_ + " " + std::to_string(id);
     variables_.emplace("self", full_name_);
@@ -32,6 +34,23 @@ bool Network::evolve(Fact* fact)
     return true;
 }
 
+bool Network::checkSubAction(Network* net)
+{
+    if(level_<net->getLevel())
+        return false;
+    if ((valid_ && closed_) == false)
+        return false;
+    age_++;
+    auto evolution = current_state_->checkSubAction(net);
+    if (evolution == nullptr)
+        return false;
+
+    current_state_ = evolution;
+    for(auto id_fact : net->getIdsFacts())
+        id_facts_involve.push_back(id_fact);
+    return true;
+}
+
 bool Network::addTransition(const PatternTransition_t& pattern)
 {
     if (closed_ == false)
@@ -42,13 +61,31 @@ bool Network::addTransition(const PatternTransition_t& pattern)
         insertVariable(pattern.fact->getVarSubject());
         insertVariable(pattern.fact->getVarObject());
 
-        Transition t = Transition(*(pattern.fact));
+        TransitionFact t = TransitionFact(*(pattern.fact));
         states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
         return true;
     } else
         return false;
 
 }
+
+bool Network::addNetwork(const PatternNetworkTransition_t& net)
+{
+    if (closed_ == false)
+    {
+        addState(net.origin_);
+        addState(net.next_);
+        for(auto& var:net.remap_var_)
+            insertVariable(var.second);
+        NetworkTransition t(net.type_,net.remap_var_);
+        states_[net.origin_]->addNetwork(t,states_[net.next_]);
+        return true;
+    } else
+        return false;
+}
+
+
+
 
 bool Network::addDescription(const ActionDescription_t& des)
 {
@@ -74,7 +111,7 @@ std::string Network::toString()
             res += "\n";
         res += "id : " + std::to_string(state.first) + " " + state.second->toString();
     }
-    res += "current state : " + current_state_->toString();
+    res += "\n\n current state : " + current_state_->toString();
     return res;
 }
 
@@ -83,7 +120,7 @@ Network* Network::clone(int new_id)
     if ((valid_ && closed_) == false)
         return nullptr;
 
-    Network* N = new Network(name_ + "_child", new_id);
+    Network* N = new Network(name_, new_id);
     N->variables_ = variables_;
     N->variables_.at("self").literal = N->getName();
     N->descriptions_ = descriptions_;
@@ -93,10 +130,15 @@ Network* Network::clone(int new_id)
 
     for (auto& state: N->states_)
     {
-        for (auto& pair_transition: states_.at(state.first)->getNexts())
+        for (auto& pair_transition: states_.at(state.first)->getNextsFacts())
         {
-            Transition t = pair_transition.first;
+            TransitionFact t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
+        }
+        for (auto& pair_transition: states_.at(state.first)->getNextsNetworks())
+        {
+            NetworkTransition t = pair_transition.first;
+            state.second->addNetwork(t, N->states_.at(pair_transition.second->getId()));
         }
     }
 
@@ -164,7 +206,9 @@ void Network::processInitialState()
     std::unordered_set<int> id_states_nexts;
     for (auto& pair_states: states_)
     {
-        for (auto& nexts_state: pair_states.second->getNexts())
+        for (auto& nexts_state: pair_states.second->getNextsFacts())
+            id_states_nexts.insert(nexts_state.second->getId());
+        for (auto& nexts_state: pair_states.second->getNextsNetworks())
             id_states_nexts.insert(nexts_state.second->getId());
     }
 
@@ -194,5 +238,7 @@ void Network::processInitialState()
         current_state_ = states_.at(id_initial_state_);
     }
 }
+
+
 
 } // namespace procedural

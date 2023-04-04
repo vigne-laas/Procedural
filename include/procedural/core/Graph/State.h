@@ -3,9 +3,10 @@
 
 #include <unordered_set>
 
-#include "procedural/core/Graph/Transition.h"
+#include "procedural/core/Graph/TransitionFact.h"
 #include "procedural/core/Types/Fact.h"
 #include "procedural/core/Types/Variable.h"
+#include "procedural/core/Graph/NetworkTransition.h"
 
 namespace procedural {
 
@@ -15,22 +16,27 @@ public:
     explicit State(const std::string& name, int id);
 
     State* evolve(Fact* fact);
+    State* checkSubAction(Network* network);
 
-    void addTransition(const Transition& transition, State* next_state);
+
+    void addTransition(const TransitionFact& transition, State* next_state);
+    void addNetwork(const NetworkTransition& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions();
-    bool isFinalNode() const { return nexts_.empty(); }
+    bool isFinalNode() const { return nexts_facts_.empty() && nexts_networks_.empty(); }
     uint32_t getId() const { return id_; };
     std::string toString() const;
 
-    const std::vector<std::pair<Transition, State*>> getNexts() const { return nexts_; };
+    const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
+    const std::vector<std::pair<NetworkTransition, State*>> getNextsNetworks() const { return nexts_networks_; };
 
 private:
     uint32_t id_;
     std::string name_;
     bool initial_node_;
-    std::vector<std::pair<Transition, State*>> nexts_;
+    std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
+    std::vector<std::pair<NetworkTransition, State*>> nexts_networks_;
 };
 
 } // namespace procedural

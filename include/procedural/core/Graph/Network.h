@@ -13,6 +13,7 @@
 #include "procedural/core/Types/PatternTransition.h"
 #include "procedural/core/Types/Description.h"
 #include "procedural/core/Types/ActionDescription.h"
+#include "procedural/core/Types/PatternNetworkTransition.h"
 
 namespace procedural {
 
@@ -44,20 +45,25 @@ struct MultiInitialStateNetworkException : public NetworkException
 class Network
 {
 public:
-    Network(const std::string& name, int id);
+    Network(const std::string& name, int id,uint32_t level=0);
     Network(const Network& other) = delete;
 
     bool evolve(Fact* fact);
+    bool checkSubAction(Network* net);
 
     const State* getCurrentState() const { return current_state_; }
+    std::string getType() const {return name_;}
     std::string getName() const { return full_name_; }
+    uint32_t getLevel() const { return level_;}
 
     bool isComplete() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
     uint32_t getAge() const { return age_; }
+    Variable_t getVar(const std::string& key) const {return variables_.at(key);};
 
     bool addTransition(const PatternTransition_t& pattern);
+    bool addNetwork(const PatternNetworkTransition_t& net);
     bool addDescription(const ActionDescription_t& des);
 
     bool closeNetwork();
@@ -82,6 +88,7 @@ private:
     std::string name_;
     uint32_t id_;
     std::string full_name_;
+    uint32_t level_;
 
     std::map<std::string, Variable_t> variables_;
 

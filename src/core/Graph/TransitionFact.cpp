@@ -1,35 +1,35 @@
-#include "procedural/core/Graph/Transition.h"
+#include "procedural/core/Graph/TransitionFact.h"
 #include <iostream>
 
 namespace procedural {
 
-Transition::Transition(const FactPattern& pattern) : var_subject_(nullptr),
-                                                     var_object_(nullptr)
+TransitionFact::TransitionFact(const FactPattern& pattern) : var_subject_(nullptr),
+                                                             var_object_(nullptr)
 {
     var_subject_str_ = pattern.getVarSubject();
     var_object_str_ = pattern.getVarObject();
     properties_.insert(pattern.getProperty());
 }
 
-void Transition::expandProperty()
+void TransitionFact::expandProperty()
 {
     // TODO use ontology to expand the property
 }
 
-void Transition::linkVariables(std::map<std::string, Variable_t>& variables)
+void TransitionFact::linkVariables(std::map<std::string, Variable_t>& variables)
 {
     var_object_ = &(variables.at(var_object_str_));
     var_subject_ = &(variables.at(var_subject_str_));
 }
 
-bool Transition::operator==(const Transition& other) const
+bool TransitionFact::operator==(const TransitionFact& other) const
 {
     return (var_subject_str_ == other.var_subject_str_) &&
            (var_object_str_ == other.var_object_str_) &&
            (properties_ == other.properties_);
 }
 
-bool Transition::matchFact(Fact* fact)
+bool TransitionFact::match(Fact* fact)
 {
     bool match = (properties_.find(fact->getProperty()) != properties_.end());
 
@@ -60,7 +60,7 @@ bool Transition::matchFact(Fact* fact)
     return match;
 }
 
-std::string Transition::toString() const
+std::string TransitionFact::toString() const
 {
     std::string str = var_subject_->toString() + " - (";
     for (auto property: properties_)
