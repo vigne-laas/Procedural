@@ -76,15 +76,14 @@ add_library(${PROJECT_NAME}_lib
         )
 
 add_library(${PROJECT_NAME}_network_lib
-        src/core/Graph/Transition.cpp
+        src/core/Graph/TransitionFact.cpp
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
         src/core/Types/Action.cpp
         src/core/Types/PatternRecognition.cpp
         include/procedural/core/Types/ActionDescription.h
         include/procedural/core/Types/Description.h
-
-        )
+        src/core/Graph/NetworkTransition.cpp include/procedural/core/Graph/NetworkTransition.h include/procedural/core/Types/PatternNetworkTransition.h)
 target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 
 add_library(${PROJECT_NAME}_reader_lib
