@@ -77,8 +77,10 @@ bool Network::addNetwork(const PatternNetworkTransition_t& net)
         addState(net.next_);
         for(auto& var:net.remap_var_)
             insertVariable(var.second);
-        NetworkTransition t(net.type_,net.remap_var_);
-        states_[net.origin_]->addNetwork(t,states_[net.next_]);
+        
+        auto type = NetworkTransition::sub_network_table.get(net.type_);
+        NetworkTransition transition(type, net.remap_var_);
+        states_[net.origin_]->addNetwork(transition, states_[net.next_]);
         return true;
     } else
         return false;

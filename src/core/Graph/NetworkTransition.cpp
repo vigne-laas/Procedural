@@ -2,7 +2,9 @@
 #include "procedural/core/Graph/Network.h"
 
 namespace procedural {
-WordTable NetworkTransition::subNetworkTable;
+
+WordTable NetworkTransition::sub_network_table;
+
 NetworkTransition::NetworkTransition(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
                                                                                                            remap_var_(
                                                                                                                    remap_var)
@@ -13,7 +15,7 @@ NetworkTransition::NetworkTransition(uint32_t type, const std::map<std::string, 
 }
 std::string NetworkTransition::toString() const
 {
-    std::string res = "Network Transition type : " + std::to_string(type_) + "(" + subNetworkTable.get(type_) + ")\n";
+    std::string res = "Network Transition type : " + std::to_string(type_) + "(" + sub_network_table.get(type_) + ")\n";
     for (auto& pair: remap_var_)
         res += "\t" + pair.first + " ==> " + pair.second + "\n";
     res += "Variables : \n";
@@ -23,7 +25,7 @@ std::string NetworkTransition::toString() const
 }
 bool NetworkTransition::match(Network* net)
 {
-    auto type = subNetworkTable.getConst(net->getType());
+    auto type = sub_network_table.getConst(net->getType());
     if (type == type_)
     {
         for (const auto& pair: remap_var_)

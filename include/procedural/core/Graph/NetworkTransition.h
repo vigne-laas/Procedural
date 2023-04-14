@@ -3,12 +3,12 @@
 
 #include <string>
 #include <map>
+
 #include "procedural/core/Types/WordTable.h"
 #include "procedural/core/Types/Variable.h"
 
-
-
 namespace procedural {
+
 class Network;
 
 class NetworkTransition
@@ -18,7 +18,7 @@ public:
 
     std::map<std::string,std::string> remap_var_;
 
-    static WordTable subNetworkTable;
+    static WordTable sub_network_table;
 
     std::string toString() const ;
     bool match(Network * netComplete) ;
@@ -27,7 +27,6 @@ public:
 private:
     uint32_t type_;
     std::map<std::string,Variable_t*> variables_;
-
 };
 
 } // procedural

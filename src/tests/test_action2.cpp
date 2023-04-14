@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
 
     std::vector<procedural::PatternNetworkTransition_t> patterns_net;
-    patterns_net.emplace_back(0, "grasp", 1, remap);
+    patterns_net.emplace_back(0, 1, "grasp", remap);
 
     std::vector<procedural::PatternTransition_t> list_pick_over;
     list_pick_over.emplace_back(1, &F4, 2);
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 
 
     std::vector<procedural::PatternNetworkTransition_t> patterns_net_release;
-    patterns_net_release.emplace_back(1, "release", 2, remap_place);
+    patterns_net_release.emplace_back(1, 2, "release", remap_place);
 
     std::vector<procedural::PatternTransition_t> list_place_over;
 //    list_pick_over.emplace_back(1, &F6, 2);
@@ -150,8 +150,8 @@ int main(int argc, char** argv)
 
 
     std::vector<procedural::PatternNetworkTransition_t> patterns_net_pick_place;
-    patterns_net_pick_place.emplace_back(0, "pick_over", 1, remap_pick);
-    patterns_net_pick_place.emplace_back(1, "place_over", 2, remap_place2);
+    patterns_net_pick_place.emplace_back(0, 1, "pick_over", remap_pick);
+    patterns_net_pick_place.emplace_back(1, 2, "place_over", remap_place2);
 
     std::vector<procedural::PatternTransition_t> list_pick_place;
     std::vector<procedural::PatternRecognition> list_pattern_pick_place;
