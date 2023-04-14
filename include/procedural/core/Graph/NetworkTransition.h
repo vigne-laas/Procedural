@@ -14,7 +14,7 @@ class Network;
 class NetworkTransition
 {
 public:
-    NetworkTransition(uint32_t type,const std::map<std::string,std::string>& remap_var);
+    NetworkTransition(uint32_t type, const std::map<std::string,std::string>& remap_var);
 
     std::map<std::string,std::string> remap_var_;
 

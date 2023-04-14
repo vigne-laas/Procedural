@@ -36,7 +36,7 @@ public:
     std::string getName() { return name_;};
 private:
     std::string name_;
-    std::unordered_set<Network*>  complete_networks_;
+    std::unordered_set<Network*> complete_networks_;
     bool flag_;
 
     std::vector<PatternRecognition> patterns_;

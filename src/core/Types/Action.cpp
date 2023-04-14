@@ -3,7 +3,7 @@
 
 namespace procedural {
 
-Action::Action(const std::string& name) : name_(name),flag_(false)
+Action::Action(const std::string& name) : name_(name), flag_(false)
 {}
 
 bool Action::addPatterns(const PatternRecognition& pattern)
@@ -28,7 +28,6 @@ std::set<uint32_t> Action::checkCompleteNetworks()
     std::set<uint32_t> set_valid_facts;
     if(flag_ == false)
     {
-
         for (auto& pattern: patterns_)
         {
             std::set<uint32_t> temp_set = pattern.checkNetwork();
@@ -45,7 +44,6 @@ std::set<uint32_t> Action::checkCompleteNetworks()
         flag_ = true;
     }
     return set_valid_facts;
-
 }
 
 void Action::displayCurrentState()
@@ -54,6 +52,7 @@ void Action::displayCurrentState()
 //        for(auto& net : pattern.networks_) // TODO networks_ should not be public
 //            std::cout << net->getCurrentState()->toString() << std::endl;
 }
+
 void Action::clean()
 {
     flag_ = false;

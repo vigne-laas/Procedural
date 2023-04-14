@@ -63,8 +63,8 @@ public:
     Variable_t getVar(const std::string& key) const {return variables_.at(key);};
 
     bool addTransition(const PatternTransition_t& pattern);
-    bool addNetwork(const PatternNetworkTransition_t& net);
-    bool addDescription(const ActionDescription_t& des);
+    bool addNetwork(const PatternNetworkTransition_t& network);
+    bool addDescription(const ActionDescription_t& description);
 
     bool closeNetwork();
 
