@@ -64,30 +64,29 @@ bool Network::addTransition(const PatternTransition_t& pattern)
         TransitionFact t = TransitionFact(*(pattern.fact));
         states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
         return true;
-    } else
+    }
+    else
         return false;
 
 }
 
-bool Network::addNetwork(const PatternNetworkTransition_t& net)
+bool Network::addNetwork(const PatternNetworkTransition_t& network)
 {
     if (closed_ == false)
     {
-        addState(net.origin_);
-        addState(net.next_);
-        for(auto& var:net.remap_var_)
+        addState(network.origin_);
+        addState(network.next_);
+        for(auto& var : network.remap_var_)
             insertVariable(var.second);
         
-        auto type = NetworkTransition::sub_network_table.get(net.type_);
-        NetworkTransition transition(type, net.remap_var_);
-        states_[net.origin_]->addNetwork(transition, states_[net.next_]);
+        auto type = NetworkTransition::sub_network_table.get(network.type_);
+        NetworkTransition transition(type, network.remap_var_);
+        states_[network.origin_]->addNetworkTransition(transition, states_[network.next_]);
         return true;
-    } else
+    }
+    else
         return false;
 }
-
-
-
 
 bool Network::addDescription(const ActionDescription_t& des)
 {
@@ -140,7 +139,7 @@ Network* Network::clone(int new_id)
         for (auto& pair_transition: states_.at(state.first)->getNextsNetworks())
         {
             NetworkTransition t = pair_transition.first;
-            state.second->addNetwork(t, N->states_.at(pair_transition.second->getId()));
+            state.second->addNetworkTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }
 

@@ -20,7 +20,7 @@ public:
 
 
     void addTransition(const TransitionFact& transition, State* next_state);
-    void addNetwork(const NetworkTransition& transition, State* next_state);
+    void addNetworkTransition(const NetworkTransition& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions();
