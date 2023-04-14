@@ -5,17 +5,18 @@
 
 namespace procedural {
 
+WordTable Network::types_table;
 
-Network::Network(const std::string& name, int id, uint32_t level) : name_(name),
+Network::Network(const std::string& name, int id, uint32_t level) : type_str_(name),
                                                     id_(id),
                                                     closed_(false),
                                                     valid_(false),
                                                     age_(0),
                                                     level_(level)
 {
-    full_name_ = name_ + " " + std::to_string(id);
+    full_name_ = type_str_ + " " + std::to_string(id);
     variables_.emplace("self", full_name_);
-
+    type_ = Network::types_table.get(type_str_);
 }
 
 bool Network::evolve(Fact* fact)
@@ -79,7 +80,7 @@ bool Network::addNetwork(const PatternNetworkTransition_t& network)
         for(auto& var : network.remap_var_)
             insertVariable(var.second);
         
-        auto type = NetworkTransition::sub_network_table.get(network.type_);
+        auto type = Network::types_table.get(network.type_);
         NetworkTransition transition(type, network.remap_var_);
         states_[network.origin_]->addNetworkTransition(transition, states_[network.next_]);
         return true;
@@ -121,7 +122,7 @@ Network* Network::clone(int new_id)
     if ((valid_ && closed_) == false)
         return nullptr;
 
-    Network* N = new Network(name_, new_id);
+    Network* N = new Network(type_str_, new_id);
     N->variables_ = variables_;
     N->variables_.at("self").literal = N->getName();
     N->descriptions_ = descriptions_;

@@ -16,16 +16,13 @@ class NetworkTransition
 public:
     NetworkTransition(uint32_t type, const std::map<std::string,std::string>& remap_var);
 
-    std::map<std::string,std::string> remap_var_;
-
-    static WordTable sub_network_table;
-
     std::string toString() const ;
-    bool match(Network * netComplete) ;
+    bool match(Network * network) ;
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
 private:
     uint32_t type_;
+    std::map<std::string,std::string> remap_var_;
     std::map<std::string,Variable_t*> variables_;
 };
 

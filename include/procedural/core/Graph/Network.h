@@ -52,7 +52,8 @@ public:
     bool checkSubAction(Network* net);
 
     const State* getCurrentState() const { return current_state_; }
-    std::string getType() const {return name_;}
+    std::string getTypeStr() const { return type_str_; }
+    uint32_t getType() const { return type_; }
     std::string getName() const { return full_name_; }
     uint32_t getLevel() const { return level_;}
 
@@ -60,7 +61,7 @@ public:
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
     uint32_t getAge() const { return age_; }
-    Variable_t getVar(const std::string& key) const {return variables_.at(key);};
+    Variable_t getVar(const std::string& key) const { return variables_.at(key); }
 
     bool addTransition(const PatternTransition_t& pattern);
     bool addNetwork(const PatternNetworkTransition_t& network);
@@ -73,9 +74,11 @@ public:
     Network* clone(int new_id);
     void displayVariables();
     std::string describe(bool expl = false);
-    std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; };
+    std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; }
 
     bool involveFacts(const std::set<uint32_t>& facts);
+
+    static WordTable types_table;
 
 private:
 
@@ -85,7 +88,8 @@ private:
 
     void processInitialState();
 
-    std::string name_;
+    std::string type_str_;
+    uint32_t type_;
     uint32_t id_;
     std::string full_name_;
     uint32_t level_;
