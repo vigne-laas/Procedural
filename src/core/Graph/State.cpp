@@ -18,13 +18,12 @@ State* State::evolve(Fact* fact)
     return nullptr;
 }
 
-State* State::checkSubAction(Network* network)
+State* State::evolve(Network* network)
 {
-    if(nexts_networks_.empty())
-        return nullptr;
     for (auto& pair: nexts_networks_)
         if (pair.first.match(network))
             return pair.second;
+
     return nullptr;
 }
 
@@ -33,7 +32,7 @@ void State::addTransition(const TransitionFact& transition, State* next_state)
     nexts_facts_.emplace_back(transition, next_state);
 }
 
-void State::addNetworkTransition(const TransitionNetwork& transition, State* next_state)
+void State::addTransition(const TransitionNetwork& transition, State* next_state)
 {
     nexts_networks_.emplace_back(transition, next_state);
 }

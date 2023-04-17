@@ -16,11 +16,10 @@ public:
     explicit State(const std::string& name, int id);
 
     State* evolve(Fact* fact);
-    State* checkSubAction(Network* network);
-
+    State* evolve(Network* network);
 
     void addTransition(const TransitionFact& transition, State* next_state);
-    void addNetworkTransition(const TransitionNetwork& transition, State* next_state);
+    void addTransition(const TransitionNetwork& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions();

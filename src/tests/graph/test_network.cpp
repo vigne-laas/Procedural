@@ -216,7 +216,7 @@ int main()
         for (auto complete_net: net_complete)
             for (auto net: nets)
                 if (net->getName() != complete_net->getName())
-                    if (net->checkSubAction(complete_net))
+                    if (net->evolve(complete_net))
                         std::cout << "evolve thanks to completion of net " << std::endl;
 
 

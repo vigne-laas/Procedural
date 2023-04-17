@@ -159,7 +159,7 @@ bool PatternRecognition::checksubAction(Action* action)
     for (auto& network : networks_)
     {
         for(auto complete_net : complete_networks)
-            if (network->checkSubAction(complete_net))
+            if (network->evolve(complete_net))
             {
                 std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
                 evolve = true;
@@ -174,7 +174,7 @@ bool PatternRecognition::checksubAction(Action* action)
         for(auto complete_net : complete_networks)
         {
             Network* new_net = root_network_->clone(getNextId());
-            if (new_net->checkSubAction(complete_net))
+            if (new_net->evolve(complete_net))
             {
                 std::cout << "create new network " << new_net->getName() << std::endl;
                 networks_.insert(new_net);

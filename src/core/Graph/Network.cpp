@@ -35,14 +35,14 @@ bool Network::evolve(Fact* fact)
     return true;
 }
 
-bool Network::checkSubAction(Network* net)
+bool Network::evolve(Network* net)
 {
     if(level_<net->getLevel())
         return false;
     if ((valid_ && closed_) == false)
         return false;
     age_++;
-    auto evolution = current_state_->checkSubAction(net);
+    auto evolution = current_state_->evolve(net);
     if (evolution == nullptr)
         return false;
 
@@ -82,7 +82,7 @@ bool Network::addNetwork(const PatternNetworkTransition_t& network)
         
         auto type = Network::types_table.get(network.type_);
         TransitionNetwork transition(type, network.remap_var_);
-        states_[network.origin_]->addNetworkTransition(transition, states_[network.next_]);
+        states_[network.origin_]->addTransition(transition, states_[network.next_]);
         return true;
     }
     else
@@ -140,7 +140,7 @@ Network* Network::clone(int new_id)
         for (auto& pair_transition: states_.at(state.first)->getNextsNetworks())
         {
             TransitionNetwork t = pair_transition.first;
-            state.second->addNetworkTransition(t, N->states_.at(pair_transition.second->getId()));
+            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }
 

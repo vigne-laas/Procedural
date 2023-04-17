@@ -50,7 +50,7 @@ public:
     Network(const Network& other) = delete;
 
     bool evolve(Fact* fact);
-    bool checkSubAction(Network* net);
+    bool evolve(Network* net);
 
     const State* getCurrentState() const { return current_state_; }
     std::string getTypeStr() const { return type_str_; }
