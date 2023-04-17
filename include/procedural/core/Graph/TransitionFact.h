@@ -2,7 +2,7 @@
 #define PROCEDURAL_TRANSITIONFACT_H
 
 #include <unordered_set>
-#include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Types/PatternFact.h"
 #include "procedural/core/Types/Variable.h"
 
 namespace procedural {
@@ -10,7 +10,7 @@ namespace procedural {
 class TransitionFact
 {
 public:
-    explicit TransitionFact(const FactPattern& pattern);
+    explicit TransitionFact(const PatternFact& pattern);
 
     void setSubject(int32_t subject) { var_subject_->value = subject; }
     void setObject(int32_t object) { var_object_->value = object; }

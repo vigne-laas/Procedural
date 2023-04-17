@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_FACTPATTERN_H
-#define PROCEDURAL_FACTPATTERN_H
+#ifndef PROCEDURAL_PATTERNFACT_H
+#define PROCEDURAL_PATTERNFACT_H
 
 #include <string>
 
@@ -7,15 +7,15 @@
 
 namespace procedural {
 
-class FactPattern
+class PatternFact
 {
 
 public:
-    FactPattern(bool is_insertion, const std::string& var_subject, const std::string& property,
+    PatternFact(bool is_insertion, const std::string& var_subject, const std::string& property,
                 const std::string& var_object, bool required);
 
     int32_t getProperty() const { return (int32_t) property_ * (is_insertion_ ? 1 : -1); }
-    const std::string& getStringProperty() const { return Fact::properties_table[property_]; };
+    const std::string& getStringProperty() const { return Fact::properties_table[property_]; }
 
     const std::string& getVarSubject() const { return var_subject_; }
     const std::string& getVarObject() const { return var_object_; }
@@ -35,4 +35,4 @@ private:
 
 } // namespace procedural
 
-#endif // PROCEDURAL_FACTPATTERN_H
+#endif // PROCEDURAL_PATTERNFACT_H

@@ -1,4 +1,4 @@
-#include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Types/PatternFact.h"
 #include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Graph/Network.h"
 #include <iostream>
@@ -9,10 +9,10 @@
 int main()
 {
     /*
-    procedural::FactPattern F = procedural::FactPattern(false, "A", "MoveThrought", "O", false);
-    procedural::FactPattern F1 = procedural::FactPattern(false, "A", "hasInHand", "O", false);
-    procedural::FactPattern F2 = procedural::FactPattern(true, "O", "overSupport", "S", true);
-    procedural::FactPattern F3 = procedural::FactPattern(true, "O", "inContainer", "S", true);
+    procedural::PatternFact F = procedural::PatternFact(false, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F1 = procedural::PatternFact(false, "A", "hasInHand", "O", false);
+    procedural::PatternFact F2 = procedural::PatternFact(true, "O", "overSupport", "S", true);
+    procedural::PatternFact F3 = procedural::PatternFact(true, "O", "inContainer", "S", true);
 
     std::cout << "============= TEST BAD NETWORK no init =============" << std::endl;
     std::vector<procedural::PatternTransitionFact_t> list_test_bad_network;
@@ -139,8 +139,8 @@ int main()
 
 */
     std::cout << "============= Test Inclusion  NETWORK =============" << std::endl;
-    procedural::FactPattern F4(true, "A", "MoveThrought", "O", false);
-    procedural::FactPattern F5(true, "A", "hasInHand", "O", true);
+    procedural::PatternFact F4(true, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F5(true, "A", "hasInHand", "O", true);
     std::vector<procedural::PatternTransitionFact_t> list_grasp_network;
     list_grasp_network.emplace_back(0, &F4, 1);
     list_grasp_network.emplace_back(1, &F5, 2);
@@ -166,7 +166,7 @@ int main()
 
 
     auto* N4 = new procedural::Network("pick", 0, 1);
-    procedural::FactPattern F6(false, "O", "overSupport", "S", true);
+    procedural::PatternFact F6(false, "O", "overSupport", "S", true);
     std::vector<procedural::ActionDescription_t> pick_descriptions;
     pick_descriptions.emplace_back("??","isA","PickAction");
     pick_descriptions.emplace_back("??","isPerformedBy","?A");

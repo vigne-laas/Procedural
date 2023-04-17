@@ -14,8 +14,8 @@ int main(int argc, char** argv)
     std::cout << "============================ Create data for grasp =============================" << std::endl;
 
 
-    procedural::FactPattern F(true, "A", "MoveThrought", "O", false);
-    procedural::FactPattern F1(true, "A", "hasInHand", "O", true);
+    procedural::PatternFact F(true, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F1(true, "A", "hasInHand", "O", true);
     std::vector<procedural::PatternTransitionFact_t> list_grasp_network;
     list_grasp_network.emplace_back(0, &F, 1);
     list_grasp_network.emplace_back(1, &F1, 2);
@@ -32,8 +32,8 @@ int main(int argc, char** argv)
     std::cout << "============================ Create data for release =============================" << std::endl;
 
 
-    procedural::FactPattern F2(true, "A", "MoveThrought", "O", false);
-    procedural::FactPattern F3(false, "A", "hasInHand", "O", true);
+    procedural::PatternFact F2(true, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F3(false, "A", "hasInHand", "O", true);
     std::vector<procedural::PatternTransitionFact_t> release_network;
     release_network.emplace_back(0, &F2, 1);
     release_network.emplace_back(1, &F3, 2);
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
     in_descriptions.emplace_back("??", "isPerformedOn", "?O");
     in_descriptions.emplace_back("??", "isPerformedFrom", "?C");
 
-    procedural::FactPattern F4 = procedural::FactPattern(false, "O", "overSupport", "S", true);
-    procedural::FactPattern F5 = procedural::FactPattern(false, "O", "inContainer", "C", true);
+    procedural::PatternFact F4 = procedural::PatternFact(false, "O", "overSupport", "S", true);
+    procedural::PatternFact F5 = procedural::PatternFact(false, "O", "inContainer", "C", true);
 
     std::map<std::string, std::string> remap = {{"A", "A"},
                                                 {"O", "O"}};
@@ -104,8 +104,8 @@ int main(int argc, char** argv)
     place_in_descriptions.emplace_back("??", "isPerformedOn", "?O");
     place_in_descriptions.emplace_back("??", "isPerformedFrom", "?C");
 
-    procedural::FactPattern F6 = procedural::FactPattern(true, "O", "overSupport", "S", true);
-    procedural::FactPattern F7 = procedural::FactPattern(true, "O", "inContainer", "C", true);
+    procedural::PatternFact F6 = procedural::PatternFact(true, "O", "overSupport", "S", true);
+    procedural::PatternFact F7 = procedural::PatternFact(true, "O", "inContainer", "C", true);
 
     std::map<std::string, std::string> remap_place = {{"A", "A"},
                                                 {"O", "O"}};

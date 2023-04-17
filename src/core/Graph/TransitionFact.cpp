@@ -3,7 +3,7 @@
 
 namespace procedural {
 
-TransitionFact::TransitionFact(const FactPattern& pattern) : var_subject_(nullptr),
+TransitionFact::TransitionFact(const PatternFact& pattern) : var_subject_(nullptr),
                                                              var_object_(nullptr)
 {
     var_subject_str_ = pattern.getVarSubject();

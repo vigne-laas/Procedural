@@ -70,7 +70,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}_lib
-        src/core/Types/FactPattern.cpp
+        src/core/Types/PatternFact.cpp
         src/core/Types/WordTable.cpp
         src/core/Types/Fact.cpp
         )

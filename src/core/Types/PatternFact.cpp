@@ -1,10 +1,10 @@
-#include "procedural/core/Types/FactPattern.h"
+#include "procedural/core/Types/PatternFact.h"
 
 #include "procedural/core/Types/Fact.h"
 
 namespace procedural {
 
-FactPattern::FactPattern(bool is_insertion,
+PatternFact::PatternFact(bool is_insertion,
                          const std::string& varSubject,
                          const std::string& property,
                          const std::string& varObject,
@@ -18,7 +18,7 @@ FactPattern::FactPattern(bool is_insertion,
     property_ = Fact::properties_table.get(property);
 }
 
-std::string FactPattern::toString() const
+std::string PatternFact::toString() const
 {
     return "[" + std::string(is_insertion_ ? "ADD" : "DEL") + "] " +
            var_subject_ + " - " +

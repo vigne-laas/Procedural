@@ -23,10 +23,10 @@ int main(int argc, char** argv)
     in_descriptions.emplace_back("??", "isPerformedOn", "?O");
     in_descriptions.emplace_back("??", "isPerformedFrom", "?C");
 
-    procedural::FactPattern F = procedural::FactPattern(true, "A", "MoveThrought", "O", false);
-    procedural::FactPattern F1 = procedural::FactPattern(true, "A", "hasInHand", "O", false);
-    procedural::FactPattern F2 = procedural::FactPattern(false, "O", "overSupport", "S", true);
-    procedural::FactPattern F3 = procedural::FactPattern(false, "O", "inContainer", "C", true);
+    procedural::PatternFact F = procedural::PatternFact(true, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F1 = procedural::PatternFact(true, "A", "hasInHand", "O", false);
+    procedural::PatternFact F2 = procedural::PatternFact(false, "O", "overSupport", "S", true);
+    procedural::PatternFact F3 = procedural::PatternFact(false, "O", "inContainer", "C", true);
 
     std::vector <procedural::PatternTransitionFact_t> list_pick1;
     list_pick1.emplace_back(0, &F, 1);
@@ -60,10 +60,10 @@ int main(int argc, char** argv)
     in_place_descriptions.emplace_back("??", "isPerformedOn", "?O");
     in_place_descriptions.emplace_back("??", "isPerformedFrom", "?S");
 
-    procedural::FactPattern Fp = procedural::FactPattern(true, "A", "MoveThrought", "S", false);
-    procedural::FactPattern Fp1 = procedural::FactPattern(true, "O", "isInContainer", "S", true);
-    procedural::FactPattern Fp2 = procedural::FactPattern(true, "O", "isOnTopOf", "S", true);
-    procedural::FactPattern Fp3 = procedural::FactPattern(false, "A", "hasInHand", "O", true);
+    procedural::PatternFact Fp = procedural::PatternFact(true, "A", "MoveThrought", "S", false);
+    procedural::PatternFact Fp1 = procedural::PatternFact(true, "O", "isInContainer", "S", true);
+    procedural::PatternFact Fp2 = procedural::PatternFact(true, "O", "isOnTopOf", "S", true);
+    procedural::PatternFact Fp3 = procedural::PatternFact(false, "A", "hasInHand", "O", true);
 
     std::vector <procedural::PatternTransitionFact_t> list_place1;
     list_place1.emplace_back(0, &Fp, 1);
