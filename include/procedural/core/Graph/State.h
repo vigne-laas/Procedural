@@ -6,7 +6,7 @@
 #include "procedural/core/Graph/TransitionFact.h"
 #include "procedural/core/Types/Fact.h"
 #include "procedural/core/Types/Variable.h"
-#include "procedural/core/Graph/NetworkTransition.h"
+#include "procedural/core/Graph/TransitionNetwork.h"
 
 namespace procedural {
 
@@ -20,7 +20,7 @@ public:
 
 
     void addTransition(const TransitionFact& transition, State* next_state);
-    void addNetworkTransition(const NetworkTransition& transition, State* next_state);
+    void addNetworkTransition(const TransitionNetwork& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions();
@@ -29,14 +29,14 @@ public:
     std::string toString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
-    const std::vector<std::pair<NetworkTransition, State*>> getNextsNetworks() const { return nexts_networks_; };
+    const std::vector<std::pair<TransitionNetwork, State*>> getNextsNetworks() const { return nexts_networks_; };
 
 private:
     uint32_t id_;
     std::string name_;
     bool initial_node_;
     std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
-    std::vector<std::pair<NetworkTransition, State*>> nexts_networks_;
+    std::vector<std::pair<TransitionNetwork, State*>> nexts_networks_;
 };
 
 } // namespace procedural

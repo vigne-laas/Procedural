@@ -1,7 +1,7 @@
 #include <iostream>
 #include <set>
 #include "procedural/core/Graph/Network.h"
-#include "procedural/core/Graph/NetworkTransition.h"
+#include "procedural/core/Graph/TransitionNetwork.h"
 
 namespace procedural {
 
@@ -81,7 +81,7 @@ bool Network::addNetwork(const PatternNetworkTransition_t& network)
             insertVariable(var.second);
         
         auto type = Network::types_table.get(network.type_);
-        NetworkTransition transition(type, network.remap_var_);
+        TransitionNetwork transition(type, network.remap_var_);
         states_[network.origin_]->addNetworkTransition(transition, states_[network.next_]);
         return true;
     }
@@ -139,7 +139,7 @@ Network* Network::clone(int new_id)
         }
         for (auto& pair_transition: states_.at(state.first)->getNextsNetworks())
         {
-            NetworkTransition t = pair_transition.first;
+            TransitionNetwork t = pair_transition.first;
             state.second->addNetworkTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }

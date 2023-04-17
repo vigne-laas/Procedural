@@ -33,7 +33,7 @@ void State::addTransition(const TransitionFact& transition, State* next_state)
     nexts_facts_.emplace_back(transition, next_state);
 }
 
-void State::addNetworkTransition(const NetworkTransition& transition, State* next_state)
+void State::addNetworkTransition(const TransitionNetwork& transition, State* next_state)
 {
     nexts_networks_.emplace_back(transition, next_state);
 }

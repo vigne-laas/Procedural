@@ -11,10 +11,10 @@ namespace procedural {
 
 class Network;
 
-class NetworkTransition
+class TransitionNetwork
 {
 public:
-    NetworkTransition(uint32_t type, const std::map<std::string,std::string>& remap_var);
+    TransitionNetwork(uint32_t type, const std::map<std::string,std::string>& remap_var);
 
     std::string toString() const ;
     bool match(Network * network) ;

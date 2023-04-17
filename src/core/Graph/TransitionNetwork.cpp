@@ -1,9 +1,9 @@
-#include "procedural/core/Graph/NetworkTransition.h"
+#include "procedural/core/Graph/TransitionNetwork.h"
 #include "procedural/core/Graph/Network.h"
 
 namespace procedural {
 
-NetworkTransition::NetworkTransition(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
+TransitionNetwork::TransitionNetwork(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
                                                                                                            remap_var_(remap_var)
 {
     for (const auto& pair : remap_var_)
@@ -11,7 +11,7 @@ NetworkTransition::NetworkTransition(uint32_t type, const std::map<std::string, 
                                          nullptr)); // faire lien avec le constructeur de transition fact pour pouvoir lier les variables dans le resseaux.
 }
 
-std::string NetworkTransition::toString() const
+std::string TransitionNetwork::toString() const
 {
     std::string res = "Network Transition type : " + std::to_string(type_) + "(" + Network::types_table.get(type_) + ")\n";
     for (auto& pair : remap_var_)
@@ -22,7 +22,7 @@ std::string NetworkTransition::toString() const
     return res;
 }
 
-bool NetworkTransition::match(Network* netowrk)
+bool TransitionNetwork::match(Network* netowrk)
 {
     if (netowrk->getType() == type_)
     {
@@ -40,7 +40,7 @@ bool NetworkTransition::match(Network* netowrk)
         return false;
 }
 
-void NetworkTransition::linkVariables(std::map<std::string, Variable_t>& variables)
+void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variables)
 {
     for (auto& pair: variables_)
         pair.second = &(variables.at(pair.first));
