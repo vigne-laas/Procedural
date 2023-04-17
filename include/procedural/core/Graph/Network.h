@@ -13,7 +13,7 @@
 #include "procedural/core/Types/PatternTransition.h"
 #include "procedural/core/Types/Description.h"
 #include "procedural/core/Types/ActionDescription.h"
-#include "procedural/core/Types/PatternNetworkTransition.h"
+#include "procedural/core/Types/PatternTransitionNetwork.h"
 #include "procedural/core/Types/WordTable.h"
 
 namespace procedural {
@@ -65,7 +65,7 @@ public:
     Variable_t getVar(const std::string& key) const { return variables_.at(key); }
 
     bool addTransition(const PatternTransition_t& pattern);
-    bool addNetwork(const PatternNetworkTransition_t& network);
+    bool addNetwork(const PatternTransitionNetwork_t& network);
     bool addDescription(const ActionDescription_t& description);
 
     bool closeNetwork();

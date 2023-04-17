@@ -1,14 +1,14 @@
-#ifndef PROCEDURAL_PATTERNNETWORKTRANSITION_H
-#define PROCEDURAL_PATTERNNETWORKTRANSITION_H
+#ifndef PROCEDURAL_PATTERNTRANSITIONNETWORK_H
+#define PROCEDURAL_PATTERNTRANSITIONNETWORK_H
 
 #include <map>
 #include <string>
 
 namespace procedural {
 
-struct PatternNetworkTransition_t
+struct PatternTransitionNetwork_t
 {
-    PatternNetworkTransition_t(int origin, int next,
+    PatternTransitionNetwork_t(int origin, int next,
                                const std::string& network_type,
                                const std::map<std::string, std::string>& remap_var) : origin_(origin),
                                                                                       next_(next),
@@ -24,4 +24,4 @@ struct PatternNetworkTransition_t
 
 } // namespace procedural
 
-#endif // PROCEDURAL_PATTERNNETWORKTRANSITION_H
+#endif // PROCEDURAL_PATTERNTRANSITIONNETWORK_H

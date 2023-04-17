@@ -71,7 +71,7 @@ bool Network::addTransition(const PatternTransition_t& pattern)
 
 }
 
-bool Network::addNetwork(const PatternNetworkTransition_t& network)
+bool Network::addNetwork(const PatternTransitionNetwork_t& network)
 {
     if (closed_ == false)
     {

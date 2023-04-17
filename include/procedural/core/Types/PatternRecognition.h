@@ -15,7 +15,7 @@ class PatternRecognition
 public:
     PatternRecognition(const std::string& name,
                        const std::vector<PatternTransition_t>& patterns,
-                       const std::vector<PatternNetworkTransition_t>& patterns_network,
+                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
                        const std::vector<ActionDescription_t>& descriptions,
                        uint32_t ttl);
 

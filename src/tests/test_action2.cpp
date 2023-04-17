@@ -70,7 +70,7 @@ int main(int argc, char** argv)
                                                 {"O", "O"}};
 
 
-    std::vector<procedural::PatternNetworkTransition_t> patterns_net;
+    std::vector<procedural::PatternTransitionNetwork_t> patterns_net;
     patterns_net.emplace_back(0, 1, "grasp", remap);
 
     std::vector<procedural::PatternTransition_t> list_pick_over;
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
                                                 {"O", "O"}};
 
 
-    std::vector<procedural::PatternNetworkTransition_t> patterns_net_release;
+    std::vector<procedural::PatternTransitionNetwork_t> patterns_net_release;
     patterns_net_release.emplace_back(1, 2, "release", remap_place);
 
     std::vector<procedural::PatternTransition_t> list_place_over;
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
                                                      {"S", "S2"}};
 
 
-    std::vector<procedural::PatternNetworkTransition_t> patterns_net_pick_place;
+    std::vector<procedural::PatternTransitionNetwork_t> patterns_net_pick_place;
     patterns_net_pick_place.emplace_back(0, 1, "pick_over", remap_pick);
     patterns_net_pick_place.emplace_back(1, 2, "place_over", remap_place2);
 

@@ -176,7 +176,7 @@ int main()
     procedural::PatternTransition_t p2(0, &F6, 2);
     std::map<std::string, std::string> remap = {{"A", "A"},
                                                 {"O", "O"}};
-    procedural::PatternNetworkTransition_t pn1(0, 1, N3->getTypeStr(), remap);
+    procedural::PatternTransitionNetwork_t pn1(0, 1, N3->getTypeStr(), remap);
     N4->addNetwork(pn1);
     N4->addTransition(p1);
     N4->addTransition(p2);
