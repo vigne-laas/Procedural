@@ -2,6 +2,7 @@
 #include <iostream>
 #include "procedural/core/Types/SpecializedAction.h"
 #include "procedural/core/Types/Action.h"
+#include "procedural/core/ActionRecognition.h"
 
 #include "ros/ros.h"
 
@@ -172,6 +173,8 @@ int main(int argc, char** argv)
             << "======================= Feed actions pick with 2 networks type: =========================================="
             << std::endl;
 
+    procedural::ActionRecognition recognition(&Actions_);
+
     std::vector<procedural::Fact> facts;
     facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1);
 
@@ -187,87 +190,9 @@ int main(int argc, char** argv)
 
     for (auto& fact: facts)
     {
-        std::cout << "--------------" << std::endl;
-        std::cout << "fact : " << fact.toString() << std::endl;
-        std::set<uint32_t> set_id_facts;
-        std::vector<procedural::Action*> complete_actions;
-        for(auto& action : Actions_)
-            action->feed(&fact);
-
-        int nb_update = 0;
-        do
-        {
-            nb_update = 0;
-            for(auto& action: Actions_)
-            {
-                std::set<uint32_t> temp_set = action->checkCompleteNetworks();
-                if (temp_set.empty() == false)
-                {
-                    set_id_facts.insert(temp_set.begin(), temp_set.end());
-                    complete_actions.push_back(action);
-                    nb_update++;
-                }
-
-            }
-//            std::cout<< "nb complete network : " << nb_update << std::endl;
-//            nb_update = (int)complete_actions.size();
-            for (auto& action_complete: complete_actions)
-                for (auto& action: Actions_)
-                    if (action != action_complete)
-                        if(action->checkSubAction(action_complete))
-                        {
-                            std::cout << "\t\t\t update for "<<action->getName()<<"evolve thanks to complete of sub action : " << action_complete->getName() << std::endl;
-                            nb_update++;
-                        }
-            if(nb_update!=0)
-                for(auto& action: Actions_)
-                    action->cleanPatterns(set_id_facts);
-//            for(auto& action: Actions_)
-//                action->clean();
-            complete_actions.clear();
-        } while (nb_update !=0);
-
-        for (auto& action: Actions_)
-            action->clean();
-
-
-
-
-
-//        for (auto& action: Actions_)
-//        {
-//            action->feed(&fact);
-//            std::set<uint32_t> temp_set = action->checkCompleteNetworks();
-//            set_id_facts.insert(temp_set.begin(), temp_set.end());
-//            if (temp_set.empty() == false)
-//                complete_actions.push_back(action);
-//        }
-//        std::cout << "========== check sub actions ==============" << std::endl;
-//        for (auto& action_complete: complete_actions)
-//        {
-//            for (auto& action: Actions_)
-//            {
-//                if (action != action_complete)
-//                {
-//                    action->checkSubAction(action_complete);
-//                }
-//            }
-//        }
-
-
-//        for (auto& action: Actions_)
-//        {
-//            std::cout << action->toString() << std::endl;
-//        action->checkCompleteNetworks();
-//        }
-//        std::cout << "========== clean actions ==============" << std::endl;
-//        for (auto& action: Actions_)
-//        {
-//            action->cleanPatterns(set_id_facts);
-//        }
-        // A.displayCurrentState();
-        // A.checkCompleteNetworks();
+        recognition.addToQueue(&fact);
     }
+    recognition.processQueue();
     std::cout << "\n\n\n\n" << std::endl;
     for (auto& action: Actions_)
     {

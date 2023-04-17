@@ -89,6 +89,11 @@ add_library(${PROJECT_NAME}_reader_lib
         )
 target_link_libraries(${PROJECT_NAME}_reader_lib yaml-cpp)
 
+add_library(${PROJECT_NAME}_process_lib
+        src/core/ActionRecognition.cpp
+        )
+target_link_libraries(${PROJECT_NAME}_process_lib ${PROJECT_NAME}_network_lib)
+
 add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp
         )
@@ -130,11 +135,20 @@ target_link_libraries(test_reader
 #       ${PROJECT_NAME}_network_lib
 #       ${catkin_LIBRARIES}
 #       )
+
+#add_executable(actionRecogniton src/core/ActionRecognition.cpp)
+#add_dependencies(actionRecogniton ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(actionRecogniton
+#        ${PROJECT_NAME}_lib
+#        ${PROJECT_NAME}_network_lib
+#        ${catkin_LIBRARIES}
+#        )
+
+
 add_executable(test_action2 src/tests/test_action2.cpp)
 add_dependencies(test_action2 ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_action2
-        ${PROJECT_NAME}_lib
-        ${PROJECT_NAME}_network_lib
+        ${PROJECT_NAME}_process_lib
         ${catkin_LIBRARIES}
         )
 
