@@ -80,7 +80,7 @@ add_library(${PROJECT_NAME}_network_lib
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
         src/core/Types/Action.cpp
-        src/core/Types/PatternRecognition.cpp
+        src/core/Types/SpecializedAction.cpp
         src/core/Graph/TransitionNetwork.cpp)
 target_link_libraries(${PROJECT_NAME}_network_lib ${PROJECT_NAME}_lib)
 

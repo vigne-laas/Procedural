@@ -6,7 +6,7 @@ namespace procedural {
 Action::Action(const std::string& name) : name_(name), flag_(false)
 {}
 
-bool Action::addPatterns(const PatternRecognition& pattern)
+bool Action::addPatterns(const SpecializedAction& pattern)
 {
     if (pattern.isValid())
     {

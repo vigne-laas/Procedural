@@ -1,4 +1,4 @@
-#include "procedural/core/Types/PatternRecognition.h"
+#include "procedural/core/Types/SpecializedAction.h"
 #include "procedural/core/Types/Action.h"
 
 #include <cmath>
@@ -8,11 +8,11 @@
 namespace procedural {
 
 
-PatternRecognition::PatternRecognition(const std::string& name,
-                                       const std::vector<procedural::PatternTransitionFact_t>& patterns,
-                                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
-                                       const std::vector<ActionDescription_t>& descriptions,
-                                       uint32_t ttl) : name_(name),
+SpecializedAction::SpecializedAction(const std::string& name,
+                                     const std::vector<procedural::PatternTransitionFact_t>& patterns,
+                                     const std::vector<PatternTransitionNetwork_t>& patterns_network,
+                                     const std::vector<ActionDescription_t>& descriptions,
+                                     uint32_t ttl) : name_(name),
                                                        is_valid_(false),
                                                        time_to_live_(ttl),
                                                        id_(0)
@@ -29,12 +29,12 @@ PatternRecognition::PatternRecognition(const std::string& name,
 }
 
 
-int PatternRecognition::getNextId()
+int SpecializedAction::getNextId()
 {
     return id_++;
 }
 
-std::set<uint32_t> PatternRecognition::checkNetwork()
+std::set<uint32_t> SpecializedAction::checkNetwork()
 {
 //    std::unordered_set<Network*> complete_networks;
     std::unordered_set<Network*> networks_to_del;
@@ -85,7 +85,7 @@ std::set<uint32_t> PatternRecognition::checkNetwork()
     return set_valid_facts;
 }
 
-void PatternRecognition::clean()
+void SpecializedAction::clean()
 {
     for(auto complete_net :complete_networks_)
         delete complete_net;
@@ -97,7 +97,7 @@ void PatternRecognition::clean()
 //    networks_to_del_.clear();
 }
 
-void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
+void SpecializedAction::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
 {
     std::vector<Network*> network_to_deletes;
     if(evolve_sub_action)
@@ -123,7 +123,7 @@ void PatternRecognition::cleanInvolve(const std::set<uint32_t>& list_valid_facts
     }
 }
 
-void PatternRecognition::feed(Fact* fact)
+void SpecializedAction::feed(Fact* fact)
 {
     bool evolve = false;
     for (auto& network : networks_)
@@ -148,7 +148,7 @@ void PatternRecognition::feed(Fact* fact)
             delete new_net;
     }
 }
-bool PatternRecognition::checksubAction(Action* action)
+bool SpecializedAction::checksubAction(Action* action)
 {
     std::unordered_set<Network*> complete_networks = action->getCompleteNetworks();
 
@@ -189,7 +189,7 @@ bool PatternRecognition::checksubAction(Action* action)
 //    std::cout << "size network : " << networks_.size() << std::endl;
 }
 
-std::string PatternRecognition::toString()
+std::string SpecializedAction::toString()
 {
     std::string res;
     res += "Pattern Recognition of : " + name_ + "\n";
@@ -200,7 +200,7 @@ std::string PatternRecognition::toString()
     return res;
 }
 
-std::string PatternRecognition::currentState(bool shortVersion)
+std::string SpecializedAction::currentState(bool shortVersion)
 {
     std::string res;
     res += "Pattern Recognition of : " + name_ + "\t";

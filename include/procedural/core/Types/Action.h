@@ -6,7 +6,7 @@
 #include <map>
 
 #include "procedural/core/Types/Fact.h"
-#include "procedural/core/Types/PatternRecognition.h"
+#include "procedural/core/Types/SpecializedAction.h"
 
 namespace procedural {
 
@@ -15,7 +15,7 @@ class Action
 public:
     explicit Action(const std::string& name);
 
-    bool addPatterns(const PatternRecognition& pattern);
+    bool addPatterns(const SpecializedAction& pattern);
 
     void feed(Fact* fact);
 
@@ -39,7 +39,7 @@ private:
     std::unordered_set<Network*> complete_networks_;
     bool flag_;
 
-    std::vector<PatternRecognition> patterns_;
+    std::vector<SpecializedAction> patterns_;
 
 };
 

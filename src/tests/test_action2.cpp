@@ -1,6 +1,6 @@
 #include <vector>
 #include <iostream>
-#include "procedural/core/Types/PatternRecognition.h"
+#include "procedural/core/Types/SpecializedAction.h"
 #include "procedural/core/Types/Action.h"
 
 #include "ros/ros.h"
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     grasp_descriptions.emplace_back("??", "isA", "graspAction");
     grasp_descriptions.emplace_back("??", "isPerformedBy", "?A");
     grasp_descriptions.emplace_back("??", "isPerformedOn", "?O");
-    procedural::PatternRecognition pattern_grasp("grasp", list_grasp_network, {}, grasp_descriptions, 20);
+    procedural::SpecializedAction pattern_grasp("grasp", list_grasp_network, {}, grasp_descriptions, 20);
 
     procedural::Action grasp("grasp");
     grasp.addPatterns(pattern_grasp);
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     release_descriptions.emplace_back("??", "isA", "release");
     release_descriptions.emplace_back("??", "isPerformedBy", "?A");
     release_descriptions.emplace_back("??", "isPerformedOn", "?O");
-    procedural::PatternRecognition pattern_release("release", release_network, {}, release_descriptions, 20);
+    procedural::SpecializedAction pattern_release("release", release_network, {}, release_descriptions, 20);
 
     procedural::Action release("release");
     release.addPatterns(pattern_release);
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     list_pick2_into.emplace_back(1, &F5, 2);
     list_pick2_into.emplace_back(0, &F5, 2);
 
-    std::vector<procedural::PatternRecognition> list_pattern_pick;
+    std::vector<procedural::SpecializedAction> list_pattern_pick;
     list_pattern_pick.emplace_back("pick_over", list_pick_over, patterns_net, over_descriptions, 20);
     list_pattern_pick.emplace_back("pick_in", list_pick2_into, patterns_net, in_descriptions, 20);
 
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
     list_place_into.emplace_back(0, &F7, 1);
 //    list_pick2_into.emplace_back(0, &F7, 2);
 
-    std::vector<procedural::PatternRecognition> list_pattern_place;
+    std::vector<procedural::SpecializedAction> list_pattern_place;
     list_pattern_place.emplace_back("place_over", list_place_over, patterns_net_release, place_over_descriptions, 20);
     list_pattern_place.emplace_back("place_in", list_place_into, patterns_net_release, place_in_descriptions, 20);
 
@@ -154,8 +154,8 @@ int main(int argc, char** argv)
     patterns_net_pick_place.emplace_back(1, 2, "place_over", remap_place2);
 
     std::vector<procedural::PatternTransitionFact_t> list_pick_place;
-    std::vector<procedural::PatternRecognition> list_pattern_pick_place;
-    procedural::PatternRecognition pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
+    std::vector<procedural::SpecializedAction> list_pattern_pick_place;
+    procedural::SpecializedAction pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
 //    list_pattern_pick_place.emplace_back("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
 
 

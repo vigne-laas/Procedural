@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_PATTERNRECOGNITION_H
-#define PROCEDURAL_PATTERNRECOGNITION_H
+#ifndef PROCEDURAL_SPECIALIZEDACTION_H
+#define PROCEDURAL_SPECIALIZEDACTION_H
 
 #include <vector>
 #include "procedural/core/Types/PatternTransitionFact.h"
@@ -10,14 +10,14 @@
 
 namespace procedural {
 class Action;
-class PatternRecognition
+class SpecializedAction
 {
 public:
-    PatternRecognition(const std::string& name,
-                       const std::vector<PatternTransitionFact_t>& patterns,
-                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
-                       const std::vector<ActionDescription_t>& descriptions,
-                       uint32_t ttl);
+    SpecializedAction(const std::string& name,
+                      const std::vector<PatternTransitionFact_t>& patterns,
+                      const std::vector<PatternTransitionNetwork_t>& patterns_network,
+                      const std::vector<ActionDescription_t>& descriptions,
+                      uint32_t ttl);
 
     bool isValid() const { return is_valid_; }
     int getNextId();
@@ -52,4 +52,4 @@ private:
 
 } // namespace procedural
 
-#endif //PROCEDURAL_PATTERNRECOGNITION_H
+#endif //PROCEDURAL_SPECIALIZEDACTION_H
