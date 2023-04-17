@@ -15,7 +15,7 @@ int main()
     procedural::FactPattern F3 = procedural::FactPattern(true, "O", "inContainer", "S", true);
 
     std::cout << "============= TEST BAD NETWORK no init =============" << std::endl;
-    std::vector<procedural::PatternTransition_t> list_test_bad_network;
+    std::vector<procedural::PatternTransitionFact_t> list_test_bad_network;
     list_test_bad_network.emplace_back(1, &F1, 2); 
     list_test_bad_network.emplace_back(2, &F2, 3); 
     list_test_bad_network.emplace_back(3, &F2, 1); 
@@ -40,7 +40,7 @@ int main()
     std::cout << std::endl;
     
     std::cout << "============= TEST BAD NETWORK multiple init =============" << std::endl;
-    std::vector<procedural::PatternTransition_t> list_test_bad_network_multi;
+    std::vector<procedural::PatternTransitionFact_t> list_test_bad_network_multi;
     list_test_bad_network_multi.emplace_back(1, &F1, 2); 
     list_test_bad_network_multi.emplace_back(3, &F2, 2); 
     
@@ -63,7 +63,7 @@ int main()
 
     std::cout << "============= TEST CREATION NETWORK =============" << std::endl;
 
-    std::vector<procedural::PatternTransition_t> list_test;
+    std::vector<procedural::PatternTransitionFact_t> list_test;
     list_test.emplace_back(0, &F, 1); 
     list_test.emplace_back(0, &F1, 2); 
     list_test.emplace_back(1, &F1, 2); 
@@ -141,7 +141,7 @@ int main()
     std::cout << "============= Test Inclusion  NETWORK =============" << std::endl;
     procedural::FactPattern F4(true, "A", "MoveThrought", "O", false);
     procedural::FactPattern F5(true, "A", "hasInHand", "O", true);
-    std::vector<procedural::PatternTransition_t> list_grasp_network;
+    std::vector<procedural::PatternTransitionFact_t> list_grasp_network;
     list_grasp_network.emplace_back(0, &F4, 1);
     list_grasp_network.emplace_back(1, &F5, 2);
     std::vector<procedural::ActionDescription_t> grasp_descriptions;
@@ -172,8 +172,8 @@ int main()
     pick_descriptions.emplace_back("??","isPerformedBy","?A");
     pick_descriptions.emplace_back("??","isPerformedOn","?O");
     pick_descriptions.emplace_back("??","isPerformedFrom","?S");
-    procedural::PatternTransition_t p1(1, &F6, 2);
-    procedural::PatternTransition_t p2(0, &F6, 2);
+    procedural::PatternTransitionFact_t p1(1, &F6, 2);
+    procedural::PatternTransitionFact_t p2(0, &F6, 2);
     std::map<std::string, std::string> remap = {{"A", "A"},
                                                 {"O", "O"}};
     procedural::PatternTransitionNetwork_t pn1(0, 1, N3->getTypeStr(), remap);

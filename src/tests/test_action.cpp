@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     procedural::FactPattern F2 = procedural::FactPattern(false, "O", "overSupport", "S", true);
     procedural::FactPattern F3 = procedural::FactPattern(false, "O", "inContainer", "C", true);
 
-    std::vector <procedural::PatternTransition_t> list_pick1;
+    std::vector <procedural::PatternTransitionFact_t> list_pick1;
     list_pick1.emplace_back(0, &F, 1);
     list_pick1.emplace_back(0, &F1, 2);
     list_pick1.emplace_back(1, &F1, 2);
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     list_pick1.emplace_back(1, &F2, 3);
     list_pick1.emplace_back(0, &F2, 3);
 
-    std::vector <procedural::PatternTransition_t> list_pick2;
+    std::vector <procedural::PatternTransitionFact_t> list_pick2;
     list_pick2.emplace_back(0, &F, 1);
     list_pick2.emplace_back(0, &F1, 2);
     list_pick2.emplace_back(1, &F1, 2);
@@ -65,13 +65,13 @@ int main(int argc, char** argv)
     procedural::FactPattern Fp2 = procedural::FactPattern(true, "O", "isOnTopOf", "S", true);
     procedural::FactPattern Fp3 = procedural::FactPattern(false, "A", "hasInHand", "O", true);
 
-    std::vector <procedural::PatternTransition_t> list_place1;
+    std::vector <procedural::PatternTransitionFact_t> list_place1;
     list_place1.emplace_back(0, &Fp, 1);
     list_place1.emplace_back(0, &Fp1, 2);
     list_place1.emplace_back(1, &Fp1, 2);
     list_place1.emplace_back(2, &Fp3, 3);
 
-    std::vector <procedural::PatternTransition_t> list_place2;
+    std::vector <procedural::PatternTransitionFact_t> list_place2;
     list_place2.emplace_back(0, &Fp, 1);
     list_place2.emplace_back(0, &Fp2, 2);
     list_place2.emplace_back(1, &Fp2, 2);

@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
     procedural::FactPattern F(true, "A", "MoveThrought", "O", false);
     procedural::FactPattern F1(true, "A", "hasInHand", "O", true);
-    std::vector<procedural::PatternTransition_t> list_grasp_network;
+    std::vector<procedural::PatternTransitionFact_t> list_grasp_network;
     list_grasp_network.emplace_back(0, &F, 1);
     list_grasp_network.emplace_back(1, &F1, 2);
     std::vector<procedural::ActionDescription_t> grasp_descriptions;
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 
     procedural::FactPattern F2(true, "A", "MoveThrought", "O", false);
     procedural::FactPattern F3(false, "A", "hasInHand", "O", true);
-    std::vector<procedural::PatternTransition_t> release_network;
+    std::vector<procedural::PatternTransitionFact_t> release_network;
     release_network.emplace_back(0, &F2, 1);
     release_network.emplace_back(1, &F3, 2);
     release_network.emplace_back(0, &F3, 2);
@@ -73,11 +73,11 @@ int main(int argc, char** argv)
     std::vector<procedural::PatternTransitionNetwork_t> patterns_net;
     patterns_net.emplace_back(0, 1, "grasp", remap);
 
-    std::vector<procedural::PatternTransition_t> list_pick_over;
+    std::vector<procedural::PatternTransitionFact_t> list_pick_over;
     list_pick_over.emplace_back(1, &F4, 2);
     list_pick_over.emplace_back(0, &F4, 2);
 
-    std::vector<procedural::PatternTransition_t> list_pick2_into;
+    std::vector<procedural::PatternTransitionFact_t> list_pick2_into;
     list_pick2_into.emplace_back(1, &F5, 2);
     list_pick2_into.emplace_back(0, &F5, 2);
 
@@ -114,11 +114,11 @@ int main(int argc, char** argv)
     std::vector<procedural::PatternTransitionNetwork_t> patterns_net_release;
     patterns_net_release.emplace_back(1, 2, "release", remap_place);
 
-    std::vector<procedural::PatternTransition_t> list_place_over;
+    std::vector<procedural::PatternTransitionFact_t> list_place_over;
 //    list_pick_over.emplace_back(1, &F6, 2);
     list_place_over.emplace_back(0, &F6, 1);
 
-    std::vector<procedural::PatternTransition_t> list_place_into;
+    std::vector<procedural::PatternTransitionFact_t> list_place_into;
     list_place_into.emplace_back(0, &F7, 1);
 //    list_pick2_into.emplace_back(0, &F7, 2);
 
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
     patterns_net_pick_place.emplace_back(0, 1, "pick_over", remap_pick);
     patterns_net_pick_place.emplace_back(1, 2, "place_over", remap_place2);
 
-    std::vector<procedural::PatternTransition_t> list_pick_place;
+    std::vector<procedural::PatternTransitionFact_t> list_pick_place;
     std::vector<procedural::PatternRecognition> list_pattern_pick_place;
     procedural::PatternRecognition pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
 //    list_pattern_pick_place.emplace_back("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);

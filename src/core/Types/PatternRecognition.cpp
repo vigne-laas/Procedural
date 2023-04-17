@@ -9,7 +9,7 @@ namespace procedural {
 
 
 PatternRecognition::PatternRecognition(const std::string& name,
-                                       const std::vector<procedural::PatternTransition_t>& patterns,
+                                       const std::vector<procedural::PatternTransitionFact_t>& patterns,
                                        const std::vector<PatternTransitionNetwork_t>& patterns_network,
                                        const std::vector<ActionDescription_t>& descriptions,
                                        uint32_t ttl) : name_(name),

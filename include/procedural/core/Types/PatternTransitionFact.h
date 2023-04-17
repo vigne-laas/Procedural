@@ -1,13 +1,13 @@
-#ifndef PROCEDURAL_PATTERNTRANSITION_H
-#define PROCEDURAL_PATTERNTRANSITION_H
+#ifndef PROCEDURAL_PATTERNTRANSITIONFACT_H
+#define PROCEDURAL_PATTERNTRANSITIONFACT_H
 
 #include "procedural/core/Types/FactPattern.h"
 
 namespace procedural {
 
-struct PatternTransition_t
+struct PatternTransitionFact_t
 {
-    PatternTransition_t(int origin, FactPattern* fact, int next)
+    PatternTransitionFact_t(int origin, FactPattern* fact, int next)
     {
         origin_state = origin;
         this->fact = fact;
@@ -21,4 +21,4 @@ struct PatternTransition_t
 
 } // namespace procedural
 
-#endif //PROCEDURAL_PATTERNTRANSITION_H
+#endif // PROCEDURAL_PATTERNTRANSITIONFACT_H

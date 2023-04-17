@@ -52,7 +52,7 @@ bool Network::evolve(Network* net)
     return true;
 }
 
-bool Network::addTransition(const PatternTransition_t& pattern)
+bool Network::addTransition(const PatternTransitionFact_t& pattern)
 {
     if (closed_ == false)
     {
