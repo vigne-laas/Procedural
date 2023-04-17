@@ -6,20 +6,15 @@ namespace procedural {
 TransitionNetwork::TransitionNetwork(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
                                                                                                            remap_var_(remap_var)
 {
+    // TODO faire lien avec le constructeur de transition fact pour pouvoir lier les variables dans le resseaux.
     for (const auto& pair : remap_var_)
-        variables_.insert(std::make_pair(pair.second,
-                                         nullptr)); // faire lien avec le constructeur de transition fact pour pouvoir lier les variables dans le resseaux.
+        variables_.insert(std::make_pair(pair.second, nullptr)); 
 }
 
-std::string TransitionNetwork::toString() const
+void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variables)
 {
-    std::string res = "Network Transition type : " + std::to_string(type_) + "(" + Network::types_table.get(type_) + ")\n";
-    for (auto& pair : remap_var_)
-        res += "\t" + pair.first + " ==> " + pair.second + "\n";
-    res += "Variables : \n";
-    for (auto& var : variables_)
-        res += "\t" + var.first + " : " + var.second->toString() + "\n";
-    return res;
+    for (auto& pair: variables_)
+        pair.second = &(variables.at(pair.first));
 }
 
 bool TransitionNetwork::match(Network* netowrk)
@@ -40,11 +35,15 @@ bool TransitionNetwork::match(Network* netowrk)
         return false;
 }
 
-void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variables)
+std::string TransitionNetwork::toString() const
 {
-    for (auto& pair: variables_)
-        pair.second = &(variables.at(pair.first));
+    std::string res = "Network Transition type : " + std::to_string(type_) + "(" + Network::types_table.get(type_) + ")\n";
+    for (auto& pair : remap_var_)
+        res += "\t" + pair.first + " ==> " + pair.second + "\n";
+    res += "Variables : \n";
+    for (auto& var : variables_)
+        res += "\t" + var.first + " : " + var.second->toString() + "\n";
+    return res;
 }
 
-
-} // procedural
+} // namespace procedural

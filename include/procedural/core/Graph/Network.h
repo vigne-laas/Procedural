@@ -14,6 +14,7 @@
 #include "procedural/core/Types/Description.h"
 #include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Types/PatternNetworkTransition.h"
+#include "procedural/core/Types/WordTable.h"
 
 namespace procedural {
 
