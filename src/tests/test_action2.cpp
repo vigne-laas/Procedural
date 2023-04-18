@@ -2,8 +2,8 @@
 #include <iostream>
 #include "procedural/core/Types/SpecializedAction.h"
 #include "procedural/core/Types/Action.h"
-#include "procedural/core/ActionRecognition.h"
-
+#include "procedural/utils/ActionRecognition.h"
+#include "procedural/utils/TimeStamp.h"
 #include "ros/ros.h"
 
 
@@ -83,8 +83,8 @@ int main(int argc, char** argv)
     list_pick2_into.emplace_back(0, &F5, 2);
 
     std::vector<procedural::SpecializedAction> list_pattern_pick;
-    list_pattern_pick.emplace_back("pick_over", list_pick_over, patterns_net, over_descriptions, 20);
-    list_pattern_pick.emplace_back("pick_in", list_pick2_into, patterns_net, in_descriptions, 20);
+    list_pattern_pick.emplace_back("pick_over", list_pick_over, patterns_net, over_descriptions, 10);
+    list_pattern_pick.emplace_back("pick_in", list_pick2_into, patterns_net, in_descriptions, 10);
 
     procedural::Action Apick("pick");
     for (auto& pattern: list_pattern_pick)
@@ -124,8 +124,8 @@ int main(int argc, char** argv)
 //    list_pick2_into.emplace_back(0, &F7, 2);
 
     std::vector<procedural::SpecializedAction> list_pattern_place;
-    list_pattern_place.emplace_back("place_over", list_place_over, patterns_net_release, place_over_descriptions, 20);
-    list_pattern_place.emplace_back("place_in", list_place_into, patterns_net_release, place_in_descriptions, 20);
+    list_pattern_place.emplace_back("place_over", list_place_over, patterns_net_release, place_over_descriptions, 10);
+    list_pattern_place.emplace_back("place_in", list_place_into, patterns_net_release, place_in_descriptions, 10);
 
     procedural::Action Aplace("place");
     for (auto& pattern: list_pattern_place)
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 
     std::vector<procedural::PatternTransitionFact_t> list_pick_place;
     std::vector<procedural::SpecializedAction> list_pattern_pick_place;
-    procedural::SpecializedAction pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
+    procedural::SpecializedAction pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 10);
 //    list_pattern_pick_place.emplace_back("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
 
 
@@ -173,19 +173,25 @@ int main(int argc, char** argv)
             << "======================= Feed actions pick with 2 networks type: =========================================="
             << std::endl;
 
-    procedural::ActionRecognition recognition(&Actions_);
+    procedural::ActionRecognition recognition(Actions_);
 
     std::vector<procedural::Fact> facts;
-    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1);
+    procedural::TimeStamp_t t0(0,50);
+    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1,t0);
+    procedural::TimeStamp_t t1(15,0);
+    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1,t1);
 
-
-    facts.emplace_back(true, "Bastien", "hasInHand", "Cube", 2);
-    facts.emplace_back(false, "Cube", "overSupport", "Table", 3);
-
-    //    facts.emplace_back(true, "Bob", "hasInHand", "Cube2", 4);
+    procedural::TimeStamp_t t2(20,0);
+    facts.emplace_back(true, "Bastien", "hasInHand", "Cube", 2,t2);
+    procedural::TimeStamp_t t3(25,0);
+    facts.emplace_back(false, "Cube", "overSupport", "Table", 3,t3);
+//    procedural::TimeStamp_t t4(5,0);
+//    facts.emplace_back(true, "Bob", "hasInHand", "Cube2", 4,t4);
 //    facts.emplace_back(true, "Charly", "hasInHand", "Cube", 5);
-    facts.emplace_back(true, "Cube", "overSupport", "Armoire", 6);
-    facts.emplace_back(false, "Bastien", "hasInHand", "Cube", 7);
+    procedural::TimeStamp_t t6(25,0);
+    facts.emplace_back(true, "Cube", "overSupport", "Armoire", 6,t6);
+    procedural::TimeStamp_t t7(28,0);
+    facts.emplace_back(false, "Bastien", "hasInHand", "Cube", 7,t7);
 //     facts.emplace_back(false, "Cube2", "bruit", "Table",7);
 
     for (auto& fact: facts)
