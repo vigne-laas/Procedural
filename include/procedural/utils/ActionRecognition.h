@@ -5,26 +5,22 @@
 #include <queue>
 #include <mutex>
 #include "procedural/core/Types/Fact.h"
+#include "procedural/utils/BufferFacts.h"
 
 namespace procedural {
     class Action;
 
     class ActionRecognition {
     public:
-        explicit ActionRecognition(std::vector<Action *> *actions);
+        explicit ActionRecognition(const std::vector<Action *>& actions,long tll = 30,int max_size=500);
 
         void addToQueue(Fact *fact);
 
         void processQueue();
 
     private:
-        std::mutex mutex_lock;
-
-        std::queue<Fact *> primary_queue;
-        std::queue<Fact *> secondary_queue;
-        std::queue<Fact *> *read_queue;
-        std::queue<Fact *> *write_queue;
-        std::vector<Action *> *actions_;
+        BufferFacts buffer_;
+        std::vector<Action *> actions_;
     };
 
 } // procedural
