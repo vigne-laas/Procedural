@@ -21,7 +21,7 @@ public:
 
     bool isValid() const { return is_valid_; }
     int getNextId();
-    std::set<uint32_t> checkNetwork();
+    std::set<uint32_t> checkNetwork(TimeStamp_t more_recent);
 
     void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
     void clean();

@@ -23,14 +23,14 @@ void Action::feed(Fact* fact)
         pattern.feed(fact);
 }
 
-std::set<uint32_t> Action::checkCompleteNetworks()
+std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t more_recent)
 {
     std::set<uint32_t> set_valid_facts;
     if(flag_ == false)
     {
         for (auto& pattern: patterns_)
         {
-            std::set<uint32_t> temp_set = pattern.checkNetwork();
+            std::set<uint32_t> temp_set = pattern.checkNetwork(more_recent);
             set_valid_facts.insert(temp_set.begin(), temp_set.end());
             if(temp_set.empty() == false)
             {

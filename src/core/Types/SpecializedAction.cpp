@@ -34,7 +34,7 @@ int SpecializedAction::getNextId()
     return id_++;
 }
 
-std::set<uint32_t> SpecializedAction::checkNetwork()
+std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t more_recent_timestamp)
 {
 //    std::unordered_set<Network*> complete_networks;
     std::unordered_set<Network*> networks_to_del;
@@ -44,10 +44,10 @@ std::set<uint32_t> SpecializedAction::checkNetwork()
     {
         if (network->isComplete())
             complete_networks_.insert(network);
-        else if (network->getAge() > time_to_live_)
+        else if (more_recent_timestamp - network->getLastupdate() > time_to_live_)
         {
             networks_to_del.insert(network);
-            std::cout << "Del network due to age " << network->getName() << std::endl;
+            std::cout << "Del network due to age " << network->getName() << "value : " << more_recent_timestamp - network->getLastupdate()<< "ttl : " << time_to_live_ << std::endl;
         }
     }
 

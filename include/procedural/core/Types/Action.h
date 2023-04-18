@@ -19,7 +19,7 @@ public:
 
     void feed(Fact* fact);
 
-    std::set<uint32_t> checkCompleteNetworks();
+    std::set<uint32_t> checkCompleteNetworks(TimeStamp_t more_recent);
 
     void displayCurrentState();
 
