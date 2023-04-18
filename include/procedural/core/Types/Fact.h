@@ -5,6 +5,8 @@
 #include <regex>
 
 #include "procedural/core/Types/WordTable.h"
+#include "procedural/utils/TimeStamp.h"
+
 
 //TODO Add stamp data et moyen de synchro les faits infered
 //TODO add id
@@ -13,7 +15,7 @@ namespace procedural {
 class Fact
 {
 public:
-    Fact(bool add, const std::string& subject, const std::string& property, const std::string& object, uint32_t id);
+    Fact(bool add, const std::string& subject, const std::string& property, const std::string& object, uint32_t id, const TimeStamp_t & time);
 
     bool isValid() const { return property_ != 0; }
 
@@ -21,6 +23,7 @@ public:
     uint32_t getSubject() const { return subject_; }
     uint32_t getObject() const { return object_; }
     uint32_t getId() const { return id_; }
+    TimeStamp_t getTimeStamp() const { return timestamp_; }
 
     std::string getStringProperty() const { return properties_table[property_]; }
     std::string getStringSubject() const { return individuals_table[subject_]; }
@@ -38,8 +41,10 @@ private:
     uint32_t subject_;
     uint32_t property_;
     uint32_t object_;
-
     uint32_t id_;
+    TimeStamp_t timestamp_;
+
+
 };
 
 } // procedural

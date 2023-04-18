@@ -57,11 +57,12 @@ public:
     uint32_t getType() const { return type_; }
     std::string getName() const { return full_name_; }
     uint32_t getLevel() const { return level_;}
+    TimeStamp_t getLastupdate() const { return last_update_;}
 
     bool isComplete() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
-    uint32_t getAge() const { return age_; }
+    TimeStamp_t getAge() const { return age_; }
     Variable_t getVar(const std::string& key) const { return variables_.at(key); }
 
     bool addTransition(const PatternTransitionFact_t& pattern);
@@ -107,7 +108,8 @@ private:
 
     bool closed_;
     bool valid_;
-    uint32_t age_;
+    TimeStamp_t age_;
+    TimeStamp_t last_update_;
 };
 
 } // procedural

@@ -7,8 +7,8 @@ namespace procedural {
 WordTable Fact::properties_table;
 WordTable Fact::individuals_table;
 
-Fact::Fact(bool add, const std::string& subject, const std::string& property, const std::string& object, uint32_t id)
-        : add_(add), id_(id)
+Fact::Fact(bool add, const std::string& subject, const std::string& property, const std::string& object, uint32_t id,const TimeStamp_t& timestamp)
+        : add_(add), id_(id),timestamp_(timestamp)
 {
     property_ = properties_table.getConst(property);
     subject_ = individuals_table.get(subject);

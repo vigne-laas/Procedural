@@ -11,7 +11,8 @@ Network::Network(const std::string& name, int id, uint32_t level) : type_str_(na
                                                     id_(id),
                                                     closed_(false),
                                                     valid_(false),
-                                                    age_(0),
+                                                    age_(0,0),
+                                                    last_update_(0,0),
                                                     level_(level)
 {
     full_name_ = type_str_ + " " + std::to_string(id);
@@ -23,11 +24,13 @@ bool Network::evolve(Fact* fact)
 {
     if ((valid_ && closed_) == false)
         return false;
-    age_++;
     auto evolution = current_state_->evolve(fact);
 
     if (evolution == nullptr)
         return false;
+    if(current_state_->getId()==id_initial_state_)
+        age_ = fact->getTimeStamp();
+    last_update_ = fact->getTimeStamp();
 
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
@@ -41,11 +44,12 @@ bool Network::evolve(Network* net)
         return false;
     if ((valid_ && closed_) == false)
         return false;
-    age_++;
     auto evolution = current_state_->evolve(net);
     if (evolution == nullptr)
         return false;
-
+    if(current_state_->getId()==id_initial_state_)
+        age_ = net->getLastupdate();
+    last_update_ = net->getLastupdate();
     current_state_ = evolution;
     for(auto id_fact : net->getIdsFacts())
         id_facts_involve.push_back(id_fact);
@@ -79,7 +83,7 @@ bool Network::addNetwork(const PatternTransitionNetwork_t& network)
         addState(network.next_);
         for(auto& var : network.remap_var_)
             insertVariable(var.second);
-        
+
         auto type = Network::types_table.get(network.type_);
         TransitionNetwork transition(type, network.remap_var_);
         states_[network.origin_]->addTransition(transition, states_[network.next_]);
