@@ -209,7 +209,7 @@ void Network::insertVariable(const std::string& variable)
 
 void Network::processInitialState()
 {
-    std::unordered_set<int> id_states_nexts;
+    std::unordered_set<uint32_t> id_states_nexts;
     for (auto& pair_states: states_)
     {
         for (auto& nexts_state: pair_states.second->getNextsFacts())

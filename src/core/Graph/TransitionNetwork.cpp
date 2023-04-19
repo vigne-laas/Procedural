@@ -17,16 +17,16 @@ void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variabl
         pair.second = &(variables.at(pair.first));
 }
 
-bool TransitionNetwork::match(Network* netowrk)
+bool TransitionNetwork::match(Network* network)
 {
-    if (netowrk->getType() == type_)
+    if (network->getType() == type_)
     {
         for (const auto& pair : remap_var_)
         {
             uint32_t local_val = variables_.at(pair.second)->getValue();
             if(local_val == 0)
-                variables_.at(pair.second)->value = netowrk->getVar(pair.first).getValue();
-            else if (netowrk->getVar(pair.first).getValue() != local_val)
+                variables_.at(pair.second)->value = network->getVar(pair.first).getValue();
+            else if (network->getVar(pair.first).getValue() != local_val)
                 return false;
         }
         return true;
