@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace procedural {
-    ActionRecognition::ActionRecognition(const std::vector<Action *> &actions, long ttl, int max_size) : actions_(
+    ActionRecognition::ActionRecognition(const std::vector<Action *> &actions, double ttl, int max_size) : actions_(
             actions), buffer_(ttl, max_size) {
 
     }

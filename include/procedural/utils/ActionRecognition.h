@@ -12,7 +12,7 @@ namespace procedural {
 
     class ActionRecognition {
     public:
-        explicit ActionRecognition(const std::vector<Action *>& actions,long tll = 30,int max_size=500);
+        explicit ActionRecognition(const std::vector<Action *>& actions,double tll = 30,int max_size=500);
 
         void addToQueue(Fact *fact);
 
