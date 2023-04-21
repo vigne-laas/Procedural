@@ -18,13 +18,13 @@ State* State::evolve(Fact* fact)
     return nullptr;
 }
 
-State* State::evolve(Network* network)
+std::pair<State*, TransitionNetwork*> State::evolve(Network* network)
 {
     for (auto& pair: nexts_networks_)
         if (pair.first.match(network))
-            return pair.second;
+            return std::make_pair(pair.second, &pair.first);
 
-    return nullptr;
+    return std::make_pair(nullptr, nullptr);
 }
 
 void State::addTransition(const TransitionFact& transition, State* next_state)
@@ -44,6 +44,7 @@ void State::linkVariables(std::map<std::string, Variable_t>& variables_)
     for (auto& pair: nexts_networks_)
         pair.first.linkVariables(variables_);
 }
+
 
 void State::expandTransitions()
 {

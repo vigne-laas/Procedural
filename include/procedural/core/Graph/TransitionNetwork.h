@@ -18,11 +18,17 @@ public:
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
     bool match(Network * network) ;
+
+    bool checkMatch(){return flag_;}
+    std::map<std::string,std::string> getRemap(){return remap_var_;}
+
+
     
     std::string toString() const ;
     
 private:
     uint32_t type_;
+    bool flag_;
     std::map<std::string,std::string> remap_var_;
     std::map<std::string,Variable_t*> variables_;
 };

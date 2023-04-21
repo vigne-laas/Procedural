@@ -8,12 +8,12 @@ namespace procedural {
 WordTable Network::types_table;
 
 Network::Network(const std::string& name, int id, uint32_t level) : type_str_(name),
-                                                    id_(id),
-                                                    closed_(false),
-                                                    valid_(false),
-                                                    age_(0,0),
-                                                    last_update_(0,0),
-                                                    level_(level)
+                                                                    id_(id),
+                                                                    closed_(false),
+                                                                    valid_(false),
+                                                                    age_(0, 0),
+                                                                    last_update_(0, 0),
+                                                                    level_(level)
 {
     full_name_ = type_str_ + " " + std::to_string(id);
     variables_.emplace("self", full_name_);
@@ -28,32 +28,50 @@ bool Network::evolve(Fact* fact)
 
     if (evolution == nullptr)
         return false;
-    if(current_state_->getId()==id_initial_state_)
+    if (current_state_->getId() == id_initial_state_)
         age_ = fact->getTimeStamp();
     last_update_ = fact->getTimeStamp();
 
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
-
+    checkIncompletsNetworks();
     return true;
 }
 
 bool Network::evolve(Network* net)
 {
-    if(level_<net->getLevel())
+    if (level_ < net->getLevel())
         return false;
     if ((valid_ && closed_) == false)
         return false;
     auto evolution = current_state_->evolve(net);
-    if (evolution == nullptr)
+    if (evolution.first == nullptr)
         return false;
-    if(current_state_->getId()==id_initial_state_)
+    if (current_state_->getId() == id_initial_state_)
         age_ = net->getLastupdate();
     last_update_ = net->getLastupdate();
-    current_state_ = evolution;
-    for(auto id_fact : net->getIdsFacts())
+
+    for (auto id_fact: net->getIdsFacts())
         id_facts_involve.push_back(id_fact);
+    if (net->getCompletionRatio() != 1.0)
+    {
+        incompletes_networks_.insert(std::make_pair(net, evolution.second->getRemap()));
+//        std::cout << "incomplete add : " << net->getName() << std::endl;
+    }
+    current_state_ = evolution.first;
+    checkIncompletsNetworks();
+
     return true;
+}
+
+
+float Network::getCompletionRatio() const
+{
+    float incomplete = 0;
+    for (const auto& var: variables_)
+        if (var.second.getValue() == 0 && var.first != "self")
+            incomplete++;
+    return 1 - (incomplete / float(variables_.size()));
 }
 
 bool Network::addTransition(const PatternTransitionFact_t& pattern)
@@ -69,8 +87,7 @@ bool Network::addTransition(const PatternTransitionFact_t& pattern)
         TransitionFact t = TransitionFact(*(pattern.fact));
         states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
         return true;
-    }
-    else
+    } else
         return false;
 
 }
@@ -81,15 +98,14 @@ bool Network::addNetwork(const PatternTransitionNetwork_t& network)
     {
         addState(network.origin_);
         addState(network.next_);
-        for(auto& var : network.remap_var_)
+        for (auto& var: network.remap_var_)
             insertVariable(var.second);
 
         auto type = Network::types_table.get(network.type_);
         TransitionNetwork transition(type, network.remap_var_);
         states_[network.origin_]->addTransition(transition, states_[network.next_]);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -170,6 +186,18 @@ std::string Network::describe(bool expl)
         else
             msg += description.explain() + " / ";
     }
+    msg += "// completion ratio :" + std::to_string(getCompletionRatio());
+
+    if (incompletes_networks_.empty())
+        return msg;
+
+    msg += "\t // incomplete Network link : ";
+    for (const auto& net: incompletes_networks_)
+    {
+        msg += net.first->getName();
+        msg += "\n\t new level : " + std::to_string(net.first->getCompletionRatio()) + "\n";
+//         net.first->displayVariables();
+    }
 
 
     return msg;
@@ -184,6 +212,18 @@ bool Network::involveFacts(const std::set<uint32_t>& facts)
 }
 
 /* ------------------------------ private part ------------------------------ */
+
+void Network::checkIncompletsNetworks()
+{
+    if (incompletes_networks_.empty())
+        return;
+    for (auto& pair: incompletes_networks_)
+        if (pair.first->updateVar(pair.second, variables_))
+            std::cout << " new explanation available for : " << pair.first->full_name_ << " => "
+                      << pair.first->describe(true) << std::endl;
+
+}
+
 
 void Network::addState(int id_state)
 {
@@ -244,7 +284,20 @@ void Network::processInitialState()
         current_state_ = states_.at(id_initial_state_);
     }
 }
-
+bool
+Network::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
+{
+    bool res = false;
+    for (const auto& pair: remap)
+    {
+        if (variables_.at(pair.first).getValue() == 0 && new_var.at(pair.second).getValue() != 0)
+        {
+            variables_.at(pair.first).value = new_var.at(pair.second).getValue();
+            res = true;
+        }
+    }
+    return res;
+}
 
 
 } // namespace procedural

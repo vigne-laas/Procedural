@@ -58,12 +58,14 @@ public:
     std::string getName() const { return full_name_; }
     uint32_t getLevel() const { return level_;}
     TimeStamp_t getLastupdate() const { return last_update_;}
+    TimeStamp_t getAge() const { return age_; }
+    Variable_t getVar(const std::string& key) const { return variables_.at(key); }
+    float getCompletionRatio() const;
 
     bool isComplete() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
-    TimeStamp_t getAge() const { return age_; }
-    Variable_t getVar(const std::string& key) const { return variables_.at(key); }
+
 
     bool addTransition(const PatternTransitionFact_t& pattern);
     bool addNetwork(const PatternTransitionNetwork_t& network);
@@ -84,9 +86,11 @@ public:
 
 private:
 
+    void checkIncompletsNetworks();
     void addState(int id_state);
     void linkNetwork();
     void insertVariable(const std::string& variable);
+
 
     void processInitialState();
 
@@ -110,6 +114,8 @@ private:
     bool valid_;
     TimeStamp_t age_;
     TimeStamp_t last_update_;
+    std::map<Network*,std::map<std::string,std::string>> incompletes_networks_;
+    bool updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& variables_);
 };
 
 } // procedural
