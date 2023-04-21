@@ -36,6 +36,9 @@ public:
     std::string getName() { return name_;};
     bool checkNewExplanation();
     std::vector<Network*> getNewExplanation();
+
+    double maxTtl();
+
 private:
     std::string name_;
     std::unordered_set<Network*> complete_networks_;

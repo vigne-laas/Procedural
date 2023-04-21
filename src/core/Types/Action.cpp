@@ -115,6 +115,14 @@ std::vector<Network*> Action::getNewExplanation()
     }
     return res;
 }
+double Action::maxTtl()
+{
+    double res;
+    for(auto& action : patterns_)
+        if(action.getTtl()>res)
+            res= action.getTtl();
+    return res;
+}
 
 
 } // namespace procedural

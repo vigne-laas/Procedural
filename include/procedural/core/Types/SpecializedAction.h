@@ -17,9 +17,10 @@ public:
                       const std::vector<PatternTransitionFact_t>& patterns,
                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
                       const std::vector<ActionDescription_t>& descriptions,
-                      uint32_t ttl);
+                      double ttl);
 
     bool isValid() const { return is_valid_; }
+    double getTtl() const {return time_to_live_;}
     int getNextId();
     std::set<uint32_t> checkNetwork(TimeStamp_t current_timestamp);
 
@@ -37,6 +38,8 @@ public:
     bool checksubAction(Action* action);
     bool checkNewUpdatedSubNetwork(){return updated_networks.empty() == false;};
     std::vector<Network*> getUpdatedNetworks() {return updated_networks;};
+
+
 private:
     int id_;
 
@@ -50,7 +53,7 @@ private:
 
     bool is_valid_;
     bool evolve_sub_action;
-    uint32_t time_to_live_;
+    double time_to_live_;
 
 };
 

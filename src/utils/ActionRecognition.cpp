@@ -5,19 +5,25 @@
 
 namespace procedural {
 ActionRecognition::ActionRecognition(const std::vector<Action*>& actions, double ttl, int max_size) : actions_(
-        actions), buffer_(ttl, max_size), callback_output_(ActionRecognition::defaultCallback)
+        actions), callback_output_(ActionRecognition::defaultCallback)
 {
-
+    double max_ttl = 0;
+    for(auto& action: actions_)
+        if(action->maxTtl() > max_ttl)
+            max_ttl = action->maxTtl();
+    if(ttl>max_ttl)
+        max_ttl = ttl;
+    buffer_ = new BufferFacts(max_ttl,max_size);
 }
 
 void ActionRecognition::addToQueue(Fact* fact)
 {
-    buffer_.addFact(fact);
+    buffer_->addFact(fact);
 }
 
 void ActionRecognition::processQueue(TimeStamp_t current_time)
 {
-    std::vector<Fact*> list_facts = buffer_.getFacts(current_time);
+    std::vector<Fact*> list_facts = buffer_->getFacts(current_time);
     std::set<uint32_t> facts_used;
     for (auto fact: list_facts)
     {
@@ -97,7 +103,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
         facts_used.insert(set_id_facts.begin(), set_id_facts.end());
     }
-    buffer_.cleanUsedFacts(facts_used);
+    buffer_->cleanUsedFacts(facts_used);
 }
 void ActionRecognition::defaultCallback(const std::vector<NetworkOutput>& outputs)
 {
