@@ -12,8 +12,7 @@ bool Action::addPatterns(const SpecializedAction& pattern)
     {
         patterns_.push_back(pattern);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -26,16 +25,16 @@ void Action::feed(Fact* fact)
 std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t more_recent)
 {
     std::set<uint32_t> set_valid_facts;
-    if(flag_ == false)
+    if (flag_ == false)
     {
         for (auto& pattern: patterns_)
         {
             std::set<uint32_t> temp_set = pattern.checkNetwork(more_recent);
             set_valid_facts.insert(temp_set.begin(), temp_set.end());
-            if(temp_set.empty() == false)
+            if (temp_set.empty() == false)
             {
                 std::unordered_set<Network*> temp = pattern.getCompleteNetwork();
-                complete_networks_.insert(temp.begin(),temp.end());
+                complete_networks_.insert(temp.begin(), temp.end());
             }
 
         }
@@ -89,9 +88,9 @@ std::string Action::currentState(bool shortVersion)
 bool Action::checkSubAction(Action* action)
 {
     bool evolve = false;
-    for(auto& pattern : patterns_)
+    for (auto& pattern: patterns_)
         evolve |= pattern.checksubAction(action);
-    if(evolve)
+    if (evolve)
         flag_ = false;
     return evolve;
 }
