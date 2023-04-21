@@ -7,11 +7,10 @@
 #include "ros/ros.h"
 
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "test_action");
 
-    std::vector<procedural::Action*> Actions_;
+    std::vector<procedural::Action *> Actions_;
     std::cout << "============================ Create data for grasp =============================" << std::endl;
 
 
@@ -20,6 +19,7 @@ int main(int argc, char** argv)
     std::vector<procedural::PatternTransitionFact_t> list_grasp_network;
     list_grasp_network.emplace_back(0, &F, 1);
     list_grasp_network.emplace_back(1, &F1, 2);
+    list_grasp_network.emplace_back(0, &F1, 2);
     std::vector<procedural::ActionDescription_t> grasp_descriptions;
     grasp_descriptions.emplace_back("??", "isA", "graspAction");
     grasp_descriptions.emplace_back("??", "isPerformedBy", "?A");
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     list_pattern_pick.emplace_back("pick_in", list_pick2_into, patterns_net, in_descriptions, 10);
 
     procedural::Action Apick("pick");
-    for (auto& pattern: list_pattern_pick)
+    for (auto &pattern: list_pattern_pick)
         Apick.addPatterns(pattern);
 
     Actions_.push_back(&Apick);
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     procedural::PatternFact F7 = procedural::PatternFact(true, "O", "inContainer", "C", true);
 
     std::map<std::string, std::string> remap_place = {{"A", "A"},
-                                                {"O", "O"}};
+                                                      {"O", "O"}};
 
 
     std::vector<procedural::PatternTransitionNetwork_t> patterns_net_release;
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
     list_pattern_place.emplace_back("place_in", list_place_into, patterns_net_release, place_in_descriptions, 10);
 
     procedural::Action Aplace("place");
-    for (auto& pattern: list_pattern_place)
+    for (auto &pattern: list_pattern_place)
         Aplace.addPatterns(pattern);
 
     Actions_.push_back(&Aplace);
@@ -143,11 +143,11 @@ int main(int argc, char** argv)
     pick_place_descriptions.emplace_back("??", "isPerformedTo", "?S2");
 
     std::map<std::string, std::string> remap_pick = {{"A", "A"},
-                                                      {"O", "O"},
-                                                      {"S", "S1"}};
-    std::map<std::string, std::string> remap_place2 = {{"A", "A"},
                                                      {"O", "O"},
-                                                     {"S", "S2"}};
+                                                     {"S", "S1"}};
+    std::map<std::string, std::string> remap_place2 = {{"A", "A"},
+                                                       {"O", "O"},
+                                                       {"S", "S2"}};
 
 
     std::vector<procedural::PatternTransitionNetwork_t> patterns_net_pick_place;
@@ -156,7 +156,8 @@ int main(int argc, char** argv)
 
     std::vector<procedural::PatternTransitionFact_t> list_pick_place;
     std::vector<procedural::SpecializedAction> list_pattern_pick_place;
-    procedural::SpecializedAction pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 10);
+    procedural::SpecializedAction pattern_pick_place("pick&place", list_pick_place, patterns_net_pick_place,
+                                                     pick_place_descriptions, 10);
 //    list_pattern_pick_place.emplace_back("pick&place", list_pick_place, patterns_net_pick_place, pick_place_descriptions, 20);
 
 
@@ -167,7 +168,7 @@ int main(int argc, char** argv)
 
     Actions_.push_back(&Apick_place);
     std::cout << "======================= Display action : ==========================================" << std::endl;
-    for (auto& action: Actions_)
+    for (auto &action: Actions_)
         std::cout << action->toString() << std::endl;
     std::cout
             << "======================= Feed actions pick with 2 networks type: =========================================="
@@ -178,30 +179,29 @@ int main(int argc, char** argv)
     std::vector<procedural::Fact> facts;
     procedural::TimeStamp_t t0(0,50);
     facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1,t0);
-    procedural::TimeStamp_t t1(15,0);
-    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1,t1);
+//    procedural::TimeStamp_t t1(15,0);
+//    facts.emplace_back(true, "Bastien", "MoveThrought", "Cube", 1,t1);
 
-    procedural::TimeStamp_t t2(20,0);
-    facts.emplace_back(true, "Bastien", "hasInHand", "Cube", 2,t2);
-    procedural::TimeStamp_t t3(25,0);
-    facts.emplace_back(false, "Cube", "overSupport", "Table", 3,t3);
-//    procedural::TimeStamp_t t4(5,0);
-//    facts.emplace_back(true, "Bob", "hasInHand", "Cube2", 4,t4);
+//    procedural::TimeStamp_t t2(20,0);
+//    facts.emplace_back(true, "Bastien", "hasInHand", "Cube", 2,t2);
+    procedural::TimeStamp_t t3(25, 0);
+    facts.emplace_back(false, "Cube", "overSupport", "Table", 3, t3);
+    procedural::TimeStamp_t t4(5,0);
+    facts.emplace_back(true, "Bob", "hasInHand", "Cube2", 4,t4);
 //    facts.emplace_back(true, "Charly", "hasInHand", "Cube", 5);
-    procedural::TimeStamp_t t6(25,0);
-    facts.emplace_back(true, "Cube", "overSupport", "Armoire", 6,t6);
-    procedural::TimeStamp_t t7(28,0);
-    facts.emplace_back(false, "Bastien", "hasInHand", "Cube", 7,t7);
+    procedural::TimeStamp_t t6(25, 0);
+    facts.emplace_back(true, "Cube", "overSupport", "Armoire", 6, t6);
+    procedural::TimeStamp_t t7(28, 0);
+    facts.emplace_back(false, "Bastien", "hasInHand", "Cube", 7, t7);
 //     facts.emplace_back(false, "Cube2", "bruit", "Table",7);
 
-    for (auto& fact: facts)
-    {
+    procedural::TimeStamp_t current_time(28,900);
+    for (auto &fact: facts) {
         recognition.addToQueue(&fact);
     }
-    recognition.processQueue();
+    recognition.processQueue(current_time);
     std::cout << "\n\n\n\n" << std::endl;
-    for (auto& action: Actions_)
-    {
+    for (auto &action: Actions_) {
 //        action->checkCompleteNetworks();
         std::cout << action->toString() << std::endl;
 //        std::cout << action->checkCompleteNetworks() << std::endl;
