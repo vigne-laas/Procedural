@@ -16,20 +16,28 @@ bool Action::addPatterns(const SpecializedAction& pattern)
         return false;
 }
 
-void Action::feed(Fact* fact)
+void Action::feed(Fact* fact, TimeStamp_t currentTimestamp)
 {
+
     for (auto& pattern: patterns_)
-        pattern.feed(fact);
+        if ((currentTimestamp - fact->getTimeStamp()) < pattern.getTtl())
+            pattern.feed(fact);
+//        else
+//        {
+//            std::cout << "rejected fact : " << fact->toString() << "for  :" << pattern.getName() << std::endl;
+//            std::cout << "delta _t =" << currentTimestamp - fact->getTimeStamp() << " / ttl : " << pattern.getTtl()
+//                      << std::endl;
+//        }
 }
 
-std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t more_recent)
+std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t currentTimestamp)
 {
     std::set<uint32_t> set_valid_facts;
     if (flag_ == false)
     {
         for (auto& pattern: patterns_)
         {
-            std::set<uint32_t> temp_set = pattern.checkNetwork(more_recent);
+            std::set<uint32_t> temp_set = pattern.checkNetwork(currentTimestamp);
             set_valid_facts.insert(temp_set.begin(), temp_set.end());
             if (temp_set.empty() == false)
             {
@@ -118,9 +126,9 @@ std::vector<Network*> Action::getNewExplanation()
 double Action::maxTtl()
 {
     double res;
-    for(auto& action : patterns_)
-        if(action.getTtl()>res)
-            res= action.getTtl();
+    for (auto& action: patterns_)
+        if (action.getTtl() > res)
+            res = action.getTtl();
     return res;
 }
 

@@ -33,7 +33,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         std::set<uint32_t> set_id_facts;
         std::vector<procedural::Action*> complete_actions;
         for (auto& action: actions_)
-            action->feed(fact);
+            action->feed(fact,current_time);
 
         int nb_update;
         do

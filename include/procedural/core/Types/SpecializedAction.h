@@ -21,6 +21,7 @@ public:
 
     bool isValid() const { return is_valid_; }
     double getTtl() const {return time_to_live_;}
+    std::string getName() const { return name_;}
     int getNextId();
     std::set<uint32_t> checkNetwork(TimeStamp_t current_timestamp);
 
