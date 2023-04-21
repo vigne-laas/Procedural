@@ -17,7 +17,7 @@ namespace procedural {
             }
         } customSort;
 
-        void cleanOldFacts();
+        void cleanOldFacts(TimeStamp_t current_time);
 
         std::mutex mutex_lock;
         std::vector<Fact *> primary_queue;
@@ -35,7 +35,7 @@ namespace procedural {
 
         void addFact(Fact *fact);
 
-        std::vector<Fact *> getFacts();
+        std::vector<Fact *> getFacts(TimeStamp_t current_time);
         TimeStamp_t getMoreRecent(){return more_recent_timestamp_;};
         void cleanUsedFacts(const std::set<uint32_t>& ids);
 

@@ -12,11 +12,11 @@ namespace procedural {
 
     class ActionRecognition {
     public:
-        explicit ActionRecognition(const std::vector<Action *>& actions,double tll = 30,int max_size=500);
+        explicit ActionRecognition(const std::vector<Action *>& actions,double tll = 25,int max_size=500);
 
         void addToQueue(Fact *fact);
 
-        void processQueue();
+        void processQueue(TimeStamp_t current_time);
 
     private:
         BufferFacts buffer_;

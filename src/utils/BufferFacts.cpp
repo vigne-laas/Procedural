@@ -24,16 +24,16 @@ namespace procedural {
     }
 
 
-    std::vector<Fact *> BufferFacts::getFacts() {
+    std::vector<Fact *> BufferFacts::getFacts(TimeStamp_t current_time) {
         mutex_lock.lock();
         auto temp = write_queue;
         write_queue = read_queue;
         read_queue = temp;
         mutex_lock.unlock();
-        if (!read_queue->empty()) {
-            cleanOldFacts();
+        if (read_queue->empty() == false) {
             history_queue.insert(history_queue.end(), read_queue->begin(), read_queue->end());
             read_queue->clear();
+            cleanOldFacts(current_time);
             std::sort(history_queue.begin(), history_queue.end(), customSort);
         }
         if (history_queue.size() > max_size_)
@@ -49,10 +49,10 @@ namespace procedural {
 
     }
 
-    void BufferFacts::cleanOldFacts() {
+    void BufferFacts::cleanOldFacts(TimeStamp_t current_time) {
         auto new_end = std::remove_if(history_queue.begin(), history_queue.end(),
-                                      [this](Fact *val) {
-                                          return (this->getMoreRecent() - val->getTimeStamp()) > this->ttl_;
+                                      [current_time,this](Fact *val) {
+                                          return (current_time - val->getTimeStamp()) > this->ttl_;
                                       });
         history_queue.erase(new_end, history_queue.end());
 
