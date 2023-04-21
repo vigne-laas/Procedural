@@ -34,9 +34,12 @@ public:
 
     std::unordered_set<Network*> getCompleteNetworks() { return complete_networks_;};
     std::string getName() { return name_;};
+    bool checkNewExplanation();
+    std::vector<Network*> getNewExplanation();
 private:
     std::string name_;
     std::unordered_set<Network*> complete_networks_;
+    std::unordered_set<Network*> updated_sub_networks_;
     bool flag_;
 
     std::vector<SpecializedAction> patterns_;

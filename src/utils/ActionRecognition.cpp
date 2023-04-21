@@ -5,7 +5,7 @@
 
 namespace procedural {
 ActionRecognition::ActionRecognition(const std::vector<Action*>& actions, double ttl, int max_size) : actions_(
-        actions), buffer_(ttl, max_size)
+        actions), buffer_(ttl, max_size), callback_output_(ActionRecognition::defaultCallback)
 {
 
 }
@@ -22,8 +22,8 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
     for (auto fact: list_facts)
     {
 
-//            std::cout << "--------------" << std::endl;
-//            std::cout << "fact in Action recognition: " << fact->toString() << std::endl;
+        std::cout << "--------------" << std::endl;
+        std::cout << "fact in Action recognition: " << fact->toString() << "\n\n" << std::endl;
         std::set<uint32_t> set_id_facts;
         std::vector<procedural::Action*> complete_actions;
         for (auto& action: actions_)
@@ -33,6 +33,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         do
         {
             nb_update = 0;
+            std::vector<NetworkOutput> outputs;
             for (auto& action: actions_)
             {
                 std::set<uint32_t> temp_set = action->checkCompleteNetworks(current_time);
@@ -42,20 +43,48 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     complete_actions.push_back(action);
                     nb_update++;
                 }
+                else
+                {
+                    if (action->checkNewExplanation())
+                    {
+                        auto nets = action->getNewExplanation();
+                        for (auto& net: nets)
+                            outputs.emplace_back(net,true);
+                    }
+                }
 
             }
 //            std::cout<< "nb complete network : " << nb_update << std::endl;
 //            nb_update = (int)complete_actions.size();
             for (auto& action_complete: complete_actions)
+            {
                 for (auto& action: actions_)
                     if (action != action_complete)
+                    {
                         if (action->checkSubAction(action_complete))
                         {
-                            std::cout << "\t\t\t update for " << action->getName()
-                                      << "evolve thanks to complete of sub action : " << action_complete->getName()
-                                      << std::endl;
+//                            std::cout << "\t\t\t update for " << action->getName()
+//                                      << "evolve thanks to complete of sub action : " << action_complete->getName()
+//                                      << std::endl;
+                            if (action->checkNewExplanation())
+                            {
+                                auto nets = action->getNewExplanation();
+                                for (auto& net: nets)
+                                    outputs.emplace_back(net, true);
+                            }
                             nb_update++;
                         }
+                    }
+
+                auto networks = action_complete->getCompleteNetworks();
+                for (auto& net: networks)
+                    outputs.emplace_back(net);
+
+            }
+
+            callback_output_(outputs);
+
+
             if (nb_update != 0)
                 for (auto& action: actions_)
                     action->cleanPatterns(set_id_facts);
@@ -69,6 +98,12 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         facts_used.insert(set_id_facts.begin(), set_id_facts.end());
     }
     buffer_.cleanUsedFacts(facts_used);
+}
+void ActionRecognition::defaultCallback(const std::vector<NetworkOutput>& outputs)
+{
+    for (const auto& output: outputs)
+        std::cout << ">> " << output << std::endl;
+
 }
 
 

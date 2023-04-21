@@ -35,6 +35,8 @@ public:
     std::string currentState(bool shortVersion = true);
 
     bool checksubAction(Action* action);
+    bool checkNewUpdatedSubNetwork(){return updated_networks.empty() == false;};
+    std::vector<Network*> getUpdatedNetworks() {return updated_networks;};
 private:
     int id_;
 
@@ -43,11 +45,13 @@ private:
 
     std::unordered_set<Network*> networks_;
     std::unordered_set<Network*> complete_networks_;
-//    std::unordered_set<Network*> networks_to_del_;
+    std::vector<Network*> updated_networks;
+
 
     bool is_valid_;
     bool evolve_sub_action;
     uint32_t time_to_live_;
+
 };
 
 } // namespace procedural

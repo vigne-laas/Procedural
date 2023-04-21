@@ -13,7 +13,7 @@ Network::Network(const std::string& name, int id, uint32_t level) : type_str_(na
                                                                     valid_(false),
                                                                     age_(0, 0),
                                                                     last_update_(0, 0),
-                                                                    level_(level)
+                                                                    level_(level), new_explanations_(false)
 {
     full_name_ = type_str_ + " " + std::to_string(id);
     variables_.emplace("self", full_name_);
@@ -34,7 +34,7 @@ bool Network::evolve(Fact* fact)
 
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
-    checkIncompletsNetworks();
+    new_explanations_ = checkIncompletsNetworks();
     return true;
 }
 
@@ -59,8 +59,8 @@ bool Network::evolve(Network* net)
 //        std::cout << "incomplete add : " << net->getName() << std::endl;
     }
     current_state_ = evolution.first;
-    checkIncompletsNetworks();
-
+    new_explanations_ = checkIncompletsNetworks();
+//    std::cout << "new_explanations_  : " << new_explanations_ <<std::endl;
     return true;
 }
 
@@ -72,6 +72,16 @@ float Network::getCompletionRatio() const
         if (var.second.getValue() == 0 && var.first != "self")
             incomplete++;
     return 1 - (incomplete / float(variables_.size()));
+}
+
+
+std::vector<std::string> Network::getDescription()
+{
+    std::vector<std::string> res;
+//    res.resize(descriptions_.size());
+    for (auto& description: descriptions_)
+        res.push_back(description.explainExplicit());
+    return res;
 }
 
 bool Network::addTransition(const PatternTransitionFact_t& pattern)
@@ -213,15 +223,16 @@ bool Network::involveFacts(const std::set<uint32_t>& facts)
 
 /* ------------------------------ private part ------------------------------ */
 
-void Network::checkIncompletsNetworks()
+bool Network::checkIncompletsNetworks()
 {
+    updated_sub_networks_.clear();
     if (incompletes_networks_.empty())
-        return;
+        return false;
     for (auto& pair: incompletes_networks_)
         if (pair.first->updateVar(pair.second, variables_))
-            std::cout << " new explanation available for : " << pair.first->full_name_ << " => "
-                      << pair.first->describe(true) << std::endl;
+            updated_sub_networks_.push_back(pair.first);
 
+    return updated_sub_networks_.empty() == false;
 }
 
 

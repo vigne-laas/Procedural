@@ -6,6 +6,7 @@
 #include <mutex>
 #include "procedural/core/Types/Fact.h"
 #include "procedural/utils/BufferFacts.h"
+#include "procedural/core/Types/NetworkOutput.h"
 
 namespace procedural {
     class Action;
@@ -18,9 +19,14 @@ namespace procedural {
 
         void processQueue(TimeStamp_t current_time);
 
+        void setCallback(std::function<void(const std::vector<NetworkOutput>&)> callback){callback_output_ = callback;}
+
     private:
+        static void defaultCallback(const std::vector<NetworkOutput>& outputs);
         BufferFacts buffer_;
         std::vector<Action *> actions_;
+
+        std::function<void(const std::vector<NetworkOutput>&)> callback_output_;
     };
 
 } // procedural

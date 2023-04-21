@@ -94,6 +94,27 @@ bool Action::checkSubAction(Action* action)
         flag_ = false;
     return evolve;
 }
+bool Action::checkNewExplanation()
+{
+    bool res = false;
+    if (flag_ == false)
+    {
+        for (auto& specializedAction: patterns_)
+            res |= specializedAction.checkNewUpdatedSubNetwork();
+    }
+
+    return res;
+}
+std::vector<Network*> Action::getNewExplanation()
+{
+    std::vector<Network*> res;
+    for (auto& specializedAction: patterns_)
+    {
+        auto nets = specializedAction.getUpdatedNetworks();
+        res.insert(res.end(), nets.begin(), nets.end());
+    }
+    return res;
+}
 
 
 } // namespace procedural

@@ -54,15 +54,18 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
 
     for (auto& complete_network: complete_networks_)
     {
-        std::cout << "network finish :" << complete_network->getName() << std::endl;
-        std::cout << "explanation : " << complete_network->describe(true) << std::endl;
-        std::cout << "facts involved : ";
+//        std::cout << "network finish :" << complete_network->getName() << std::endl;
+//        std::cout << "explanation : " << complete_network->describe(true) << std::endl;
+//        std::cout << "facts involved : ";
+
         for (auto& id: complete_network->getIdsFacts())
         {
-            std::cout << std::to_string(id) << "|";
+//            std::cout << std::to_string(id) << "|";
             set_valid_facts.insert(id);
         }
-        std::cout << std::endl;
+//        NetworkOutput output(complete_network,false);
+//        std::cout << output << std::endl;
+//        std::cout << std::endl;
         networks_.erase(complete_network);
         // delete complete_network; // Check if Guillaume is right
     }
@@ -72,7 +75,7 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
     {
         if (network->involveFacts(set_valid_facts))
         {
-            std::cout << "may delete this network" << network->getName() << std::endl;
+//            std::cout << "may delete this network" << network->getName() << std::endl;
             networks_to_del.insert(network);
         }
     }
@@ -127,31 +130,37 @@ void SpecializedAction::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
 
 void SpecializedAction::feed(Fact* fact)
 {
+    updated_networks.clear();
     bool evolve = false;
     for (auto& network: networks_)
     {
         if (network->evolve(fact))
         {
-            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
+//            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
             evolve = true;
+            if(network->newExplanationAvailable())
+                updated_networks.push_back(network);
             // checkNetworkComplete(network);
         }
     }
+
 
     if (evolve == false)
     {
         Network* new_net = root_network_->clone(getNextId());
         if (new_net->evolve(fact))
         {
-            std::cout << "create new network " << new_net->getName() << std::endl;
+//            std::cout << "create new network " << new_net->getName() << std::endl;
             networks_.insert(new_net);
             // checkNetworkComplete(new_net);
         } else
             delete new_net;
     }
+
 }
 bool SpecializedAction::checksubAction(Action* action)
 {
+    updated_networks.clear();
     std::unordered_set<Network*> complete_networks = action->getCompleteNetworks();
 
     if (complete_networks.empty())
@@ -163,9 +172,12 @@ bool SpecializedAction::checksubAction(Action* action)
         for (auto complete_net: complete_networks)
             if (network->evolve(complete_net))
             {
-                std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
+//                std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
                 evolve = true;
                 evolve_sub_action = true;
+                if(network->newExplanationAvailable())
+                    for(auto& net : network->getUpdatedNetworks())
+                        updated_networks.push_back(net);
                 // checkNetworkComplete(network);
             }
 
@@ -178,7 +190,7 @@ bool SpecializedAction::checksubAction(Action* action)
             Network* new_net = root_network_->clone(getNextId());
             if (new_net->evolve(complete_net))
             {
-                std::cout << "create new network " << new_net->getName() << std::endl;
+//                std::cout << "create new network " << new_net->getName() << std::endl;
                 networks_.insert(new_net);
                 evolve_sub_action = true;
                 evolve = true;
@@ -218,6 +230,7 @@ std::string SpecializedAction::currentState(bool shortVersion)
     res += "\n";
     return res;
 }
+
 
 
 } // namespace procedural

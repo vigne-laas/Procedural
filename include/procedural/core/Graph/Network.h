@@ -36,7 +36,7 @@ struct NoInitialStateNetworkException : public NetworkException
 struct MultiInitialStateNetworkException : public NetworkException
 {
     explicit MultiInitialStateNetworkException(const std::unordered_set<State*>& invalid_states) :
-             NetworkException("Invalid Network due to no initial State detected\nState detected as initial are : ")
+            NetworkException("Invalid Network due to no initial State detected\nState detected as initial are : ")
     {
         for (auto& state: invalid_states)
             msg_ += state->toString() + "\n";
@@ -46,7 +46,7 @@ struct MultiInitialStateNetworkException : public NetworkException
 class Network
 {
 public:
-    Network(const std::string& name, int id,uint32_t level=0);
+    Network(const std::string& name, int id, uint32_t level = 0);
     Network(const Network& other) = delete;
 
     bool evolve(Fact* fact);
@@ -56,11 +56,13 @@ public:
     std::string getTypeStr() const { return type_str_; }
     uint32_t getType() const { return type_; }
     std::string getName() const { return full_name_; }
-    uint32_t getLevel() const { return level_;}
-    TimeStamp_t getLastupdate() const { return last_update_;}
+    uint32_t getLevel() const { return level_; }
+    TimeStamp_t getLastupdate() const { return last_update_; }
     TimeStamp_t getAge() const { return age_; }
     Variable_t getVar(const std::string& key) const { return variables_.at(key); }
+    bool newExplanationAvailable() const { return new_explanations_; }
     float getCompletionRatio() const;
+    std::vector<std::string> getDescription();
 
     bool isComplete() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
@@ -84,21 +86,25 @@ public:
 
     static WordTable types_table;
 
+    std::vector<Network*> getUpdatedNetworks() { return updated_sub_networks_;};
 private:
 
-    void checkIncompletsNetworks();
+    bool checkIncompletsNetworks();
     void addState(int id_state);
     void linkNetwork();
     void insertVariable(const std::string& variable);
 
-
     void processInitialState();
+
+    bool updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& variables_);
+
 
     std::string type_str_;
     uint32_t type_;
     uint32_t id_;
     std::string full_name_;
     uint32_t level_;
+    bool new_explanations_;
 
     std::map<std::string, Variable_t> variables_;
 
@@ -114,9 +120,14 @@ private:
     bool valid_;
     TimeStamp_t age_;
     TimeStamp_t last_update_;
-    std::map<Network*,std::map<std::string,std::string>> incompletes_networks_;
-    bool updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& variables_);
+    std::map<Network*, std::map<std::string, std::string>> incompletes_networks_;
+
+    std::vector<Network*> updated_sub_networks_;
+
+
 };
+
+
 
 } // procedural
 
