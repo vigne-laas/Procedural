@@ -36,6 +36,11 @@ namespace procedural {
             return os;
         }
 
+        float toFloat(){
+            return float(sec_+(nsec_*pow(10,-9)));
+        }
+
+
     };
 
 }
