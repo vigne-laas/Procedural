@@ -92,7 +92,7 @@ target_link_libraries(${PROJECT_NAME}_reader_lib yaml-cpp)
 add_library(${PROJECT_NAME}_utils_lib
         src/utils/BufferFacts.cpp
         src/utils/ActionRecognition.cpp
-        include/procedural/utils/TimeStamp.h)
+        )
 target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_network_lib)
 
 add_library(${PROJECT_NAME}_feed_lib

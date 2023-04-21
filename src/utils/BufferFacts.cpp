@@ -18,7 +18,7 @@ namespace procedural {
         if (fact->getTimeStamp() > more_recent_timestamp_)
         {
             more_recent_timestamp_ = fact->getTimeStamp();
-            std::cout << "Buffer more recent timestamp : " << more_recent_timestamp_<< std::endl;
+//            std::cout << "Buffer more recent timestamp : " << more_recent_timestamp_<< std::endl;
         }
 
     }
