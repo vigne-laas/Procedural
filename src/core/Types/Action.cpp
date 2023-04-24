@@ -20,14 +20,14 @@ void Action::feed(Fact* fact, TimeStamp_t currentTimestamp)
 {
 
     for (auto& pattern: patterns_)
-        if ((currentTimestamp - fact->getTimeStamp()) < pattern.getTtl())
+        if ((currentTimestamp - fact->getTimeStamp()) <= pattern.getTtl())
             pattern.feed(fact);
-//        else
-//        {
-//            std::cout << "rejected fact : " << fact->toString() << "for  :" << pattern.getName() << std::endl;
+        else
+        {
+            std::cout << "rejected fact : " << fact->toString() << " for  :" << pattern.getName() << std::endl;
 //            std::cout << "delta _t =" << currentTimestamp - fact->getTimeStamp() << " / ttl : " << pattern.getTtl()
 //                      << std::endl;
-//        }
+        }
 }
 
 std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t currentTimestamp)
