@@ -18,7 +18,7 @@ SpecializedAction::SpecializedAction(const std::string& name,
                                                      id_(0)
 {
 
-    root_network_ = new Network(name_, 0);
+    root_network_ = new Network(name_, id_);
     for (auto& pattern: patterns)
         root_network_->addTransition(pattern);
     for (auto& net_pattern: patterns_network)
