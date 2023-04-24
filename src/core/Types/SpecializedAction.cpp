@@ -44,7 +44,7 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
     {
         if (network->isComplete())
             complete_networks_.insert(network);
-        else if (current_timestamp - network->getLastupdate() > time_to_live_)
+        else if (current_timestamp - network->getAge() > time_to_live_)
         {
             networks_to_del.insert(network);
             std::cout << "Del network due to age " << network->getName() << "value : "
