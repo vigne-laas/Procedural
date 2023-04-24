@@ -29,15 +29,17 @@ public:
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
     const std::vector<std::pair<TransitionNetwork, State*>> getNextsNetworks() const { return nexts_networks_; };
+    bool hasTimeoutTransition() const { return has_timeout_transition;}
 
 
+    void addTimeoutTransition();
 private:
     uint32_t id_;
     std::string name_;
     bool initial_node_;
     std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
     std::vector<std::pair<TransitionNetwork, State*>> nexts_networks_;
-    TransitionNetwork* last_transistion_matched_;
+    bool has_timeout_transition;
 };
 
 } // namespace procedural

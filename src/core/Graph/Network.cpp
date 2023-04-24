@@ -147,7 +147,7 @@ std::string Network::toString()
     return res;
 }
 
-Network* Network::clone(int new_id)
+Network* Network::clone(int new_id,int last_state_required)
 {
     if ((valid_ && closed_) == false)
         return nullptr;
@@ -173,7 +173,7 @@ Network* Network::clone(int new_id)
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }
-
+    N->addTimeoutTransition(last_state_required);
     N->closeNetwork();
     return N;
 }
@@ -221,6 +221,12 @@ bool Network::involveFacts(const std::set<uint32_t>& facts)
     return true;
 }
 
+void Network::addTimeoutTransition(int last_state_required)
+{
+    states_.at(last_state_required)->addTimeoutTransition();
+}
+
+
 /* ------------------------------ private part ------------------------------ */
 
 bool Network::checkIncompletsNetworks()
@@ -257,6 +263,7 @@ void Network::insertVariable(const std::string& variable)
 {
     variables_.emplace(variable, variable);
 }
+
 
 void Network::processInitialState()
 {

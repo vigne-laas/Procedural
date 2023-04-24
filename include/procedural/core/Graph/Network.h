@@ -78,7 +78,7 @@ public:
 
     std::string toString();
 
-    Network* clone(int new_id);
+    Network* clone(int new_id,int last_state_required);
     void displayVariables();
     std::string describe(bool expl = false);
     std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; }
@@ -88,6 +88,9 @@ public:
     static WordTable types_table;
 
     std::vector<Network*> getUpdatedNetworks() { return updated_sub_networks_;};
+
+    void addTimeoutTransition(int last_state_required);
+
 private:
 
     bool checkIncompletsNetworks();

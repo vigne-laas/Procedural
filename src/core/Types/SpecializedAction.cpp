@@ -12,10 +12,12 @@ SpecializedAction::SpecializedAction(const std::string& name,
                                      const std::vector<procedural::PatternTransitionFact_t>& patterns,
                                      const std::vector<PatternTransitionNetwork_t>& patterns_network,
                                      const std::vector<ActionDescription_t>& descriptions,
+                                     int last_state_required,
                                      double ttl) : name_(name),
                                                      is_valid_(false),
                                                      time_to_live_(ttl),
-                                                     id_(0)
+                                                     id_(0),
+                                                     last_state_required_(last_state_required)
 {
 
     root_network_ = new Network(name_, id_);
@@ -25,7 +27,9 @@ SpecializedAction::SpecializedAction(const std::string& name,
         root_network_->addNetwork(net_pattern);
     for (auto& description: descriptions)
         root_network_->addDescription(description);
+
     is_valid_ = root_network_->closeNetwork();
+    root_network_->addTimeoutTransition(last_state_required_);
 }
 
 
@@ -42,10 +46,21 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
     std::set<uint32_t> set_valid_facts;
     for (auto network: networks_)
     {
+//        std::cout << "value : "<< current_timestamp - network->getAge() << "ttl : " << time_to_live_ << std::endl;
         if (network->isComplete())
             complete_networks_.insert(network);
         else if (current_timestamp - network->getAge() > time_to_live_)
         {
+
+            if(network->getCurrentState()->hasTimeoutTransition())
+                complete_networks_.insert(network);
+            else
+            {
+                networks_to_del.insert(network);
+                std::cout << "Del network due to age " << network->getName() << "value : "
+                          << current_timestamp - network->getAge() << "ttl : " << time_to_live_ << std::endl;
+            }
+
             networks_to_del.insert(network);
             std::cout << "Del network due to age " << network->getName() << "value : "
                       << current_timestamp - network->getLastupdate() << "ttl : " << time_to_live_ << std::endl;
@@ -147,7 +162,7 @@ void SpecializedAction::feed(Fact* fact)
 
     if (evolve == false)
     {
-        Network* new_net = root_network_->clone(getNextId());
+        Network* new_net = root_network_->clone(getNextId(),last_state_required_);
         if (new_net->evolve(fact))
         {
 //            std::cout << "create new network " << new_net->getName() << std::endl;
@@ -187,7 +202,7 @@ bool SpecializedAction::checksubAction(Action* action)
     {
         for (auto complete_net: complete_networks)
         {
-            Network* new_net = root_network_->clone(getNextId());
+            Network* new_net = root_network_->clone(getNextId(),last_state_required_);
             if (new_net->evolve(complete_net))
             {
 //                std::cout << "create new network " << new_net->getName() << std::endl;

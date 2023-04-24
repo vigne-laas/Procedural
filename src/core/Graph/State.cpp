@@ -6,7 +6,8 @@ namespace procedural {
 
 State::State(const std::string& name, int id) : id_(id),
                                                 name_(name + "_" + std::to_string(id)),
-                                                initial_node_(false)
+                                                initial_node_(false),
+                                                has_timeout_transition(false)
 {}
 
 State* State::evolve(Fact* fact)
@@ -66,6 +67,10 @@ std::string State::toString() const
             msg += "\t" + pair_transition_state.first.toString() + "]\n";
 
     return msg;
+}
+void State::addTimeoutTransition()
+{
+    has_timeout_transition = true;
 }
 
 

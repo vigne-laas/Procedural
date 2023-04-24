@@ -17,6 +17,7 @@ public:
                       const std::vector<PatternTransitionFact_t>& patterns,
                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
                       const std::vector<ActionDescription_t>& descriptions,
+                      int last_state_required,
                       double ttl);
 
     bool isValid() const { return is_valid_; }
@@ -55,6 +56,8 @@ private:
     bool is_valid_;
     bool evolve_sub_action;
     double time_to_live_;
+
+    int last_state_required_;
 
 };
 
