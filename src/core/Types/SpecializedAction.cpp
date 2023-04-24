@@ -60,10 +60,6 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
                 std::cout << "Del network due to age " << network->getName() << "value : "
                           << current_timestamp - network->getAge() << "ttl : " << time_to_live_ << std::endl;
             }
-
-            networks_to_del.insert(network);
-            std::cout << "Del network due to age " << network->getName() << "value : "
-                      << current_timestamp - network->getLastupdate() << "ttl : " << time_to_live_ << std::endl;
         }
     }
 
