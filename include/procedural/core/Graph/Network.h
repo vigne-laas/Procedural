@@ -15,6 +15,7 @@
 #include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Types/PatternTransitionNetwork.h"
 #include "procedural/core/Types/WordTable.h"
+#include "procedural/core/Types/IncompleteNetwork.h"
 
 namespace procedural {
 
@@ -120,7 +121,7 @@ private:
     bool valid_;
     TimeStamp_t age_;
     TimeStamp_t last_update_;
-    std::map<Network*, std::map<std::string, std::string>> incompletes_networks_;
+    std::vector<IncompleteNetwork_t> incompletes_networks_;
 
     std::vector<Network*> updated_sub_networks_;
 

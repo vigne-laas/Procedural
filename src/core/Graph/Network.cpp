@@ -55,7 +55,7 @@ bool Network::evolve(Network* net)
         id_facts_involve.push_back(id_fact);
     if (net->getCompletionRatio() != 1.0)
     {
-        incompletes_networks_.insert(std::make_pair(net, evolution.second->getRemap()));
+        incompletes_networks_.emplace_back(net, evolution.second->getRemap());
 //        std::cout << "incomplete add : " << net->getName() << std::endl;
     }
     current_state_ = evolution.first;
@@ -202,10 +202,10 @@ std::string Network::describe(bool expl)
         return msg;
 
     msg += "\t // incomplete Network link : ";
-    for (const auto& net: incompletes_networks_)
+    for (const auto& incomplete_net: incompletes_networks_)
     {
-        msg += net.first->getName();
-        msg += "\n\t new level : " + std::to_string(net.first->getCompletionRatio()) + "\n";
+        msg += incomplete_net.network_->getName();
+        msg += "\n\t new level : " + std::to_string(incomplete_net.network_->getCompletionRatio()) + "\n";
 //         net.first->displayVariables();
     }
 
@@ -228,9 +228,9 @@ bool Network::checkIncompletsNetworks()
     updated_sub_networks_.clear();
     if (incompletes_networks_.empty())
         return false;
-    for (auto& pair: incompletes_networks_)
-        if (pair.first->updateVar(pair.second, variables_))
-            updated_sub_networks_.push_back(pair.first);
+    for (auto& incomplete_net: incompletes_networks_)
+        if (incomplete_net.network_->updateVar(incomplete_net.remap_variables_, variables_))
+            updated_sub_networks_.push_back(incomplete_net.network_);
 
     return updated_sub_networks_.empty() == false;
 }
