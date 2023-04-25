@@ -1,20 +1,10 @@
 #ifndef PROCEDURAL_YAMLREADER_H
 #define PROCEDURAL_YAMLREADER_H
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <experimental/optional>
-//#include <yaml.h>
-#include <yaml-cpp/yaml.h>
 #include <regex>
-#include <unordered_set>
-#include "procedural/core/Types/Action.h"
-#include "procedural/core/Types/PatternTransition.h"
-#include "procedural/core/Types/ActionDescription.h"
-
+#include <yaml-cpp/yaml.h>
+#include "procedural/reader/types/ParsedSimpleAction.h"
+#include "procedural/reader/types/ParsedComposedAction.h"
 
 namespace procedural {
 
@@ -23,39 +13,31 @@ class YamlReader
 public:
     YamlReader();
     bool read(const std::string& path);
-    std::vector<Action*> getActions() { return actions_; };
 
-    std::string actionsCreatedString();
+    std::vector<ParsedSimpleAction_t> getSimpleActions()
+    { return simple_actions_; };
+    std::vector<ParsedComposedAction_t>& getComposedActions()
+    { return composed_actions_; };
 
-private:
+private :
+    bool parse();
+
     std::regex pattern_facts_;
     std::regex pattern_description_;
-    std::unordered_set<std::string> compose_action_;
     YAML::Node yaml_file_;
-    std::vector<Action*> actions_;
 
+    std::vector<ParsedSimpleAction_t> simple_actions_;
+    std::vector<ParsedComposedAction_t> composed_actions_;
 
-    Action* createAction(const std::string& name, const YAML::Node& node);
-    Action* createComposeAction(const std::string& name, const YAML::Node& node);
-
-    uint32_t readParameters(const YAML::Node& node);
-    std::vector<PatternTransition_t> readFacts(const YAML::Node& node);
-    std::vector<ActionDescription_t> readDescription(const YAML::Node& node);
-
-    bool isPrimitiveAction(const YAML::Node& node) { return node["ordered_facts"] && node["description"]; };
-    bool isComposeAction(const YAML::Node& node)
+    bool isSimpleAction(const YAML::Node& node)
+    { return node["ordered_facts"] && node["description"]; };
+    bool isComposedAction(const YAML::Node& node)
     {
-        return (static_cast<bool>(node["ordered_facts"]) == false) &&
-               (static_cast<bool>(node["description"]) == false) and node.size() >= 1;
+        return node["pattern"] && node["description"];
     };
-
-    FactPattern* parseFact(const std::string& str_fact);
-    procedural::ActionDescription_t parseDescription(const std::string& str_description);
-
-    PatternRecognition createPattern(const std::string& name, const YAML::Node& node, uint32_t ttl = 4);
 
 };
 
-} // namespace procedural
+} // procedural
 
-#endif // PROCEDURAL_YAMLREADER_H
+#endif //PROCEDURAL_YAMLREADER_H
