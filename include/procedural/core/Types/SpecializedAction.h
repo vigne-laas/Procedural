@@ -4,7 +4,7 @@
 #include <vector>
 #include "procedural/core/Types/PatternTransitionFact.h"
 #include "procedural/core/Graph/Network.h"
-
+#include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Types/Fact.h"
 
 
@@ -18,7 +18,7 @@ public:
                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
                       const std::vector<ActionDescription_t>& descriptions,
                       int last_state_required,
-                      double ttl);
+                      double ttl=30);
 
     bool isValid() const { return is_valid_; }
     double getTtl() const {return time_to_live_;}
@@ -40,6 +40,8 @@ public:
     bool checksubAction(Action* action);
     bool checkNewUpdatedSubNetwork(){return updated_networks.empty() == false;};
     std::vector<Network*> getUpdatedNetworks() {return updated_networks;};
+
+    std::vector<std::string> getLiteralVariables() {return root_network_->getLiteralVariables();};
 
 
 private:

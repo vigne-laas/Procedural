@@ -64,6 +64,7 @@ public:
     bool newExplanationAvailable() const { return new_explanations_; }
     float getCompletionRatio() const;
     std::vector<std::string> getDescription();
+    std::vector<std::string> getLiteralVariables();
 
     bool isComplete() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
@@ -86,6 +87,8 @@ public:
     bool involveFacts(const std::set<uint32_t>& facts);
 
     static WordTable types_table;
+
+    static void displayTypesTable();
 
     std::vector<Network*> getUpdatedNetworks() { return updated_sub_networks_;};
 

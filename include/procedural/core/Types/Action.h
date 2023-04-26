@@ -33,12 +33,13 @@ public:
     bool checkSubAction(Action* action);
 
     std::unordered_set<Network*> getCompleteNetworks() { return complete_networks_;};
-    std::string getName() { return name_;};
+    std::string getName() const { return name_;};
     bool checkNewExplanation();
     std::vector<Network*> getNewExplanation();
 
     double maxTtl();
 
+    std::vector<SpecializedAction> getSpecializedActions() {return patterns_;};
 private:
     std::string name_;
     std::unordered_set<Network*> complete_networks_;
