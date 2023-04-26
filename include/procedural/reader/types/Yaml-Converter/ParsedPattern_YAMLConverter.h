@@ -20,7 +20,7 @@ struct convert<procedural::ParsedPattern_t>
         {
             return false;
         }
-        uint32_t level = 0;
+        int level = 0;
         for (auto iter_node = 0; iter_node != node.size(); iter_node++)
         {
 
@@ -31,7 +31,7 @@ struct convert<procedural::ParsedPattern_t>
                 parsed_pattern.facts.emplace_back(key, level);
             } else
             {
-                if (node[iter_node].IsMap())
+                if (node[iter_node].IsMap()) // TODO or_facts or or_networks
                 {
                     for (const auto& map_elmt: node[iter_node])
                     {
@@ -46,6 +46,7 @@ struct convert<procedural::ParsedPattern_t>
             }
             level++;
         }
+        parsed_pattern.max_level = level;
         return true;
     }
 };

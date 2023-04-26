@@ -9,9 +9,12 @@
 namespace procedural {
 struct ParsedComposedAction_t
 {
-    ParsedComposedAction_t() = default;
+    ParsedComposedAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)")
+    {};
 
-    std::string name_;
+    std::regex regex_type;
+    std::string type;
+    std::string subtype;
     procedural::ParsedParameters_t parameters;
     procedural::ParsedPattern_t pattern;
     procedural::ParsedDescriptions_t descriptions;
@@ -32,10 +35,16 @@ struct ParsedComposedAction_t
 
 
     }
+    std::string getName()
+    {
+        std::string res = type;
+        return subtype.empty() ? res : res + "_" + subtype;
+    }
 
     void addPattern(const ParsedPattern_t& new_pattern)
     {
         pattern = new_pattern;
+        max_level = new_pattern.max_level;
         if (remaps.empty() == false)
             linkRemapPattern();
     }
@@ -48,16 +57,25 @@ struct ParsedComposedAction_t
 
     friend std::ostream& operator<<(std::ostream& os, const ParsedComposedAction_t& lhs)
     {
-        os << "Composed Action : " << lhs.name_ << "\n";
+        os << "Composed Action : " << lhs.type;
+        os << (lhs.subtype.empty() ? "\n" : "_" + lhs.subtype + "\n");
         os << lhs.pattern;
         os << "Description : \n" << lhs.descriptions;
         os << ((lhs.parameters.empty()) ? "" : "Parameters : \n") << lhs.parameters;
 
         return os;
     }
+
+    void setType(const std::string& str_type)
+    {
+        std::smatch results;
+        std::regex_search(str_type, results, regex_type);
+        type = results[1];
+        subtype = results[2];
+    }
+    int max_level;
 };
 }
-
 
 
 #endif //PROCEDURAL_PARSEDCOMPOSEDACTION_H
