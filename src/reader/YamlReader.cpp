@@ -28,13 +28,13 @@ bool YamlReader::parse()
         if (isSimpleAction(it->second))
         {
             auto action = it->second.as<ParsedSimpleAction_t>();
-            action.name_ = it->first.as<std::string>();
+            action.setType(it->first.as<std::string>());
             simple_actions_.push_back(action);
         }
         if (isComposedAction(it->second))
         {
             auto action = it->second.as<ParsedComposedAction_t>();
-            action.name_ = it->first.as<std::string>();
+            action.setType(it->first.as<std::string>());
             composed_actions_.push_back(action);
         }
     }
