@@ -84,6 +84,15 @@ std::vector<std::string> Network::getDescription()
     return res;
 }
 
+std::vector<std::string> Network::getLiteralVariables()
+{
+    std::vector<std::string> res;
+    for (auto const& map_elemet: variables_)
+        res.push_back(map_elemet.first);
+    return res;
+}
+
+
 bool Network::addTransition(const PatternTransitionFact_t& pattern)
 {
     if (closed_ == false)
@@ -147,7 +156,7 @@ std::string Network::toString()
     return res;
 }
 
-Network* Network::clone(int new_id,int last_state_required)
+Network* Network::clone(int new_id, int last_state_required)
 {
     if ((valid_ && closed_) == false)
         return nullptr;
@@ -315,6 +324,11 @@ Network::updateVar(const std::map<std::string, std::string>& remap, const std::m
         }
     }
     return res;
+}
+void Network::displayTypesTable()
+{
+    for (int index = 0; index < Network::types_table.size(); index++)
+        std::cout << " types_table[" << index << "] : " << types_table[index] << std::endl;
 }
 
 
