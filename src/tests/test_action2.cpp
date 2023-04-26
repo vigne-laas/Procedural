@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     std::cout << "============================ Create data for release =============================" << std::endl;
 
 
-    procedural::PatternFact F2(true, "A", "MoveThrought", "O", false);
+    procedural::PatternFact F2(true, "A", "MoveThrought", "S", false);
     procedural::PatternFact F3(false, "A", "hasInHand", "O", true);
     std::vector<procedural::PatternTransitionFact_t> release_network;
     release_network.emplace_back(0, &F2, 1);
@@ -44,6 +44,7 @@ int main(int argc, char** argv)
     release_descriptions.emplace_back("??", "isA", "release");
     release_descriptions.emplace_back("??", "isPerformedBy", "?A");
     release_descriptions.emplace_back("??", "isPerformedOn", "?O");
+    release_descriptions.emplace_back("??", "isPerformedOver", "?S");
     procedural::SpecializedAction pattern_release("release", release_network, {}, release_descriptions, 2, 20);
 
     procedural::Action release("release");

@@ -86,7 +86,7 @@ Grasp:
 
 Pick_into:
   pattern:
-    - G: Grasp REQUIRED
+    - G: Pick_over REQUIRED
     - NOT ?O isOnTopOf ?S REQUIRED
   remap:
     - G.C: O

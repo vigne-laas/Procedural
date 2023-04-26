@@ -137,6 +137,7 @@ target_link_libraries(test_reader
         ${PROJECT_NAME}_reader_lib
         ${PROJECT_NAME}_graph_lib
         ${PROJECT_NAME}_builder_lib
+        ${PROJECT_NAME}_utils_lib
         ${catkin_LIBRARIES}
         )
 
