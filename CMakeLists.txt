@@ -105,8 +105,11 @@ add_library(${PROJECT_NAME}_utils_lib
         )
 target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_graph_lib)
 
-#add_library(${PROJECT_NAME}_feed_lib
-#        src/feeder/Feeder.cpp)
+add_library(${PROJECT_NAME}_feed_lib
+        src/feeder/Feeder.cpp)
+target_link_libraries(${PROJECT_NAME}_feed_lib ${PROJECT_NAME}_utils_lib)
+
+
 
 ##################################
 ##      Test executables        ##
@@ -165,11 +168,14 @@ target_link_libraries(test_action2
         ${catkin_LIBRARIES}
         )
 
-#add_executable(test_feeder src/tests/feeder/test_feeder.cpp)
-#add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(test_feeder
-#        ${PROJECT_NAME}_feed_lib
-#        )
+add_executable(test_feeder src/tests/test_feeder.cpp)
+add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_feeder
+        ${PROJECT_NAME}_feed_lib
+        ${PROJECT_NAME}_reader_lib
+        ${PROJECT_NAME}_builder_lib
+        ${PROJECT_NAME}_utils_lib
+        )
 
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -19,7 +19,7 @@ namespace procedural {
 
         void processQueue(TimeStamp_t current_time);
 
-        void setCallback(std::function<void(const std::vector<NetworkOutput>&)> callback){callback_output_ = callback;}
+        void setCallback(const std::function<void(const std::vector<NetworkOutput>&)>& callback){callback_output_ = callback;}
 
     private:
         static void defaultCallback(const std::vector<NetworkOutput>& outputs);
