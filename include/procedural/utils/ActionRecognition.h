@@ -15,7 +15,7 @@ namespace procedural {
     public:
         explicit ActionRecognition(const std::vector<Action *>& actions,double tll = 25,int max_size=500);
 
-        void addToQueue(Fact *fact);
+        void addToQueue(Fact *fact) const;
 
         void processQueue(TimeStamp_t current_time);
 

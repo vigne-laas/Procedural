@@ -16,7 +16,7 @@ ActionRecognition::ActionRecognition(const std::vector<Action*>& actions, double
     buffer_ = new BufferFacts(max_ttl, max_size);
 }
 
-void ActionRecognition::addToQueue(Fact* fact)
+void ActionRecognition::addToQueue(Fact* fact) const
 {
     buffer_->addFact(fact);
 }
@@ -61,7 +61,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                 }
 
             }
-//            std::cout<< "nb complete network : " << nb_update << std::endl;
+            std::cout<< "nb complete network : " << nb_update << std::endl;
 //            nb_update = (int)complete_actions.size();
             for (auto& action_complete: complete_actions)
             {
@@ -70,9 +70,9 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     {
                         if (action->checkSubAction(action_complete))
                         {
-//                            std::cout << "\t\t\t update for " << action->getName()
-//                                      << "evolve thanks to complete of sub action : " << action_complete->getName()
-//                                      << std::endl;
+                            std::cout << "\t\t\t update for " << action->getName()
+                                      << "evolve thanks to complete of sub action : " << action_complete->getName()
+                                      << std::endl;
                             if (action->checkNewExplanation())
                             {
                                 auto nets = action->getNewExplanation();
@@ -85,7 +85,12 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
                 auto networks = action_complete->getCompleteNetworks();
                 for (auto& net: networks)
+                {
+//                    auto output = NetworkOutput(net);
+//                    outputs.push_back(output);
                     outputs.emplace_back(net);
+                }
+
 
             }
 
