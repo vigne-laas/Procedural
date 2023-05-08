@@ -1,5 +1,6 @@
 #include "procedural/core/Graph/TransitionFact.h"
 #include <iostream>
+#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 
 namespace procedural {
 
@@ -8,12 +9,25 @@ TransitionFact::TransitionFact(const PatternFact& pattern) : var_subject_(nullpt
 {
     var_subject_str_ = pattern.getVarSubject();
     var_object_str_ = pattern.getVarObject();
+    str_initial_property = pattern.getStringProperty();
     properties_.insert(pattern.getProperty());
+    insertion_ = (*properties_.begin())>0 ? true : false;
 }
 
-void TransitionFact::expandProperty()
+void TransitionFact::expandProperty(ObjectPropertyClient* object_client)
 {
-    // TODO use ontology to expand the property
+
+    auto res = object_client->getDown(str_initial_property);
+    if (res.empty())
+        return;
+    std::cout << "expand property :" << str_initial_property << std::endl;
+    for (const auto& result: res)
+    {
+        std::cout << "\t " << result << std::endl;
+        auto property_id = Fact::properties_table.get(result);
+        properties_.insert(insertion_? int(1*property_id) : int(-1*property_id));
+    }
+
 }
 
 void TransitionFact::linkVariables(std::map<std::string, Variable_t>& variables)

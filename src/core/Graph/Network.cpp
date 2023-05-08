@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 #include "procedural/core/Graph/Network.h"
 #include "procedural/core/Graph/TransitionNetwork.h"
 
@@ -329,6 +330,33 @@ void Network::displayTypesTable()
 {
     for (int index = 0; index < Network::types_table.size(); index++)
         std::cout << " types_table[" << index << "] : " << types_table[index] << std::endl;
+}
+void Network::setId(int new_id)
+{
+    id_ = new_id;
+    full_name_ = type_str_ + " " + std::to_string(new_id);
+    variables_.at("self").literal = full_name_;
+//    std::cout << "full_name :" << full_name_ << std::endl;
+//    std::cout << "description : " << descriptions_.at(0).var_subject_str_ << " isA "
+//              << descriptions_.at(0).var_object_str_ << std::endl;
+
+}
+std::string Network::getStrStructure()
+{
+    std::string res;
+    for (auto& state: states_)
+    {
+        if (res != "")
+            res += "\n";
+        res += "id : " + std::to_string(state.first) + " " + state.second->toString();
+    }
+    return res;
+}
+void Network::expandProperties(ObjectPropertyClient* object_client)
+{
+    for(auto& state : states_)
+        (state.second)->expandTransitions(object_client);
+
 }
 
 

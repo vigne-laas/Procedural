@@ -1,16 +1,27 @@
 #include <iostream>
+
 #include "procedural/reader/ActionBuilder.h"
 #include "procedural/core/Types/ActionDescription.h"
 
 namespace procedural {
-ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simpleActions,
-                             std::vector<ParsedComposedAction_t>& composedActions)
+ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
+                             std::vector<ParsedComposedAction_t>& composed_actions)
 {
-    combineActions(simpleActions, composedActions);
-    buildSimpleAction(simpleActions);
-    buildComposedAction(composedActions);
+    build(simple_actions, composed_actions, nullptr);
+}
+
+void ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_actions,
+                          std::vector<ParsedComposedAction_t>& composed_actions,
+                          ObjectPropertyClient* client = nullptr)
+{
+    property_client_=client;
+    combineActions(simple_actions, composed_actions);
+    buildSimpleAction(simple_actions);
+    buildComposedAction(composed_actions);
     buildIncomplete();
 }
+
+
 void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions)
 {
     for (const auto& action: simple_actions)
@@ -44,6 +55,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
 
         SpecializedAction new_spe_action(action.getName(), facts, networks, descriptions,
                                          last_required,
+                                         property_client_,
                                          ttl);
         auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                           [action](Action* act) { return act->getName() == action.type; });
@@ -126,6 +138,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                 ttl = 30;
             SpecializedAction new_spe_action(action.getName(), facts, networks, descriptions,
                                              last_required,
+                                             property_client_,
                                              ttl);
             auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                               [action](Action* act) { return act->getName() == action.type; });

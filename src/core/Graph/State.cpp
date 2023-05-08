@@ -1,6 +1,7 @@
 #include "procedural/core/Graph/State.h"
 
 #include <iostream>
+#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 
 namespace procedural {
 
@@ -47,10 +48,11 @@ void State::linkVariables(std::map<std::string, Variable_t>& variables_)
 }
 
 
-void State::expandTransitions()
+void State::expandTransitions(ObjectPropertyClient* object_client)
 {
     for (auto& next: nexts_facts_)
-        next.first.expandProperty();
+        next.first.expandProperty(object_client);
+
 }
 
 std::string State::toString() const

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <set>
+#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 
 namespace procedural {
 
@@ -13,11 +14,13 @@ SpecializedAction::SpecializedAction(const std::string& name,
                                      const std::vector<PatternTransitionNetwork_t>& patterns_network,
                                      const std::vector<ActionDescription_t>& descriptions,
                                      int last_state_required,
+                                     ObjectPropertyClient* object_client,
                                      double ttl) : name_(name),
-                                                     is_valid_(false),
-                                                     time_to_live_(ttl),
-                                                     id_(0),
-                                                     last_state_required_(last_state_required)
+                                                   is_valid_(false),
+                                                   time_to_live_(ttl),
+                                                   id_(0),
+                                                   last_state_required_(
+                                                           last_state_required)
 {
 
     root_network_ = new Network(name_, id_);
@@ -29,6 +32,8 @@ SpecializedAction::SpecializedAction(const std::string& name,
         root_network_->addDescription(description);
 
     is_valid_ = root_network_->closeNetwork();
+    if (object_client != nullptr)
+        root_network_->expandProperties(object_client);
     root_network_->addTimeoutTransition(last_state_required_);
 }
 
@@ -139,7 +144,7 @@ void SpecializedAction::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
     }
 }
 
-void SpecializedAction::feed(Fact* fact)
+bool SpecializedAction::feed(Fact* fact)
 {
     updated_networks.clear();
     bool evolve = false;
@@ -147,9 +152,9 @@ void SpecializedAction::feed(Fact* fact)
     {
         if (network->evolve(fact))
         {
-//            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
+            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
             evolve = true;
-            if(network->newExplanationAvailable())
+            if (network->newExplanationAvailable())
                 updated_networks.push_back(network);
             // checkNetworkComplete(network);
         }
@@ -158,15 +163,20 @@ void SpecializedAction::feed(Fact* fact)
 
     if (evolve == false)
     {
-        Network* new_net = root_network_->clone(getNextId(),last_state_required_);
+        Network* new_net = root_network_->clone(-1, last_state_required_);
         if (new_net->evolve(fact))
         {
-//            std::cout << "create new network " << new_net->getName() << std::endl;
+            new_net->setId(getNextId());
             networks_.insert(new_net);
+            std::cout << "create new network " << new_net->getName() << std::endl;
+
+            evolve = true;
             // checkNetworkComplete(new_net);
         } else
             delete new_net;
     }
+
+    return evolve;
 
 }
 bool SpecializedAction::checksubAction(Action* action)
@@ -183,11 +193,11 @@ bool SpecializedAction::checksubAction(Action* action)
         for (auto complete_net: complete_networks)
             if (network->evolve(complete_net))
             {
-//                std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
+                std::cout << "\t succes of evolution sub action : " << network->getName() << std::endl;
                 evolve = true;
                 evolve_sub_action = true;
-                if(network->newExplanationAvailable())
-                    for(auto& net : network->getUpdatedNetworks())
+                if (network->newExplanationAvailable())
+                    for (auto& net: network->getUpdatedNetworks())
                         updated_networks.push_back(net);
                 // checkNetworkComplete(network);
             }
@@ -198,10 +208,11 @@ bool SpecializedAction::checksubAction(Action* action)
     {
         for (auto complete_net: complete_networks)
         {
-            Network* new_net = root_network_->clone(getNextId(),last_state_required_);
+            Network* new_net = root_network_->clone(-1, last_state_required_);
             if (new_net->evolve(complete_net))
             {
 //                std::cout << "create new network " << new_net->getName() << std::endl;
+                new_net->setId(getNextId());
                 networks_.insert(new_net);
                 evolve_sub_action = true;
                 evolve = true;

@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include "procedural/core/Types/PatternFact.h"
 #include "procedural/core/Types/Variable.h"
+#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 
 namespace procedural {
 
@@ -18,7 +19,7 @@ public:
     const std::string& getVarSubject() const { return var_subject_->literal; }
     const std::string& getVarObject() const { return var_object_->literal; }
 
-    void expandProperty();
+    void expandProperty(ObjectPropertyClient* object_client);
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
@@ -35,6 +36,8 @@ private:
     Variable_t* var_object_;
 
     std::unordered_set<int32_t> properties_;
+    std::string str_initial_property;
+    bool insertion_;
 };
 
 } // namespace procedural

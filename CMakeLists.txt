@@ -8,6 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
         std_msgs
+         ontologenius
+        mementar
         )
 
 find_package(yaml-cpp REQUIRED)
@@ -67,6 +69,8 @@ include_directories(
         include
         ${catkin_INCLUDE_DIRS}
         ${YAML_INCLUDE_DIRS}
+        ${ontologenius_INCLUDE_DIRS}
+        ${MEMENTAR_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}_types_lib
@@ -84,7 +88,7 @@ add_library(${PROJECT_NAME}_graph_lib
         src/core/Graph/State.cpp
         src/core/Graph/Network.cpp
         src/core/Graph/TransitionNetwork.cpp)
-target_link_libraries(${PROJECT_NAME}_graph_lib ${PROJECT_NAME}_types_lib)
+target_link_libraries(${PROJECT_NAME}_graph_lib ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
 
 add_library(${PROJECT_NAME}_reader_lib
         src/reader/YamlReader.cpp)

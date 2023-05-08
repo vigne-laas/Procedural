@@ -18,6 +18,7 @@ public:
                       const std::vector<PatternTransitionNetwork_t>& patterns_network,
                       const std::vector<ActionDescription_t>& descriptions,
                       int last_state_required,
+                      ObjectPropertyClient* object_client,
                       double ttl=30);
 
     bool isValid() const { return is_valid_; }
@@ -31,7 +32,7 @@ public:
 
     std::unordered_set<Network*> getCompleteNetwork() { return complete_networks_;};
 
-    void feed(Fact* fact);
+    bool feed(Fact* fact);
 
     std::string toString();
 
