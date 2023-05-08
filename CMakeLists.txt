@@ -57,7 +57,7 @@ find_package(yaml-cpp REQUIRED)
 catkin_package(
         # INCLUDE_DIRS include
         # LIBRARIES procedural_lib
-        CATKIN_DEPENDS roscpp rospy std_msgs
+        CATKIN_DEPENDS roscpp rospy std_msgs ontologenius mementar
         #  DEPENDS system_lib
 )
 
@@ -74,10 +74,8 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}_types_lib
-
         src/core/Types/PatternFact.cpp
         src/core/Types/WordTable.cpp
-
         src/core/Types/Fact.cpp
         )
 
@@ -113,11 +111,22 @@ add_library(${PROJECT_NAME}_feed_lib
         src/feeder/Feeder.cpp)
 target_link_libraries(${PROJECT_NAME}_feed_lib ${PROJECT_NAME}_utils_lib)
 
-
+add_library(${PROJECT_NAME}_interface_lib
+        src/RosInterface.cpp)
+target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
+        ${PROJECT_NAME}_reader_lib
+        ${PROJECT_NAME}_builder_lib
+        ${PROJECT_NAME}_utils_lib
+        ${catkin_LIBRARIES})
 
 ##################################
 ##      Test executables        ##
 ##################################
+
+
+catkin_install_python(PROGRAMS scripts/testPublisher.py
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+        )
 
 #add_executable(test_facts src/tests/core/test_facts.cpp)
 #add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
@@ -181,6 +190,14 @@ target_link_libraries(test_feeder
         ${PROJECT_NAME}_utils_lib
         )
 
+
+add_executable(recognition src/nodes/recognition.cpp)
+add_dependencies(recognition ${catkin_EXPORTED_TARGETS})
+target_link_libraries(recognition
+        ${PROJECT_NAME}_interface_lib
+        ${catkin_LIBRARIES}
+        ${ontologenius_LIBRARIES}
+        )
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(${PROJECT_NAME}_node
