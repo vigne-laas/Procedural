@@ -28,7 +28,7 @@ bool TransitionNetwork::match(Network* network)
             uint32_t local_val = variables_.at(pair.second)->getValue();
             if (local_val == 0)
                 variables_.at(pair.second)->value = network->getVar(pair.first).getValue();
-            else if (network->getVar(pair.first).getValue() != local_val)
+            else if ((network->getVar(pair.first).getValue()!=0) && (network->getVar(pair.first).getValue() != local_val))
                 return false;
         }
         flag_ = true;
