@@ -17,7 +17,7 @@ public:
 
     bool addPatterns(const SpecializedAction& pattern);
 
-    void feed(Fact* fact,TimeStamp_t currentTimestamp);
+    bool feed(Fact* fact, TimeStamp_t currentTimestamp);
 
     std::set<uint32_t> checkCompleteNetworks(TimeStamp_t currentTimestamp);
 

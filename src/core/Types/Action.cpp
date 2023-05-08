@@ -16,18 +16,19 @@ bool Action::addPatterns(const SpecializedAction& pattern)
         return false;
 }
 
-void Action::feed(Fact* fact, TimeStamp_t currentTimestamp)
+bool Action::feed(Fact* fact, TimeStamp_t currentTimestamp)
 {
-
+    bool evolve = false;
     for (auto& pattern: patterns_)
         if ((currentTimestamp - fact->getTimeStamp()) <= pattern.getTtl())
-            pattern.feed(fact);
+            evolve |= pattern.feed(fact);
         else
         {
             std::cout << "rejected fact : " << fact->toString() << " for  :" << pattern.getName() << std::endl;
 //            std::cout << "delta _t =" << currentTimestamp - fact->getTimeStamp() << " / ttl : " << pattern.getTtl()
 //                      << std::endl;
         }
+    return evolve;
 }
 
 std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t currentTimestamp)
@@ -67,6 +68,7 @@ void Action::clean()
     {
         pattern.clean();
     }
+    complete_networks_.clear();
 }
 
 void Action::cleanPatterns(std::set<uint32_t> set_id)
