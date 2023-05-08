@@ -22,7 +22,16 @@ void Feeder::feed(const std::string& str_fact, int id, TimeStamp_t fact_timstamp
     if(fact->isValid())
         callback_buffer(fact);
     else
-        std::cout << "rejected fact because invalid " << std::endl;
+        std::cout << "rejected fact because invalid :" << str_fact << std::endl;
+
+}
+void Feeder::feed(bool added,const std::string& subject,const std::string& property,const std::string& object, int id, TimeStamp_t fact_timstamp)
+{
+    auto fact = new Fact(added,subject,property,object,id,fact_timstamp);
+    if(fact->isValid())
+        callback_buffer(fact);
+    else
+        std::cout << "rejected fact because invalid "<< subject << "|" << property << "|" << object  << std::endl;
 
 }
 void Feeder::default_callback(Fact* fact)
