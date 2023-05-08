@@ -33,6 +33,9 @@ bool Action::feed(Fact* fact, TimeStamp_t currentTimestamp)
 
 std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t currentTimestamp)
 {
+//    std::cout << "complete_networks_ set beginning " << std::endl;
+//    for(auto net : complete_networks_)
+//        std::cout << net->getName() << std::endl;
     std::set<uint32_t> set_valid_facts;
     if (flag_ == false)
     {
@@ -43,7 +46,16 @@ std::set<uint32_t> Action::checkCompleteNetworks(TimeStamp_t currentTimestamp)
             if (temp_set.empty() == false)
             {
                 std::unordered_set<Network*> temp = pattern.getCompleteNetwork();
+//                std::cout << "temp set " << std::endl;
+//                for(auto net : temp)
+//                    std::cout << net->getName() << std::endl;
                 complete_networks_.insert(temp.begin(), temp.end());
+//                std::cout << "complete_networks_ set " << std::endl;
+//                for(auto net : complete_networks_)
+//                    std::cout << net->getName() << std::endl;
+//                std::cout << "complete net at :" << currentTimestamp << " from : "<<pattern.getName() <<" : \n";
+//                for(auto net : complete_networks_)
+//                    std::cout << "\t " <<net->getName() << std::endl;
             }
 
         }

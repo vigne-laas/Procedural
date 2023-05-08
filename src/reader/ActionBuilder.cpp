@@ -85,8 +85,8 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                                                        fact.required);
                     for (auto index = last_required; index <= fact.level; index++)
                     {
-                        std::cout << "link fact on " << action.getName() << " with " << fact << " between : " << index
-                                  << " and " << fact.level + 1 << std::endl;
+//                        std::cout << "link fact on " << action.getName() << " with " << fact << " between : " << index
+//                                  << " and " << fact.level + 1 << std::endl;
                         facts.emplace_back(index, patternfact, fact.level + 1);
                     }
 
@@ -104,8 +104,8 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                     {
                         for (auto index_subnet = last_required; index_subnet <= subnet.level; index_subnet++)
                         {
-                            std::cout << "link subnet on " << action.getName() << " with " << subnet
-                                      << " between : " << index_subnet << " and " << subnet.level + 1 << std::endl;
+//                            std::cout << "link subnet on " << action.getName() << " with " << subnet
+//                                      << " between : " << index_subnet << " and " << subnet.level + 1 << std::endl;
                             networks.emplace_back(index_subnet, subnet.level + 1, subnet.getName(), subnet.remap);
                         }
 
@@ -120,8 +120,8 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
             }
             current_level++;
         } while ((current_level != action.max_level) && (incomplete == false));
-        std::cout << "-----------------------------------------------------------------------------------------"
-                  << std::endl;
+//        std::cout << "-----------------------------------------------------------------------------------------"
+//                  << std::endl;
         if (incomplete)
         {
 //            std::cout << "impossible to create action due to incomplete remap" << std::endl;
@@ -248,4 +248,5 @@ void ActionBuilder::buildIncomplete()
         buildComposedAction(incomplete_creation_network_);
 
 }
+
 } // procedural

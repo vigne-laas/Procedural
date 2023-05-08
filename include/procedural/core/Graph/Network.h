@@ -94,6 +94,9 @@ public:
 
     void addTimeoutTransition(int last_state_required);
 
+    void setId(int new_id);
+    std::string getStrStructure();
+    void expandProperties(ObjectPropertyClient* object_client);
 private:
 
     bool checkIncompletsNetworks();

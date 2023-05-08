@@ -22,7 +22,7 @@ public:
     void addTransition(const TransitionNetwork& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
-    void expandTransitions();
+    void expandTransitions(ObjectPropertyClient* object_client);
     bool isFinalNode() const { return nexts_facts_.empty() && nexts_networks_.empty(); }
     uint32_t getId() const { return id_; };
     std::string toString() const;

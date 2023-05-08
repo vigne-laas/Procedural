@@ -45,6 +45,7 @@ public:
     std::vector<std::string> getLiteralVariables() {return root_network_->getLiteralVariables();};
 
 
+    std::string getStrStructure();
 private:
     int id_;
 

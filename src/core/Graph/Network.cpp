@@ -79,7 +79,6 @@ float Network::getCompletionRatio() const
 std::vector<std::string> Network::getDescription()
 {
     std::vector<std::string> res;
-//    res.resize(descriptions_.size());
     for (auto& description: descriptions_)
         res.push_back(description.explainExplicit());
     return res;

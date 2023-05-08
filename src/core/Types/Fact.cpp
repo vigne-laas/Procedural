@@ -27,9 +27,9 @@ std::string Fact::toString() const
     if (this->isValid())
         return ((this->add_) ? "ADD " : "DEL ") + individuals_table[this->subject_] + " " +
                properties_table[this->property_] + " " +
-               individuals_table[this->object_];
+               individuals_table[this->object_] + " id : " + std::to_string(id_);
     else
-        return "";
+        return "Invalid Facts";
 }
 
 } // namespace procedural

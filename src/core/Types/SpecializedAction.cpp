@@ -91,13 +91,14 @@ std::set<uint32_t> SpecializedAction::checkNetwork(TimeStamp_t current_timestamp
     {
         if (network->involveFacts(set_valid_facts))
         {
-//            std::cout << "may delete this network" << network->getName() << std::endl;
+//            std::cout << "may delete this network involved :" << network->getName() << std::endl;
             networks_to_del.insert(network);
         }
     }
 
     for (auto network_to_del: networks_to_del)
     {
+//        std::cout << "deleted network  : " << network_to_del->getName() << std::endl;
         networks_.erase(network_to_del);
         delete network_to_del;
     }
@@ -131,14 +132,14 @@ void SpecializedAction::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
     {
         if (network->involveFacts(list_valid_facts))
         {
-//            std::cout << "may delete this network : " << network->getName() << std::endl;
+//            std::cout << "may delete this network involved : " << network->getName() << std::endl;
             network_to_deletes.push_back(network);
         }
     }
 
     for (auto network: network_to_deletes)
     {
-//        std::cout << "delete network  : " << network->getName() << std::endl;
+//        std::cout << "deleted network  : " << network->getName() << std::endl;
         networks_.erase(network);
         delete network;
     }
@@ -252,7 +253,13 @@ std::string SpecializedAction::currentState(bool shortVersion)
     res += "\n";
     return res;
 }
-
+std::string SpecializedAction::getStrStructure()
+{
+    std::string res;
+    res += "Structure of : " + name_ + "\n";
+    res += root_network_->getStrStructure();
+    return res;
+}
 
 
 } // namespace procedural
