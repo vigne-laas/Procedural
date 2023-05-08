@@ -1,0 +1,6 @@
+<launch>
+    <remap from="/mementar/echo" to="/ActionRecognition/inputFacts"/>
+    <include file="$(find procedural)/launch/ontologenius_mementar.launch">
+    </include>
+    <node name="recognition" pkg="procedural" type="recognition" output="screen" />
+</launch>

@@ -1,0 +1,16 @@
+<launch>
+  <arg name="files" default="
+    $(find common_ground_ontology)/CG_root.owl
+    $(find common_ground_ontology)/ris_agents.owl
+    $(find procedural)/ontologies/recognition.owl
+  "/>
+
+  <include file="$(find mementar)/launch/mementar_ontologenius.launch">
+    <arg name="mementar_intern_directory" value="none" />
+    <arg name="mementar_config_file" value="$(find procedural)/configs/mementar.yaml" />
+    <arg name="onto_config_file" value="$(find procedural)/configs/ontologenius.yaml" />
+    <arg name="onto_display" value="false" />
+    <arg name="onto_files" value="$(arg files)" />
+    <arg name="onto_intern_file" value="none" />
+  </include>
+</launch>
