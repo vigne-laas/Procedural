@@ -82,12 +82,12 @@ Grasp:
     - ?A hasHandMovingToward ?C
     - ?A isHolding ?C REQUIRED
   description:
-    - ?? isA Grasp
+    - ?? isA GraspAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?C
 #
 #
-Pick_over:
+Pick_Over:
   parameters:
     ttl: 30
   pattern:
@@ -96,12 +96,12 @@ Pick_over:
   remap:
     - G.C: O
   description:
-    - ?? isA PickOverAction
+    - ?? isA Pick_OverAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S
 
-Pick_into:
+Pick_Into:
   parameters:
     ttl: 30
   pattern:
@@ -110,47 +110,47 @@ Pick_into:
   remap:
     - G.C: O
   description:
-    - ?? isA PickIntoAction
+    - ?? isA Pick_IntoAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S
 
-Place_into:
+Place_Into:
   parameters:
     ttl: 30
   pattern:
     - ?O isInContainer ?S REQUIRED
     - R: Release
   description:
-    - ?? isA PlaceIntoAction
+    - ?? isA Place_IntoAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S
 
-Place_over:
+Place_Over:
   parameters:
     ttl: 30
   pattern:
     - ?O isOnTopOf ?S REQUIRED
     - R: Release
   description:
-    - ?? isA PlaceOverAction
+    - ?? isA Place_OverAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S
 
 
-Pick&Place_over:
+Pick&Place_Over:
   parameters:
     ttl: 40
   pattern:
-    - Pick: Pick_over REQUIRED
-    - Place: Place_over REQUIRED
+    - Pick: Pick_Over REQUIRED
+    - Place: Place_Over REQUIRED
   remap:
     - Pick.S: S1
     - Place.S: S2
   description:
-    - ?? isA Pick&PlaceOverAction
+    - ?? isA Pick&Place_OverAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S1
