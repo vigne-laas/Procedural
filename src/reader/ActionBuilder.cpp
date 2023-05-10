@@ -73,7 +73,6 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
         std::vector<PatternTransitionNetwork_t> networks;
 
         int last_required = 0;
-        std::cout << action.getName() << std::endl;
         int current_level = 0;
         do
         {
@@ -194,7 +193,7 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
                                    [action](Action* act) { return act->getName() == action.type; });
         if (result == actions_.end())
         {
-            std::cout << "create new action :" << action.type << std::endl;
+//            std::cout << "create new action :" << action.type << std::endl;
             auto action_ = new Action(action.type);
             actions_.push_back(action_);
         }
@@ -206,7 +205,7 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
                                    [action](Action* act) { return act->getName() == action.type; });
         if (result == actions_.end())
         {
-            std::cout << "create new action :" << action.type << std::endl;
+//            std::cout << "create new action :" << action.type << std::endl;
             auto action_ = new Action(action.type);
             actions_.push_back(action_);
         }

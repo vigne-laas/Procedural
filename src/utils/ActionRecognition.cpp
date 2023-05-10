@@ -61,7 +61,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                 }
 
             }
-            std::cout<< "nb complete network : " << nb_update << std::endl;
+//            std::cout<< "nb complete network : " << nb_update << std::endl;
 //            nb_update = (int)complete_actions.size();
             for (auto& action_complete: complete_actions)
             {
