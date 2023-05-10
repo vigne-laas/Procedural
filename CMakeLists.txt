@@ -174,21 +174,21 @@ target_link_libraries(test_reader
 #        )
 
 
-add_executable(test_action2 src/tests/test_action2.cpp)
-add_dependencies(test_action2 ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_action2
-        ${PROJECT_NAME}_utils_lib
-        ${catkin_LIBRARIES}
-        )
-
-add_executable(test_feeder src/tests/test_feeder.cpp)
-add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_feeder
-        ${PROJECT_NAME}_feed_lib
-        ${PROJECT_NAME}_reader_lib
-        ${PROJECT_NAME}_builder_lib
-        ${PROJECT_NAME}_utils_lib
-        )
+#add_executable(test_action2 src/tests/test_action2.cpp)
+#add_dependencies(test_action2 ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_action2
+#        ${PROJECT_NAME}_utils_lib
+#        ${catkin_LIBRARIES}
+#        )
+#
+#add_executable(test_feeder src/tests/test_feeder.cpp)
+#add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_feeder
+#        ${PROJECT_NAME}_feed_lib
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_utils_lib
+#        )
 
 
 add_executable(recognition src/nodes/recognition.cpp)
