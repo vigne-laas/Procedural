@@ -18,7 +18,7 @@ void TransitionFact::expandProperty(ObjectPropertyClient* object_client)
 {
 
     auto res = object_client->getDown(str_initial_property);
-    if (res.empty())
+    if (res.size()==1)
         return;
     std::cout << "expand property :" << str_initial_property << std::endl;
     for (const auto& result: res)
