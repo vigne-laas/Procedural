@@ -33,6 +33,12 @@ struct Description_t
         }
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const Description_t& description)
+    {
+        os << description.explainExplicit();
+        return os;
+    }
+
 
     void linkVariables(std::map<std::string, Variable_t>& variables)
     {
@@ -42,7 +48,7 @@ struct Description_t
             var_subject_ = &(variables.at(var_subject_str_));
     }
 
-    std::string explainExplicit()
+    std::string explainExplicit() const
     {
         std::string res = "[ADD]";
         if (var_subject_ != nullptr)
@@ -61,7 +67,7 @@ struct Description_t
 
     }
 
-    std::string explain()
+    std::string explain() const
     {
         std::string res = "[ADD]";
         if (var_subject_ != nullptr)
