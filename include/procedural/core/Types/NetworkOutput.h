@@ -7,9 +7,9 @@ namespace procedural {
 struct NetworkOutput
 {
     explicit NetworkOutput(Network* net, bool update = false) : descriptions(net->getDescription()), updated(update),
-                                                                start_time(net->getAge().toFloat()),
-                                                                stop_time(net->getLastupdate().toFloat()),
-                                                                name(net->getName())
+                                                                start_time(net->getAge()),
+                                                                stop_time(net->getLastupdate()),
+                                                                name(net->getName()),type(net->getTypeStr())
     {};
     friend std::ostream& operator<<(std::ostream& os, const NetworkOutput& val)
     {
@@ -28,11 +28,12 @@ struct NetworkOutput
         return os;
     }
 
-    std::vector <std::string> descriptions;
+    std::vector <Description_t> descriptions;
     bool updated;
-    float start_time;
-    float stop_time;
+    TimeStamp_t start_time;
+    TimeStamp_t stop_time;
     std::string name;
+    std::string type;
 };
 } //procedural
 #endif //PROCEDURAL_NETWORKOUTPUT_H

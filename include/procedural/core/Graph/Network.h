@@ -63,7 +63,7 @@ public:
     Variable_t getVar(const std::string& key) const { return variables_.at(key); }
     bool newExplanationAvailable() const { return new_explanations_; }
     float getCompletionRatio() const;
-    std::vector<std::string> getDescription();
+    std::vector<Description_t> getDescription() {return descriptions_;};
     std::vector<std::string> getLiteralVariables();
 
     bool isComplete() const { return current_state_->isFinalNode(); }

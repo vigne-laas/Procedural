@@ -16,7 +16,7 @@ Network::Network(const std::string& name, int id, uint32_t level) : type_str_(na
                                                                     last_update_(0, 0),
                                                                     level_(level), new_explanations_(false)
 {
-    full_name_ = type_str_ + " " + std::to_string(id);
+    full_name_ = type_str_ + "_" + std::to_string(id);
     variables_.emplace("self", full_name_);
     type_ = Network::types_table.get(type_str_);
 }
@@ -48,17 +48,15 @@ bool Network::evolve(Network* net)
     auto evolution = current_state_->evolve(net);
     if (evolution.first == nullptr)
         return false;
-    if (current_state_->getId() == id_initial_state_)
-        age_ = net->getLastupdate();
+    if (current_state_->getId() == id_initial_state_ || age_ > net->getAge())
+        age_ = net->getAge();
     last_update_ = net->getLastupdate();
 
     for (auto id_fact: net->getIdsFacts())
         id_facts_involve.push_back(id_fact);
     if (net->getCompletionRatio() != 1.0)
-    {
         incompletes_networks_.emplace_back(net, evolution.second->getRemap());
-//        std::cout << "incomplete add : " << net->getName() << std::endl;
-    }
+
     current_state_ = evolution.first;
     new_explanations_ = checkIncompletsNetworks();
 //    std::cout << "new_explanations_  : " << new_explanations_ <<std::endl;
@@ -76,13 +74,13 @@ float Network::getCompletionRatio() const
 }
 
 
-std::vector<std::string> Network::getDescription()
-{
-    std::vector<std::string> res;
-    for (auto& description: descriptions_)
-        res.push_back(description.explainExplicit());
-    return res;
-}
+//std::vector<std::string> Network::getDescription()
+//{
+//    std::vector<std::string> res;
+//    for (auto& description: descriptions_)
+//        res.push_back(description.explainExplicit());
+//    return res;
+//}
 
 std::vector<std::string> Network::getLiteralVariables()
 {
@@ -333,7 +331,7 @@ void Network::displayTypesTable()
 void Network::setId(int new_id)
 {
     id_ = new_id;
-    full_name_ = type_str_ + " " + std::to_string(new_id);
+    full_name_ = type_str_ + "_" + std::to_string(new_id);
     variables_.at("self").literal = full_name_;
 //    std::cout << "full_name :" << full_name_ << std::endl;
 //    std::cout << "description : " << descriptions_.at(0).var_subject_str_ << " isA "
@@ -353,7 +351,7 @@ std::string Network::getStrStructure()
 }
 void Network::expandProperties(ObjectPropertyClient* object_client)
 {
-    for(auto& state : states_)
+    for (auto& state: states_)
         (state.second)->expandTransitions(object_client);
 
 }

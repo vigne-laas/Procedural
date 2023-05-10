@@ -1,23 +1,19 @@
 #include <std_msgs/String.h>
 #include "procedural/RosInterface.h"
-
+#include "mementar/ActionsPublisher.h"
+#include <stdexcept>
 
 namespace procedural {
 
 
 RosInterface::RosInterface(ros::NodeHandle* n, const std::string& name) : node_(n), name_(name)
 {
-    std::cout << ">>>>>>>>>>>>>>>>>>> Waiting ontology manipulator " << std::endl;
-    if (name_.empty())
-    {
-        ros::service::waitForService("/ontologenius/object_property");
-        manipulator_ = new OntologyManipulator(n);
-    } else
-    {
-        auto manipulators = new OntologiesManipulator(n);
-        manipulators->waitInit();
-        manipulator_ = manipulators->get(name_);
-    }
+//    std::cout << ">>>>>>>>>>>>>>>>>>> Waiting ontology manipulator " << std::endl;
+    manipulator_ = new OntologyManipulator(name_);
+//    std::cout << ">>>>>>>>>>>>>>>>>>> Waiting ontology feeder Connected " << std::endl;
+    manipulator_->close();
+    //manipulator_->feeder.waitConnected();
+    actions_publisher_ = new mementar::ActionsPublisher(n, name);
     std::cout << "<<<<<<<<<<<<<<<<<<< Init ok ontology manipulator " << std::endl;
     parse();
     build();
@@ -59,9 +55,9 @@ bool RosInterface::build()
 
     builder_.build(reader_.getSimpleActions(), reader_.getComposedActions(), &(manipulator_->objectProperties));
     auto Actions_ = builder_.getActions();
-    for (auto action: Actions_)
-        for (auto sub_action: action->getSpecializedActions())
-            std::cout << sub_action.getStrStructure() << "\n\n" << std::endl;
+//    for (auto action: Actions_)
+//        for (auto sub_action: action->getSpecializedActions())
+//            std::cout << sub_action.getStrStructure() << "\n\n" << std::endl;
 //            std::cout << sub_action.toString() << std::endl;
     Network::displayTypesTable();
 
@@ -85,6 +81,47 @@ bool RosInterface::link()
     return false;
 }
 
+void RosInterface::OntologeniusPublisher(const NetworkOutput& output)
+{
+    ros::Time stamp_time((double) output.start_time.toFloat());
+    if (manipulator_->individuals.exist(output.name) == false)
+    {
+        if (manipulator_->classes.exist(output.type) == false)
+        {
+
+            manipulator_->feeder.addInheritage(output.type + "Action", "ActionType");
+//            manipulator_->feeder.addInheritage("ActionType", output.type + "Action");
+        }
+//        manipulator_->feeder.addConcept(output.name, stamp_time);
+    }
+    for (auto& description: output.descriptions)
+    {
+        std::string subject;
+        std::string object;
+        if (description.var_subject_ == nullptr)
+        {
+            if (description.var_subject_str_ == "self")
+                subject = output.name;
+            else
+                subject = description.var_subject_str_;
+        } else
+            subject = Fact::individuals_table[description.var_subject_->getValue()];
+
+        if (description.var_object_ == nullptr)
+        {
+            if (description.var_object_str_ == "self")
+                object = output.name;
+            else
+                object = description.var_object_str_;
+        } else
+            object = Fact::individuals_table[description.var_object_->getValue()];
+
+        manipulator_->feeder.addProperty(subject, description.property_, object);
+
+
+    }
+}
+
 std_msgs::String RosInterface::outputConverter(const NetworkOutput& output)
 {
     std::cout << " new output : " << output << std::endl;
@@ -92,12 +129,32 @@ std_msgs::String RosInterface::outputConverter(const NetworkOutput& output)
     std::stringstream ss;
     ss << output;
     res.data = ss.str();
+    TimeStamp_t delta_t{0, 500000000};
+    auto start_time(output.start_time.removeDeltaT(delta_t));
+    auto stop_time(output.stop_time.addDeltaT(delta_t));
+
+
+//    std::cout << "start time :" << start_time << std::endl;
+//    std::cout << "stop time :" << stop_time << std::endl;
+
+    actions_publisher_->insert(output.name, {(uint32_t) start_time.sec_, (uint32_t) start_time.nsec_},
+                               {(uint32_t) stop_time.sec_, (uint32_t) stop_time.nsec_});
+    OntologeniusPublisher(output);
+//    usleep(500);
     return res;
 }
 void RosInterface::inputConverter(const mementar::StampedFact::ConstPtr& msg)
 {
-    feeder_.feed(msg->added, msg->subject, msg->predicat, msg->object, std::stoi(msg->id),
-                 {msg->stamp.sec, msg->stamp.nsec});
+    try
+    {
+        feeder_.feed(msg->added, msg->subject, msg->predicat, msg->object, std::stoi(msg->id),
+                     {msg->stamp.sec, msg->stamp.nsec});
+    }
+    catch (const std::exception& e)
+    {
+//        std::cout << "invalid fact not added to feeder : " << e.what() << " msg : " << (*msg) << std::endl;
+    }
+
 }
 
 

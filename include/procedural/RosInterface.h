@@ -10,6 +10,7 @@
 #include "procedural/core/Types/NetworkOutput.h"
 
 #include "mementar/StampedFact.h"
+#include "mementar/ActionsPublisher.h"
 
 #include "ontologenius/clients/ontologyClients/ObjectPropertyClient.h"
 #include "ontologenius/OntologiesManipulator.h"
@@ -33,6 +34,8 @@ private:
 
     std_msgs::String outputConverter(const NetworkOutput& output);
     void inputConverter(const mementar::StampedFact::ConstPtr& msg);
+    void OntologeniusPublisher(const NetworkOutput& output);
+
 
 
     ros::NodeHandle* node_;
@@ -40,7 +43,10 @@ private:
     ros::Subscriber sub_input_stamped_facts_;
 
     OntologyManipulator* manipulator_;
+    mementar::ActionsPublisher* actions_publisher_;
 //    ObjectPropertyClient* objectClient_;
+
+
 
     std::string name_;
 
