@@ -84,16 +84,10 @@ bool RosInterface::link()
 void RosInterface::OntologeniusPublisher(const NetworkOutput& output)
 {
     ros::Time stamp_time((double) output.start_time.toFloat());
-    if (manipulator_->individuals.exist(output.name) == false)
-    {
-        if (manipulator_->classes.exist(output.type) == false)
-        {
+    if (manipulator_->individuals.exist(output.name) == false && manipulator_->classes.exist(output.type) == false)
+        manipulator_->feeder.addInheritage(output.type + "Action","ActionType");
+//        manipulator_->feeder.addInheritage("ActionType", output.type + "Action");
 
-            manipulator_->feeder.addInheritage(output.type + "Action", "ActionType");
-//            manipulator_->feeder.addInheritage("ActionType", output.type + "Action");
-        }
-//        manipulator_->feeder.addConcept(output.name, stamp_time);
-    }
     for (auto& description: output.descriptions)
     {
         std::string subject;
@@ -115,8 +109,8 @@ void RosInterface::OntologeniusPublisher(const NetworkOutput& output)
                 object = description.var_object_str_;
         } else
             object = Fact::individuals_table[description.var_object_->getValue()];
-
-        manipulator_->feeder.addProperty(subject, description.property_, object);
+        if(object.empty() == false and subject.empty() == false)
+            manipulator_->feeder.addProperty(subject, description.property_, object);
 
 
     }
