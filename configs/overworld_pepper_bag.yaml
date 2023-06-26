@@ -1,0 +1,22 @@
+modules:
+  robot:
+    JointStatePerceptionModule: robot_joints
+  humans:
+    OptitrackPerceptionModule: optitrack
+  objects:
+    ArTrackPerceptionModule: ar_track
+    StaticObjectsPerceptionModule: static
+
+
+robot_joints:
+  robot_name : pepper
+optitrack: 
+  name: human_1
+  offset_x: 6.5068
+  offset_y: 2.9506
+
+ar_track:
+  min_track_err: 0.05
+
+static:
+  file: package://overworld/config/adream.yaml

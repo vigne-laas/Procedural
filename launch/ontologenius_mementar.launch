@@ -2,6 +2,8 @@
   <arg name="files" default="
     $(find common_ground_ontology)/CG_root.owl
     $(find common_ground_ontology)/ris_agents.owl
+    $(find overworld)/ontologies/adream_building.owl
+    $(find dt_resources)/ontologies/dt_objects.owl
     $(find procedural)/ontologies/recognition.owl
   "/>
 
