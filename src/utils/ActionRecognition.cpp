@@ -28,9 +28,9 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
     for (auto fact: list_facts)
     {
 
-        std::cout << "--------------" << std::endl;
-        std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
-                  << std::endl;
+         std::cout << "--------------" << std::endl;
+         std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
+                   << std::endl;
         std::set<uint32_t> set_id_facts;
         std::vector<procedural::Action*> complete_actions;
         for (auto& action: actions_)
@@ -70,9 +70,9 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     {
                         if (action->checkSubAction(action_complete))
                         {
-                            std::cout << "\t\t\t update for " << action->getName()
-                                      << "evolve thanks to complete of sub action : " << action_complete->getName()
-                                      << std::endl;
+                            // std::cout << "\t\t\t update for " << action->getName()
+                            //           << "evolve thanks to complete of sub action : " << action_complete->getName()
+                            //           << std::endl;
                             if (action->checkNewExplanation())
                             {
                                 auto nets = action->getNewExplanation();
