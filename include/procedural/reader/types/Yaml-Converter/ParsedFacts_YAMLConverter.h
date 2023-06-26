@@ -35,9 +35,9 @@ struct convert<procedural::ParsedFacts_t>
                     for (auto key_map: node[iter_node])
                     {
 //                        std::cout << "key_map: " << key_map.first.as<std::string>() << std::endl;
-                        if (key_map.first.as<std::string>() == "or_facts")
+                        if (key_map.first.as<std::string>() == "parallel")
                         {
-                            auto sub_node = node[iter_node]["or_facts"];
+                            auto sub_node = node[iter_node]["parallel"];
                             for (auto or_nodes = 0; or_nodes != sub_node.size(); or_nodes++)
                             {
                                 if (sub_node[or_nodes].IsScalar())

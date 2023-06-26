@@ -30,10 +30,10 @@ private :
     std::vector<ParsedComposedAction_t> composed_actions_;
 
     bool isSimpleAction(const YAML::Node& node)
-    { return node["ordered_facts"] && node["description"]; };
+    { return node["sequence"] && node["description"]; };
     bool isComposedAction(const YAML::Node& node)
     {
-        return node["pattern"] && node["description"];
+        return node["composed_sequence"] && node["description"];
     };
 
 };

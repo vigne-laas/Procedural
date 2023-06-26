@@ -1,11 +1,11 @@
 Pick:
-  ordered_facts:
+  sequence:
     - ?A hasHandMovingToward ?O
     - ?A hasInHand ?O
-    - or_facts:
+    - parallel:
         - NOT ?O isInContainer ?S REQUIRED
         - not ?O isOnTopOf ?S
-  effects:
+  description:
     - ?? isA PickAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O

@@ -1,5 +1,5 @@
 #PickSimple_over:
-#  ordered_facts:
+#  sequence:
 #    - ?A hasHandMovingToward ?O
 #    - ?A isHolding ?O
 #    - NOT ?O isOnTopOf ?S REQUIRED
@@ -10,7 +10,7 @@
 #    - ?? isPerformedFrom ?S
 #
 #PickSimple_into:
-#  ordered_facts:
+#  sequence:
 #    - ?A hasHandMovingToward ?O
 #    - ?A isHolding ?O
 #    - NOT ?O isInContainer ?S REQUIRED
@@ -25,7 +25,7 @@
 #PlaceSimple_over:
 #  parameters:
 #    ttl: 20
-#  ordered_facts:
+#  sequence:
 #    - ?A hasHandMovingToward ?S
 #    - ?O isOnTopOf ?S REQUIRED
 #    - NOT ?A isHolding ?O REQUIRED
@@ -38,7 +38,7 @@
 #PlaceSimple_into:
 #  parameters:
 #    ttl: 20
-#  ordered_facts:
+#  sequence:
 #    - ?A hasHandMovingToward ?S
 #    - ?O isInContainer ?S REQUIRED
 #    - NOT ?A isHolding ?O REQUIRED
@@ -51,7 +51,7 @@
 Release:
   parameters:
     ttl: 10
-  ordered_facts:
+  sequence:
     - ?A hasHandMovingToward ?S
     - NOT ?A isHolding ?O REQUIRED
   description:
@@ -63,9 +63,9 @@ Release:
 
 
 #Release:
-#  ordered_facts:
+#  sequence:
 #    - NOT ?A isHolding ?O REQUIRED
-#    - or_facts:
+#    - parallel:
 #        - ?O isInContainer ?S
 #        - ?O isOnTopOf ?S
 #  description:
@@ -78,7 +78,7 @@ Release:
 Grasp:
   parameters:
     ttl: 10
-  ordered_facts:
+  sequence:
     - ?A hasHandMovingToward ?C
     - ?A isHolding ?C REQUIRED
   description:
@@ -90,7 +90,7 @@ Grasp:
 Pick_Over:
   parameters:
     ttl: 15
-  pattern:
+  composed_sequence:
     - NOT ?O isOnTopOf ?S REQUIRED
     - G: Grasp
   remap:
@@ -104,7 +104,7 @@ Pick_Over:
 #Pick_Over:
 #  parameters:
 #    ttl: 15
-#  pattern:
+#  composed_sequence:
 #    - G: Grasp
 #    - NOT ?O isOnTopOf ?S REQUIRED
 #  remap:
@@ -119,7 +119,7 @@ Pick_Over:
 Pick_Into:
   parameters:
     ttl: 15
-  pattern:
+  composed_sequence:
     - G: Grasp
     - NOT ?O isInContainer ?S REQUIRED
   remap:
@@ -133,7 +133,7 @@ Pick_Into:
 Place_Into:
   parameters:
     ttl: 15
-  pattern:
+  composed_sequence:
     - R: Release
     - ?O isInContainer ?S REQUIRED
   description:
@@ -144,7 +144,7 @@ Place_Into:
 #Place_Into:
 #  parameters:
 #    ttl: 15
-#  pattern:
+#  composed_sequence:
 #    - ?O isInContainer ?S REQUIRED
 #    - R: Release
 #  description:
@@ -157,7 +157,7 @@ Place_Into:
 Place_Over:
   parameters:
     ttl: 15
-  pattern:
+  composed_sequence:
     - R: Release
     - ?O isOnTopOf ?S REQUIRED
   description:
@@ -169,7 +169,7 @@ Place_Over:
 #Place_Over:
 #  parameters:
 #    ttl: 15
-#  pattern:
+#  composed_sequence:
 #    - ?O isOnTopOf ?S REQUIRED
 #    - R: Release
 #  description:
@@ -182,7 +182,7 @@ Place_Over:
 #Pick&Place_Over:
 #  parameters:
 #    ttl: 20
-#  pattern:
+#  composed_sequence:
 #    - Pick: Pick_Over REQUIRED
 #    - Place: Place_Over REQUIRED
 #  remap:
@@ -198,7 +198,7 @@ Place_Over:
 #Pick&Place_OverOverRobot:
 #  parameters:
 #    ttl: 20
-#  pattern:
+#  composed_sequence:
 #    - Pick: Pick_Over REQUIRED
 #    - Place: Place_OverRobot REQUIRED
 #  remap:
@@ -214,7 +214,7 @@ Place_Over:
 #Pick&Place_OverRobot:
 #  parameters:
 #    ttl: 20
-#  pattern:
+#  composed_sequence:
 #    - NOT ?O isOnTopOf ?S REQUIRED
 #    - Place: Place_OverRobot REQUIRED
 #  remap:
@@ -229,7 +229,7 @@ Place_Over:
 #Pick&Place_OverIntoRobot:
 #  parameters:
 #    ttl: 20
-#  pattern:
+#  composed_sequence:
 #    - Pick: Pick_OverRobot REQUIRED
 #    - Place: Place_IntoRobot REQUIRED
 #  remap:

@@ -28,7 +28,7 @@ struct convert<procedural::ParsedSimpleAction_t>
 //            std::cout << "key : " << key << std::endl;
             if (key == "parameters")
                 new_simple_action.parameters = iter_node.second.as<procedural::ParsedParameters_t>();
-            if (key == "ordered_facts")
+            if (key == "sequence")
                 new_simple_action.facts = iter_node.second.as<procedural::ParsedFacts_t>();
             if (key == "description")
                 new_simple_action.descriptions = iter_node.second.as<procedural::ParsedDescriptions_t>();

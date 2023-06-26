@@ -28,7 +28,7 @@ struct convert<procedural::ParsedComposedAction_t>
             std::string key = iter_node.first.as<std::string>();
             if (key == "parameters")
                 new_composed_action.parameters = iter_node.second.as<procedural::ParsedParameters_t>();
-            if (key == "pattern")
+            if (key == "composed_sequence")
                 new_composed_action.addPattern(iter_node.second.as<procedural::ParsedPattern_t>());
             if (key == "description")
                 new_composed_action.descriptions = iter_node.second.as<procedural::ParsedDescriptions_t>();
