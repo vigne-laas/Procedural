@@ -48,7 +48,7 @@ struct ParsedRemaps_t
     friend std::ostream& operator<<(std::ostream& os, const ParsedRemaps_t& lhs)
     {
         for (const auto& map_elmt: lhs.remaps)
-            os << "Network literal " << map_elmt.first << " : \n" << map_elmt.second << "\n";
+            os << "State Machine literal " << map_elmt.first << " : \n" << map_elmt.second << "\n";
         return os;
     }
     std::regex regex_origine;

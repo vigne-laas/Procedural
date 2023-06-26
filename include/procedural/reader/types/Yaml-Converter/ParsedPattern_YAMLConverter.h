@@ -31,7 +31,7 @@ struct convert<procedural::ParsedPattern_t>
                 parsed_pattern.facts.emplace_back(key, level);
             } else
             {
-                if (node[iter_node].IsMap()) // TODO or_facts or or_networks
+                if (node[iter_node].IsMap()) //TODO or_facts or or_networks
                 {
                     for (const auto& map_elmt: node[iter_node])
                     {
@@ -39,7 +39,7 @@ struct convert<procedural::ParsedPattern_t>
 //                                  << map_elmt.second.as<std::string>() << std::endl;
                         auto literal = map_elmt.first.as<std::string>();
                         auto type = map_elmt.second.as<std::string>();
-                        parsed_pattern.subnetworks.emplace_back(literal, type, level);
+                        parsed_pattern.sub_state_machines.emplace_back(literal, type, level);
                     }
 
                 }

@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_ACTION_H
-#define PROCEDURAL_ACTION_H
+#ifndef PROCEDURAL_ACTIONTYPE_H
+#define PROCEDURAL_ACTIONTYPE_H
 
 #include <string>
 #include <vector>
@@ -15,15 +15,15 @@ class ActionType
 public:
     explicit ActionType(const std::string& name);
 
-    bool addPatterns(const Action& pattern);
+    bool addActions(const Action& action);
 
     bool feed(Fact* fact, TimeStamp_t currentTimestamp);
 
-    std::set<uint32_t> checkCompleteNetworks(TimeStamp_t currentTimestamp);
+    std::set<uint32_t> checkCompleteStateMachines(TimeStamp_t currentTimestamp);
 
     void displayCurrentState();
 
-    void cleanPatterns(std::set<uint32_t> set_id);
+    void cleanActions(std::set<uint32_t> set_id);
     void clean();
 
     std::string toString();
@@ -32,24 +32,24 @@ public:
 
     bool checkSubAction(ActionType* action);
 
-    std::unordered_set<StateMachine*> getCompleteNetworks() { return complete_networks_;};
+    std::unordered_set<StateMachine*> getCompletesStateMachines() { return complete_state_machines_;};
     std::string getName() const { return name_;};
     bool checkNewExplanation();
     std::vector<StateMachine*> getNewExplanation();
 
     double maxTtl();
 
-    std::vector<Action> getSpecializedActions() {return patterns_;};
+    std::vector<Action> getActions() {return actions_;};
 private:
     std::string name_;
-    std::unordered_set<StateMachine*> complete_networks_;
-    std::unordered_set<StateMachine*> updated_sub_networks_;
+    std::unordered_set<StateMachine*> complete_state_machines_;
+    std::unordered_set<StateMachine*> updated_sub_state_machines_;
     bool flag_;
 
-    std::vector<Action> patterns_;
+    std::vector<Action> actions_;
 
 };
 
 } // namespace procedural
 
-#endif // PROCEDURAL_ACTION_H
+#endif // PROCEDURAL_ACTIONTYPE_H

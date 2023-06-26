@@ -29,7 +29,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
 
         std::vector<PatternTransitionFact_t> facts;
         std::vector<ActionDescription_t> descriptions;
-        std::vector<PatternTransitionNetwork_t> networks;
+        std::vector<PatternTransitionStateMachine_t> state_machines;
 
         int last_required = 0;
 //        std::cout << action.type << "_" << action.subtype << std::endl;
@@ -53,13 +53,13 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
         if (ttl == 0)
             ttl = 30;
 
-        Action new_spe_action(action.getName(), facts, networks, descriptions,
+        Action new_spe_action(action.getName(), facts, state_machines, descriptions,
                               last_required,
                               property_client_,
                               ttl);
         auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                           [action](ActionType* act) { return act->getName() == action.type; });
-        (*action_to_add)->addPatterns(new_spe_action);
+        (*action_to_add)->addActions(new_spe_action);
     }
 
 }
@@ -70,7 +70,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
         bool incomplete = false;
         std::vector<PatternTransitionFact_t> facts;
         std::vector<ActionDescription_t> descriptions;
-        std::vector<PatternTransitionNetwork_t> networks;
+        std::vector<PatternTransitionStateMachine_t> state_machines;
 
         int last_required = 0;
         int current_level = 0;
@@ -95,7 +95,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                 }
             }
 
-            for (auto& subnet: action.pattern.subnetworks)
+            for (auto& subnet: action.pattern.sub_state_machines)
             {
                 if (subnet.level == current_level)
                 {
@@ -105,7 +105,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                         {
 //                            std::cout << "link subnet on " << action.getName() << " with " << subnet
 //                                      << " between : " << index_subnet << " and " << subnet.level + 1 << std::endl;
-                            networks.emplace_back(index_subnet, subnet.level + 1, subnet.getName(), subnet.remap);
+                            state_machines.emplace_back(index_subnet, subnet.level + 1, subnet.getName(), subnet.remap);
                         }
 
                         if (subnet.required)
@@ -124,7 +124,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
         if (incomplete)
         {
 //            std::cout << "impossible to create action due to incomplete remap" << std::endl;
-            incomplete_creation_network_.push_back(action);
+            incomplete_creation_state_machine_.push_back(action);
 
         } else
         {
@@ -135,13 +135,13 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
             int ttl = action.parameters.ttl;
             if (ttl == 0)
                 ttl = 30;
-            Action new_spe_action(action.getName(), facts, networks, descriptions,
+            Action new_spe_action(action.getName(), facts, state_machines, descriptions,
                                   last_required,
                                   property_client_,
                                   ttl);
             auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                               [action](ActionType* act) { return act->getName() == action.type; });
-            (*action_to_add)->addPatterns(new_spe_action);
+            (*action_to_add)->addActions(new_spe_action);
         }
 
 
@@ -154,16 +154,16 @@ void ActionBuilder::display()
     for (auto action: actions_)
         std::cout << action->getName() << std::endl;
 }
-bool ActionBuilder::completeRemap(SubNetwork_t& network)
+bool ActionBuilder::completeRemap(SubStateMachine_t& sub_state_machine)
 {
     std::vector<std::string> sub_net_variables;
-    auto test = [network](const ActionType* action) { return action->getName() == network.type; };
+    auto test = [sub_state_machine](const ActionType* action) { return action->getName() == sub_state_machine.type; };
     auto result = std::find_if(actions_.begin(), actions_.end(), test);
     if (result != actions_.end())
     {
-        auto specialized_action = (*result)->getSpecializedActions();
-        auto test_specialized = [network](const Action& action) {
-            return action.getName() == network.getName();
+        auto specialized_action = (*result)->getActions();
+        auto test_specialized = [sub_state_machine](const Action& action) {
+            return action.getName() == sub_state_machine.getName();
         };
         auto result_specialized = std::find_if(specialized_action.begin(), specialized_action.end(), test_specialized);
         if (result_specialized != specialized_action.end())
@@ -177,8 +177,8 @@ bool ActionBuilder::completeRemap(SubNetwork_t& network)
     else
     {
         for (auto const& literal: sub_net_variables)
-            if (network.remap.find(literal) == network.remap.end())
-                network.remap.insert(std::make_pair(literal, literal));
+            if (sub_state_machine.remap.find(literal) == sub_state_machine.remap.end())
+                sub_state_machine.remap.insert(std::make_pair(literal, literal));
         return true;
     }
 
@@ -217,15 +217,15 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
 void ActionBuilder::buildIncomplete()
 {
     bool possible = true;
-    for (auto& net: incomplete_creation_network_)
+    for (auto& net: incomplete_creation_state_machine_)
     {
-        for (auto& subnet: net.pattern.subnetworks)
+        for (auto& subnet: net.pattern.sub_state_machines)
         {
             auto test = [subnet](const ActionType* action) { return action->getName() == subnet.type; };
             auto result = std::find_if(actions_.begin(), actions_.end(), test);
             if (result != actions_.end())
             {
-                auto specialized_action = (*result)->getSpecializedActions();
+                auto specialized_action = (*result)->getActions();
                 auto test_specialized = [subnet](const Action& action) {
                     return action.getName() == subnet.getName();
                 };
@@ -242,9 +242,9 @@ void ActionBuilder::buildIncomplete()
             break;
     }
     if (possible == false)
-        std::cout << "impossible to create all networks because at least one sub network is missing " << std::endl;
+        std::cout << "impossible to create all state machines because at least one sub state machine is missing " << std::endl;
     else
-        buildComposedAction(incomplete_creation_network_);
+        buildComposedAction(incomplete_creation_state_machine_);
 
 }
 

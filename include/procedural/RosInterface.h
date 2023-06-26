@@ -7,7 +7,7 @@
 #include "procedural/reader/ActionBuilder.h"
 #include "procedural/feeder/Feeder.h"
 #include "procedural/utils/ActionRecognition.h"
-#include "procedural/core/Types/NetworkOutput.h"
+#include "procedural/core/Types/StateMachineOutput.h"
 
 #include "mementar/StampedFact.h"
 #include "mementar/ActionsPublisher.h"
@@ -32,9 +32,9 @@ private:
     bool build();
     bool link();
 
-    std_msgs::String outputConverter(const NetworkOutput& output);
+    std_msgs::String outputConverter(const StateMachineOutput& output);
     void inputConverter(const mementar::StampedFact::ConstPtr& msg);
-    void OntologeniusPublisher(const NetworkOutput& output);
+    void OntologeniusPublisher(const StateMachineOutput& output);
 
 
 

@@ -2,7 +2,7 @@
 #include <set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 #include "procedural/core/Graph/StateMachine.h"
-#include "procedural/core/Graph/TransitionNetwork.h"
+#include "procedural/core/Graph/TransitionStateMachine.h"
 
 namespace procedural {
 
@@ -35,30 +35,30 @@ bool StateMachine::evolve(Fact* fact)
 
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
-    new_explanations_ = checkIncompletsNetworks();
+    new_explanations_ = checkIncompletsStateMachines();
     return true;
 }
 
-bool StateMachine::evolve(StateMachine* net)
+bool StateMachine::evolve(StateMachine* stateMachine)
 {
-    if (level_ < net->getLevel())
+    if (level_ < stateMachine->getLevel())
         return false;
     if ((valid_ && closed_) == false)
         return false;
-    auto evolution = current_state_->evolve(net);
+    auto evolution = current_state_->evolve(stateMachine);
     if (evolution.first == nullptr)
         return false;
-    if (current_state_->getId() == id_initial_state_ || age_ > net->getAge())
-        age_ = net->getAge();
-    last_update_ = net->getLastupdate();
+    if (current_state_->getId() == id_initial_state_ || age_ > stateMachine->getAge())
+        age_ = stateMachine->getAge();
+    last_update_ = stateMachine->getLastupdate();
 
-    for (auto id_fact: net->getIdsFacts())
+    for (auto id_fact: stateMachine->getIdsFacts())
         id_facts_involve.push_back(id_fact);
-    if (net->getCompletionRatio() != 1.0)
-        incompletes_networks_.emplace_back(net, evolution.second->getRemap());
+    if (stateMachine->getCompletionRatio() != 1.0)
+        incompletes_state_machines_.emplace_back(stateMachine, evolution.second->getRemap());
 
     current_state_ = evolution.first;
-    new_explanations_ = checkIncompletsNetworks();
+    new_explanations_ = checkIncompletsStateMachines();
 //    std::cout << "new_explanations_  : " << new_explanations_ <<std::endl;
     return true;
 }
@@ -74,14 +74,6 @@ float StateMachine::getCompletionRatio() const
 }
 
 
-//std::vector<std::string> Network::getDescription()
-//{
-//    std::vector<std::string> res;
-//    for (auto& description: descriptions_)
-//        res.push_back(description.explainExplicit());
-//    return res;
-//}
-
 std::vector<std::string> StateMachine::getLiteralVariables()
 {
     std::vector<std::string> res;
@@ -91,36 +83,36 @@ std::vector<std::string> StateMachine::getLiteralVariables()
 }
 
 
-bool StateMachine::addTransition(const PatternTransitionFact_t& pattern)
+bool StateMachine::addTransition(const PatternTransitionFact_t& transitionFact)
 {
     if (closed_ == false)
     {
-        addState(pattern.origin_state);
-        addState(pattern.next_state);
+        addState(transitionFact.origin_state);
+        addState(transitionFact.next_state);
 
-        insertVariable(pattern.fact->getVarSubject());
-        insertVariable(pattern.fact->getVarObject());
+        insertVariable(transitionFact.fact->getVarSubject());
+        insertVariable(transitionFact.fact->getVarObject());
 
-        TransitionFact t = TransitionFact(*(pattern.fact));
-        states_[pattern.origin_state]->addTransition(t, states_[pattern.next_state]);
+        TransitionFact t = TransitionFact(*(transitionFact.fact));
+        states_[transitionFact.origin_state]->addTransition(t, states_[transitionFact.next_state]);
         return true;
     } else
         return false;
 
 }
 
-bool StateMachine::addNetwork(const PatternTransitionNetwork_t& network)
+bool StateMachine::addStateMachine(const PatternTransitionStateMachine_t& transitionStateMachine)
 {
     if (closed_ == false)
     {
-        addState(network.origin_);
-        addState(network.next_);
-        for (auto& var: network.remap_var_)
+        addState(transitionStateMachine.origin_);
+        addState(transitionStateMachine.next_);
+        for (auto& var: transitionStateMachine.remap_var_)
             insertVariable(var.second);
 
-        auto type = StateMachine::types_table.get(network.type_);
-        TransitionNetwork transition(type, network.remap_var_);
-        states_[network.origin_]->addTransition(transition, states_[network.next_]);
+        auto type = StateMachine::types_table.get(transitionStateMachine.type_);
+        TransitionStateMachine transition(type, transitionStateMachine.remap_var_);
+        states_[transitionStateMachine.origin_]->addTransition(transition, states_[transitionStateMachine.next_]);
         return true;
     } else
         return false;
@@ -132,9 +124,9 @@ bool StateMachine::addDescription(const ActionDescription_t& des)
     return true;
 }
 
-bool StateMachine::closeNetwork()
+bool StateMachine::closeStateMachine()
 {
-    linkNetwork();
+    linkStateMachine();
     closed_ = true;
     processInitialState();
     valid_ = true;
@@ -174,14 +166,14 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
             TransitionFact t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
-        for (auto& pair_transition: states_.at(state.first)->getNextsNetworks())
+        for (auto& pair_transition: states_.at(state.first)->getNextsStateMachines())
         {
-            TransitionNetwork t = pair_transition.first;
+            TransitionStateMachine t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }
     N->addTimeoutTransition(last_state_required);
-    N->closeNetwork();
+    N->closeStateMachine();
     return N;
 }
 
@@ -205,14 +197,14 @@ std::string StateMachine::describe(bool expl)
     }
     msg += "// completion ratio :" + std::to_string(getCompletionRatio());
 
-    if (incompletes_networks_.empty())
+    if (incompletes_state_machines_.empty())
         return msg;
 
-    msg += "\t // incomplete Network link : ";
-    for (const auto& incomplete_net: incompletes_networks_)
+    msg += "\t // incomplete State Machine link : ";
+    for (const auto& incomplete_net: incompletes_state_machines_)
     {
-        msg += incomplete_net.network_->getName();
-        msg += "\n\t new level : " + std::to_string(incomplete_net.network_->getCompletionRatio()) + "\n";
+        msg += incomplete_net.state_machine_->getName();
+        msg += "\n\t new level : " + std::to_string(incomplete_net.state_machine_->getCompletionRatio()) + "\n";
 //         net.first->displayVariables();
     }
 
@@ -236,16 +228,16 @@ void StateMachine::addTimeoutTransition(int last_state_required)
 
 /* ------------------------------ private part ------------------------------ */
 
-bool StateMachine::checkIncompletsNetworks()
+bool StateMachine::checkIncompletsStateMachines()
 {
-    updated_sub_networks_.clear();
-    if (incompletes_networks_.empty())
+    updated_sub_state_machines_.clear();
+    if (incompletes_state_machines_.empty())
         return false;
-    for (auto& incomplete_net: incompletes_networks_)
-        if (incomplete_net.network_->updateVar(incomplete_net.remap_variables_, variables_))
-            updated_sub_networks_.push_back(incomplete_net.network_);
+    for (auto& incomplete_net: incompletes_state_machines_)
+        if (incomplete_net.state_machine_->updateVar(incomplete_net.remap_variables_, variables_))
+            updated_sub_state_machines_.push_back(incomplete_net.state_machine_);
 
-    return updated_sub_networks_.empty() == false;
+    return updated_sub_state_machines_.empty() == false;
 }
 
 
@@ -255,7 +247,7 @@ void StateMachine::addState(int id_state)
         states_.emplace(id_state, new State(getName(), id_state));
 }
 
-void StateMachine::linkNetwork()
+void StateMachine::linkStateMachine()
 {
     for (auto& state: states_)
     {
@@ -279,7 +271,7 @@ void StateMachine::processInitialState()
     {
         for (auto& nexts_state: pair_states.second->getNextsFacts())
             id_states_nexts.insert(nexts_state.second->getId());
-        for (auto& nexts_state: pair_states.second->getNextsNetworks())
+        for (auto& nexts_state: pair_states.second->getNextsStateMachines())
             id_states_nexts.insert(nexts_state.second->getId());
     }
 
@@ -293,7 +285,7 @@ void StateMachine::processInitialState()
     int nb_initial_state = result.size();
     if (result.size() == 0)
     {
-        throw NoInitialStateNetworkException();
+        throw NoInitialStateStateMachineException();
     } else if (nb_initial_state > 1)
     {
         // Maybe raise an error rather than printing text
@@ -302,7 +294,7 @@ void StateMachine::processInitialState()
         {
             invalid_states.insert(states_.at(res));
         }
-        throw MultiInitialStateNetworkException(invalid_states);
+        throw MultiInitialStateStateMachineException(invalid_states);
     } else
     {
         id_initial_state_ = *result.begin();

@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_SPECIALIZEDACTION_H
-#define PROCEDURAL_SPECIALIZEDACTION_H
+#ifndef PROCEDURAL_ACTION_H
+#define PROCEDURAL_ACTION_H
 
 #include <vector>
 #include "procedural/core/Types/PatternTransitionFact.h"
@@ -15,7 +15,7 @@ class Action
 public:
     Action(const std::string& name,
            const std::vector<PatternTransitionFact_t>& patterns,
-           const std::vector<PatternTransitionNetwork_t>& patterns_network,
+           const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
            const std::vector<ActionDescription_t>& descriptions,
            int last_state_required,
            ObjectPropertyClient* object_client,
@@ -25,12 +25,12 @@ public:
     double getTtl() const {return time_to_live_;}
     std::string getName() const { return name_;}
     int getNextId();
-    std::set<uint32_t> checkNetwork(TimeStamp_t current_timestamp);
+    std::set<uint32_t> checkStateMachine(TimeStamp_t current_timestamp);
 
     void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
     void clean();
 
-    std::unordered_set<StateMachine*> getCompleteNetwork() { return complete_networks_;};
+    std::unordered_set<StateMachine*> getCompleteStateMachine() { return complete_state_machines_;};
 
     bool feed(Fact* fact);
 
@@ -39,8 +39,8 @@ public:
     std::string currentState(bool shortVersion = true);
 
     bool checksubAction(ActionType* action);
-    bool checkNewUpdatedSubNetwork(){return updated_networks.empty() == false;};
-    std::vector<StateMachine*> getUpdatedNetworks() {return updated_networks;};
+    bool checkNewUpdatedSubStateMachine(){return updated_states_machines.empty() == false;};
+    std::vector<StateMachine*> getUpdatedStateMachines() {return updated_states_machines;};
 
     std::vector<std::string> getLiteralVariables() {return state_machine_factory_->getLiteralVariables();};
 
@@ -52,9 +52,9 @@ private:
     std::string name_;
     StateMachine* state_machine_factory_; //TODO issue when i try without *
 
-    std::unordered_set<StateMachine*> networks_;
-    std::unordered_set<StateMachine*> complete_networks_;
-    std::vector<StateMachine*> updated_networks;
+    std::unordered_set<StateMachine*> state_machines_;
+    std::unordered_set<StateMachine*> complete_state_machines_;
+    std::vector<StateMachine*> updated_states_machines;
 
 
     bool is_valid_;
@@ -67,4 +67,4 @@ private:
 
 } // namespace procedural
 
-#endif //PROCEDURAL_SPECIALIZEDACTION_H
+#endif //PROCEDURAL_ACTION_H

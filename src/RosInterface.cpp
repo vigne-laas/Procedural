@@ -69,19 +69,19 @@ bool RosInterface::build()
 bool RosInterface::link()
 {
     feeder_.setCallback([&](procedural::Fact* fact) { recognition_->addToQueue(fact); });
-    output_pub_ = node_->advertise<std_msgs::String>(getTopicName("outputNetwork"), 1);
+    output_pub_ = node_->advertise<std_msgs::String>(getTopicName("outputStateMachines"), 1);
 
     auto callback = [&](const mementar::StampedFact::ConstPtr& msg) { inputConverter(msg); };
     sub_input_stamped_facts_ = node_->subscribe<mementar::StampedFact>(getTopicName("inputFacts"), buffer_max_size_,
                                                                        callback);
-    recognition_->setCallback([&](const std::vector<procedural::NetworkOutput>& outputs) {
+    recognition_->setCallback([&](const std::vector<procedural::StateMachineOutput>& outputs) {
         for (auto& output: outputs)
         { output_pub_.publish(outputConverter(output)); };
     });
     return false;
 }
 
-void RosInterface::OntologeniusPublisher(const NetworkOutput& output)
+void RosInterface::OntologeniusPublisher(const StateMachineOutput& output)
 {
     ros::Time stamp_time((double) output.start_time.toFloat());
     if (manipulator_->individuals.exist(output.name) == false && manipulator_->classes.exist(output.type) == false)
@@ -116,7 +116,7 @@ void RosInterface::OntologeniusPublisher(const NetworkOutput& output)
     }
 }
 
-std_msgs::String RosInterface::outputConverter(const NetworkOutput& output)
+std_msgs::String RosInterface::outputConverter(const StateMachineOutput& output)
 {
     std::cout << " new output : " << output << std::endl;
     std_msgs::String res;

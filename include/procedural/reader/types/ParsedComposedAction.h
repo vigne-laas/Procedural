@@ -25,12 +25,12 @@ struct ParsedComposedAction_t
         for (auto& remap_element: remaps.remaps)
         {
             auto literal = remap_element.first;
-            auto find = [literal](const SubNetwork_t& subnet) { return subnet.literal == literal; };
-            auto result = std::find_if(pattern.subnetworks.begin(), pattern.subnetworks.end(), find);
-            if (result != pattern.subnetworks.end())
+            auto find = [literal](const SubStateMachine_t& subnet) { return subnet.literal == literal; };
+            auto result = std::find_if(pattern.sub_state_machines.begin(), pattern.sub_state_machines.end(), find);
+            if (result != pattern.sub_state_machines.end())
                 result->remap = remap_element.second.remap;
             else
-                std::cout << "Warning : not network find for this remap literal : " << literal << std::endl;
+                std::cout << "Warning : not state machine find for this remap literal : " << literal << std::endl;
         }
 
 

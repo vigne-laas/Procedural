@@ -41,10 +41,10 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         do
         {
             nb_update = 0;
-            std::vector<NetworkOutput> outputs;
+            std::vector<StateMachineOutput> outputs;
             for (auto& action: actions_)
             {
-                std::set<uint32_t> temp_set = action->checkCompleteNetworks(current_time);
+                std::set<uint32_t> temp_set = action->checkCompleteStateMachines(current_time);
                 if (temp_set.empty() == false)
                 {
                     set_id_facts.insert(temp_set.begin(), temp_set.end());
@@ -61,7 +61,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                 }
 
             }
-//            std::cout<< "nb complete network : " << nb_update << std::endl;
+//            std::cout<< "nb complete state machine : " << nb_update << std::endl;
 //            nb_update = (int)complete_actions.size();
             for (auto& action_complete: complete_actions)
             {
@@ -83,12 +83,12 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                         }
                     }
 
-                auto networks = action_complete->getCompleteNetworks();
-                for (auto& net: networks)
+                auto complete_state_machines = action_complete->getCompletesStateMachines();
+                for (auto& complete_state_machine: complete_state_machines)
                 {
 //                    auto output = NetworkOutput(net);
 //                    outputs.push_back(output);
-                    outputs.emplace_back(net);
+                    outputs.emplace_back(complete_state_machine);
                 }
 
 
@@ -99,7 +99,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
             if (nb_update != 0)
                 for (auto& action: actions_)
-                    action->cleanPatterns(set_id_facts);
+                    action->cleanActions(set_id_facts);
 
             complete_actions.clear();
         } while (nb_update != 0);
@@ -111,7 +111,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
     }
     buffer_->cleanUsedFacts(facts_used);
 }
-void ActionRecognition::defaultCallback(const std::vector<NetworkOutput>& outputs)
+void ActionRecognition::defaultCallback(const std::vector<StateMachineOutput>& outputs)
 {
     for (const auto& output: outputs)
         std::cout << ">> " << output << std::endl;

@@ -4,14 +4,14 @@
 #include "procedural/reader/types/ParsedFacts.h"
 
 namespace procedural {
-struct SubNetwork_t
+struct SubStateMachine_t
 {
-    SubNetwork_t() : level(0), regex_type(R"(\s*([^\s]*)\s*(REQUIRED)?)")
+    SubStateMachine_t() : level(0), regex_type(R"(\s*([^\s]*)\s*(REQUIRED)?)")
     {};
-    SubNetwork_t(const std::string& new_literal, const std::string& new_type, int new_level) : literal(
+    SubStateMachine_t(const std::string& new_literal, const std::string& new_type, int new_level) : literal(
             new_literal),
-                                                                                               level(new_level),
-                                                                                               regex_type(
+                                                                                                    level(new_level),
+                                                                                                    regex_type(
                                                                                                        R"(\s*([^_\s]*)_?([^\s]*)?\s*(REQUIRED)?)")
     {
         std::smatch results;
@@ -29,7 +29,7 @@ struct SubNetwork_t
         return sub_type.empty() ? res : res + "_" + sub_type;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const SubNetwork_t& lhs)
+    friend std::ostream& operator<<(std::ostream& os, const SubStateMachine_t& lhs)
     {
 
         os << lhs.literal << " <=> " << lhs.type;
@@ -57,7 +57,7 @@ struct ParsedPattern_t
         if (lhs.empty())
             return os;
         os << "subnet parsed : \n";
-        for (auto& subnet: lhs.subnetworks)
+        for (auto& subnet: lhs.sub_state_machines)
             os << subnet << "\n";
         os << "facts parsed : \n";
         for (auto& fact: lhs.facts)
@@ -66,9 +66,9 @@ struct ParsedPattern_t
     }
 
     bool empty() const
-    { return subnetworks.empty(); }
+    { return sub_state_machines.empty(); }
 
-    std::vector<SubNetwork_t> subnetworks;
+    std::vector<SubStateMachine_t> sub_state_machines;
     std::vector<ParsedFact_t> facts;
     int max_level;
 };

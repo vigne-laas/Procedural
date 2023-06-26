@@ -22,14 +22,14 @@ struct Description_t
             if (variables.find(des.subject_) != variables.end())
                 var_subject_ = &(variables.at(des.subject_));
             // else
-            // throw NetworkException("Variable "+des.subject_+ " not found invalid description");
+            // throw StateMachineException("Variable "+des.subject_+ " not found invalid description");
         }
         if (des.object_is_var_)
         {
             if (variables.find(des.object_) != variables.end())
                 var_object_ = &(variables.at(des.object_));
             // else
-            // throw NetworkException("Variable "+des.object_+ " not found invalid description");
+            // throw StateMachineException("Variable "+des.object_+ " not found invalid description");
         }
     }
 

@@ -11,7 +11,7 @@ namespace procedural {
 
 Action::Action(const std::string& name,
                const std::vector<procedural::PatternTransitionFact_t>& patterns,
-               const std::vector<PatternTransitionNetwork_t>& patterns_network,
+               const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
                const std::vector<ActionDescription_t>& descriptions,
                int last_state_required,
                ObjectPropertyClient* object_client,
@@ -26,12 +26,12 @@ Action::Action(const std::string& name,
     state_machine_factory_ = new StateMachine(name_, id_);
     for (auto& pattern: patterns)
         state_machine_factory_->addTransition(pattern);
-    for (auto& net_pattern: patterns_network)
-        state_machine_factory_->addNetwork(net_pattern);
+    for (auto& net_pattern: transition_state_machines)
+        state_machine_factory_->addStateMachine(net_pattern);
     for (auto& description: descriptions)
         state_machine_factory_->addDescription(description);
 
-    is_valid_ = state_machine_factory_->closeNetwork();
+    is_valid_ = state_machine_factory_->closeStateMachine();
     if (object_client != nullptr)
         state_machine_factory_->expandProperties(object_client);
     state_machine_factory_->addTimeoutTransition(last_state_required_);
@@ -43,38 +43,37 @@ int Action::getNextId()
     return id_++;
 }
 
-std::set<uint32_t> Action::checkNetwork(TimeStamp_t current_timestamp)
+std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
 {
-//    std::unordered_set<Network*> complete_networks;
-    std::unordered_set<StateMachine*> networks_to_del;
+    std::unordered_set<StateMachine*> state_machines_to_del;
 
     std::set<uint32_t> set_valid_facts;
-    for (auto network: networks_)
+    for (auto state_machine: state_machines_)
     {
-//        std::cout << "value : "<< current_timestamp - network->getAge() << "ttl : " << time_to_live_ << std::endl;
-        if (network->isComplete())
-            complete_networks_.insert(network);
-        else if (current_timestamp - network->getAge() > time_to_live_)
+//        std::cout << "value : "<< current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
+        if (state_machine->isComplete())
+            complete_state_machines_.insert(state_machine);
+        else if (current_timestamp - state_machine->getAge() > time_to_live_)
         {
 
-            if(network->getCurrentState()->hasTimeoutTransition())
-                complete_networks_.insert(network);
+            if(state_machine->getCurrentState()->hasTimeoutTransition())
+                complete_state_machines_.insert(state_machine);
             else
             {
-                networks_to_del.insert(network);
-                std::cout << "Del network due to age " << network->getName() << "value : "
-                          << current_timestamp - network->getAge() << "ttl : " << time_to_live_ << std::endl;
+                state_machines_to_del.insert(state_machine);
+                std::cout << "Del state machine due to age " << state_machine->getName() << "value : "
+                          << current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
             }
         }
     }
 
-    for (auto& complete_network: complete_networks_)
+    for (auto& complete_state_machine: complete_state_machines_)
     {
-//        std::cout << "network finish :" << complete_network->getName() << std::endl;
-//        std::cout << "explanation : " << complete_network->describe(true) << std::endl;
+//        std::cout << "state machine finish :" << complete_state_machine->getName() << std::endl;
+//        std::cout << "explanation : " << complete_state_machine->describe(true) << std::endl;
 //        std::cout << "facts involved : ";
 
-        for (auto& id: complete_network->getIdsFacts())
+        for (auto& id: complete_state_machine->getIdsFacts())
         {
 //            std::cout << std::to_string(id) << "|";
             set_valid_facts.insert(id);
@@ -82,25 +81,25 @@ std::set<uint32_t> Action::checkNetwork(TimeStamp_t current_timestamp)
 //        NetworkOutput output(complete_network,false);
 //        std::cout << output << std::endl;
 //        std::cout << std::endl;
-        networks_.erase(complete_network);
+        state_machines_.erase(complete_state_machine);
         // delete complete_network; // Check if Guillaume is right
     }
     // std::cout << "Pattern : "<< this->name_<< std::endl;
     // std::cout << "size net : "<< networks_.size()<< std::endl;
-    for (auto& network: networks_)
+    for (auto& state_machine: state_machines_)
     {
-        if (network->involveFacts(set_valid_facts))
+        if (state_machine->involveFacts(set_valid_facts))
         {
 //            std::cout << "may delete this network involved :" << network->getName() << std::endl;
-            networks_to_del.insert(network);
+            state_machines_to_del.insert(state_machine);
         }
     }
 
-    for (auto network_to_del: networks_to_del)
+    for (auto state_machine_to_del: state_machines_to_del)
     {
 //        std::cout << "deleted network  : " << network_to_del->getName() << std::endl;
-        networks_.erase(network_to_del);
-        delete network_to_del;
+        state_machines_.erase(state_machine_to_del);
+        delete state_machine_to_del;
     }
 
     return set_valid_facts;
@@ -108,55 +107,55 @@ std::set<uint32_t> Action::checkNetwork(TimeStamp_t current_timestamp)
 
 void Action::clean()
 {
-    for (auto complete_net: complete_networks_)
-        if (complete_net->getCompletionRatio() == 1.0)
-            delete complete_net;
+    for (auto complete_state_machine: complete_state_machines_)
+        if (complete_state_machine->getCompletionRatio() == 1.0)
+            delete complete_state_machine;
 
 //    for (auto network_to_del : networks_to_del_)
 //         delete network_to_del;
 
-    complete_networks_.clear();
+    complete_state_machines_.clear();
 //    networks_to_del_.clear();
 }
 
 void Action::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
 {
-    std::vector<StateMachine*> network_to_deletes;
+    std::vector<StateMachine*> state_machine_to_deletes;
     if (evolve_sub_action)
     {
         evolve_sub_action = false;
         return;
     }
 
-    for (auto& network: networks_)
+    for (auto& state_machine: state_machines_)
     {
-        if (network->involveFacts(list_valid_facts))
+        if (state_machine->involveFacts(list_valid_facts))
         {
 //            std::cout << "may delete this network involved : " << network->getName() << std::endl;
-            network_to_deletes.push_back(network);
+            state_machine_to_deletes.push_back(state_machine);
         }
     }
 
-    for (auto network: network_to_deletes)
+    for (auto state_machine: state_machine_to_deletes)
     {
 //        std::cout << "deleted network  : " << network->getName() << std::endl;
-        networks_.erase(network);
-        delete network;
+        state_machines_.erase(state_machine);
+        delete state_machine;
     }
 }
 
 bool Action::feed(Fact* fact)
 {
-    updated_networks.clear();
+    updated_states_machines.clear();
     bool evolve = false;
-    for (auto& network: networks_)
+    for (auto& state_machine: state_machines_)
     {
-        if (network->evolve(fact))
+        if (state_machine->evolve(fact))
         {
-            std::cout << "\t succes of evolution  : " << network->getName() << std::endl;
+            std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
             evolve = true;
-            if (network->newExplanationAvailable())
-                updated_networks.push_back(network);
+            if (state_machine->newExplanationAvailable())
+                updated_states_machines.push_back(state_machine);
             // checkNetworkComplete(network);
         }
     }
@@ -168,8 +167,8 @@ bool Action::feed(Fact* fact)
         if (new_net->evolve(fact))
         {
             new_net->setId(getNextId());
-            networks_.insert(new_net);
-            std::cout << "create new network " << new_net->getName() << std::endl;
+            state_machines_.insert(new_net);
+            std::cout << "create new state machine " << new_net->getName() << std::endl;
 
             evolve = true;
             // checkNetworkComplete(new_net);
@@ -182,24 +181,24 @@ bool Action::feed(Fact* fact)
 }
 bool Action::checksubAction(ActionType* action)
 {
-    updated_networks.clear();
-    std::unordered_set<StateMachine*> complete_networks = action->getCompleteNetworks();
+    updated_states_machines.clear();
+    std::unordered_set<StateMachine*> complete_state_machines = action->getCompletesStateMachines();
 
-    if (complete_networks.empty())
+    if (complete_state_machines.empty())
         return false;
 
     bool evolve = false;
-    for (auto& network: networks_)
+    for (auto& state_machine: state_machines_)
     {
-        for (auto complete_net: complete_networks)
-            if (network->evolve(complete_net))
+        for (auto complete_state_machine: complete_state_machines)
+            if (state_machine->evolve(complete_state_machine))
             {
-                std::cout << "\t succes of evolution sub action : " << network->getName() << std::endl;
+                std::cout << "\t succes of evolution sub action : " << state_machine->getName() << std::endl;
                 evolve = true;
                 evolve_sub_action = true;
-                if (network->newExplanationAvailable())
-                    for (auto& net: network->getUpdatedNetworks())
-                        updated_networks.push_back(net);
+                if (state_machine->newExplanationAvailable())
+                    for (auto& net: state_machine->getUpdatedStateMachines())
+                        updated_states_machines.push_back(net);
                 // checkNetworkComplete(network);
             }
 
@@ -207,14 +206,14 @@ bool Action::checksubAction(ActionType* action)
 
     if (evolve == false)
     {
-        for (auto complete_net: complete_networks)
+        for (auto complete_state_machine: complete_state_machines)
         {
             StateMachine* new_net = state_machine_factory_->clone(-1, last_state_required_);
-            if (new_net->evolve(complete_net))
+            if (new_net->evolve(complete_state_machine))
             {
 //                std::cout << "create new network " << new_net->getName() << std::endl;
                 new_net->setId(getNextId());
-                networks_.insert(new_net);
+                state_machines_.insert(new_net);
                 evolve_sub_action = true;
                 evolve = true;
                 // checkNetworkComplete(new_net);
@@ -230,9 +229,9 @@ std::string Action::toString()
 {
     std::string res;
     res += "Pattern Recognition of : " + name_ + "\n";
-    res += "\t nb of active networks : " + std::to_string(networks_.size()) + "\n";
-    res += "\t active networks : \n";
-    for (auto& net: networks_)
+    res += "\t nb of active state machine : " + std::to_string(state_machines_.size()) + "\n";
+    res += "\t active state machine : \n";
+    for (auto& net: state_machines_)
         res += net->toString() + "\n";
     return res;
 }
@@ -241,8 +240,8 @@ std::string Action::currentState(bool shortVersion)
 {
     std::string res;
     res += "Pattern Recognition of : " + name_ + "\t";
-    res += "\t nb of networks : " + std::to_string(networks_.size()) + "\n";
-    for (auto& net: networks_)
+    res += "\t nb of state machine : " + std::to_string(state_machines_.size()) + "\n";
+    for (auto& net: state_machines_)
     {
         if (shortVersion)
             res += net->getCurrentState()->toString() + "\t";

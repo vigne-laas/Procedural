@@ -18,7 +18,6 @@ int main()
     auto Actions_ = builder.getActions();
     procedural::ActionRecognition recognition(Actions_);
 
-//    procedural::Network::displayTypesTable();
 
     std::vector<procedural::Fact> facts;
 //    procedural::TimeStamp_t t0(0, 50);

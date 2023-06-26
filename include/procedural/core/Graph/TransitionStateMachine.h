@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_TRANSITIONNETWORK_H
-#define PROCEDURAL_TRANSITIONNETWORK_H
+#ifndef PROCEDURAL_TRANSITIONSTATEMACHINE_H
+#define PROCEDURAL_TRANSITIONSTATEMACHINE_H
 
 #include <string>
 #include <map>
@@ -10,14 +10,14 @@ namespace procedural {
 
 class StateMachine;
 
-class TransitionNetwork
+class TransitionStateMachine
 {
 public:
-    TransitionNetwork(uint32_t type, const std::map<std::string,std::string>& remap_var);
+    TransitionStateMachine(uint32_t type, const std::map<std::string,std::string>& remap_var);
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
-    bool match(StateMachine * network) ;
+    bool match(StateMachine * stateMachine) ;
 
     bool checkMatch(){return flag_;}
     std::map<std::string,std::string> getRemap(){return remap_var_;}
@@ -35,4 +35,4 @@ private:
 
 } // namespace procedural
 
-#endif // ROCEDURAL_TRANSITIONNETWORK_H
+#endif // PROCEDURAL_TRANSITIONSTATEMACHINE_H

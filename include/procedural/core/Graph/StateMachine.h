@@ -1,5 +1,5 @@
-#ifndef PROCEDURAL_NETWORK_H
-#define PROCEDURAL_NETWORK_H
+#ifndef PROCEDURAL_STATE_MACHINE_H
+#define PROCEDURAL_STATE_MACHINE_H
 
 #include <unordered_set>
 #include <unordered_map>
@@ -13,31 +13,31 @@
 #include "procedural/core/Types/PatternTransitionFact.h"
 #include "procedural/core/Types/Description.h"
 #include "procedural/core/Types/ActionDescription.h"
-#include "procedural/core/Types/PatternTransitionNetwork.h"
+#include "procedural/core/Types/PatternTransitionStateMachine.h"
 #include "procedural/core/Types/WordTable.h"
-#include "procedural/core/Types/IncompleteNetwork.h"
+#include "procedural/core/Types/IncompleteStateMachine.h"
 
 namespace procedural {
 
-struct NetworkException : public std::exception
+struct StateMachineException : public std::exception
 {
     std::string msg_;
-    explicit NetworkException(const std::string& msg) : msg_(msg){}
+    explicit StateMachineException(const std::string& msg) : msg_(msg){}
     const char* what() const throw()
     {
         return msg_.c_str();
     }
 };
 
-struct NoInitialStateNetworkException : public NetworkException
+struct NoInitialStateStateMachineException : public StateMachineException
 {
-    NoInitialStateNetworkException() : NetworkException("Invalid Network due to no initial State detected"){};
+    NoInitialStateStateMachineException() : StateMachineException("Invalid State Machine due to no initial State detected"){};
 };
 
-struct MultiInitialStateNetworkException : public NetworkException
+struct MultiInitialStateStateMachineException : public StateMachineException
 {
-    explicit MultiInitialStateNetworkException(const std::unordered_set<State*>& invalid_states) :
-            NetworkException("Invalid Network due to no initial State detected\nState detected as initial are : ")
+    explicit MultiInitialStateStateMachineException(const std::unordered_set<State*>& invalid_states) :
+            StateMachineException("Invalid State Machine due to no initial State detected\nState detected as initial are : ")
     {
         for (auto& state: invalid_states)
             msg_ += state->toString() + "\n";
@@ -51,7 +51,7 @@ public:
     StateMachine(const StateMachine& other) = delete;
 
     bool evolve(Fact* fact);
-    bool evolve(StateMachine* net);
+    bool evolve(StateMachine* state_machine);
 
     const State* getCurrentState() const { return current_state_; }
     std::string getTypeStr() const { return type_str_; }
@@ -71,11 +71,11 @@ public:
     bool isValid() const { return valid_; }
 
 
-    bool addTransition(const PatternTransitionFact_t& pattern);
-    bool addNetwork(const PatternTransitionNetwork_t& network);
+    bool addTransition(const PatternTransitionFact_t& transitionFact);
+    bool addStateMachine(const PatternTransitionStateMachine_t& transitionStateMachine);
     bool addDescription(const ActionDescription_t& description);
 
-    bool closeNetwork();
+    bool closeStateMachine();
 
     std::string toString();
 
@@ -90,7 +90,7 @@ public:
 
     static void displayTypesTable();
 
-    std::vector<StateMachine*> getUpdatedNetworks() { return updated_sub_networks_;};
+    std::vector<StateMachine*> getUpdatedStateMachines() { return updated_sub_state_machines_;};
 
     void addTimeoutTransition(int last_state_required);
 
@@ -99,9 +99,9 @@ public:
     void expandProperties(ObjectPropertyClient* object_client);
 private:
 
-    bool checkIncompletsNetworks();
+    bool checkIncompletsStateMachines();
     void addState(int id_state);
-    void linkNetwork();
+    void linkStateMachine();
     void insertVariable(const std::string& variable);
 
     void processInitialState();
@@ -130,9 +130,9 @@ private:
     bool valid_;
     TimeStamp_t age_;
     TimeStamp_t last_update_;
-    std::vector<IncompleteNetwork_t> incompletes_networks_;
+    std::vector<IncompleteStateMachine_t> incompletes_state_machines_;
 
-    std::vector<StateMachine*> updated_sub_networks_;
+    std::vector<StateMachine*> updated_sub_state_machines_;
 
 
 };
@@ -141,4 +141,4 @@ private:
 
 } // procedural
 
-#endif //PROCEDURAL_NETWORK_H
+#endif //PROCEDURAL_STATE_MACHINE_H

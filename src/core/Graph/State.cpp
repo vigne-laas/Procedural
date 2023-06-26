@@ -20,10 +20,10 @@ State* State::evolve(Fact* fact)
     return nullptr;
 }
 
-std::pair<State*, TransitionNetwork*> State::evolve(StateMachine* network)
+std::pair<State*, TransitionStateMachine*> State::evolve(StateMachine* state_machine)
 {
-    for (auto& pair: nexts_networks_)
-        if (pair.first.match(network))
+    for (auto& pair: nexts_state_machines_)
+        if (pair.first.match(state_machine))
             return std::make_pair(pair.second, &pair.first);
 
     return std::make_pair(nullptr, nullptr);
@@ -34,16 +34,16 @@ void State::addTransition(const TransitionFact& transition, State* next_state)
     nexts_facts_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionNetwork& transition, State* next_state)
+void State::addTransition(const TransitionStateMachine& transition, State* next_state)
 {
-    nexts_networks_.emplace_back(transition, next_state);
+    nexts_state_machines_.emplace_back(transition, next_state);
 }
 
 void State::linkVariables(std::map<std::string, Variable_t>& variables_)
 {
     for (auto& pair: nexts_facts_)
         pair.first.linkVariables(variables_);
-    for (auto& pair: nexts_networks_)
+    for (auto& pair: nexts_state_machines_)
         pair.first.linkVariables(variables_);
 }
 
@@ -60,12 +60,12 @@ std::string State::toString() const
     std::string msg = "State : " + name_ + "\n";
     msg += isFinalNode() ? "\tFinal Node \n" : "";
     msg += initial_node_ ? "\tInitial Node \n" : "";
-    msg += "\tTransitions (" + std::to_string(nexts_facts_.size() + nexts_networks_.size()) + "):";
+    msg += "\tTransitions (" + std::to_string(nexts_facts_.size() + nexts_state_machines_.size()) + "):";
     if (!nexts_facts_.empty())
         for (auto& pair_transition_state: nexts_facts_)
             msg += "\t[" + pair_transition_state.first.toString() + "]";
-    if (!nexts_networks_.empty())
-        for (auto& pair_transition_state: nexts_networks_)
+    if (!nexts_state_machines_.empty())
+        for (auto& pair_transition_state: nexts_state_machines_)
             msg += "\t" + pair_transition_state.first.toString() + "]\n";
 
     return msg;

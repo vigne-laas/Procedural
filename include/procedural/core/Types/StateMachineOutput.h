@@ -1,17 +1,17 @@
-#ifndef PROCEDURAL_NETWORKOUTPUT_H
-#define PROCEDURAL_NETWORKOUTPUT_H
+#ifndef PROCEDURAL_STATEMACHINEOUTPUT_H
+#define PROCEDURAL_STATEMACHINEOUTPUT_H
 
 #include "procedural/core/Graph/StateMachine.h"
 namespace procedural {
 
-struct NetworkOutput
+struct StateMachineOutput
 {
-    explicit NetworkOutput(StateMachine* net, bool update = false) : descriptions(net->getDescription()), updated(update),
-                                                                     start_time(net->getAge()),
-                                                                     stop_time(net->getLastupdate()),
-                                                                     name(net->getName()), type(net->getTypeStr())
+    explicit StateMachineOutput(StateMachine* net, bool update = false) : descriptions(net->getDescription()), updated(update),
+                                                                          start_time(net->getAge()),
+                                                                          stop_time(net->getLastupdate()),
+                                                                          name(net->getName()), type(net->getTypeStr())
     {};
-    friend std::ostream& operator<<(std::ostream& os, const NetworkOutput& val)
+    friend std::ostream& operator<<(std::ostream& os, const StateMachineOutput& val)
     {
         if (val.updated)
             os << "new explanation for : ";
@@ -36,4 +36,4 @@ struct NetworkOutput
     std::string type;
 };
 } //procedural
-#endif //PROCEDURAL_NETWORKOUTPUT_H
+#endif //PROCEDURAL_STATEMACHINEOUTPUT_H

@@ -1,34 +1,34 @@
-#include "procedural/core/Graph/TransitionNetwork.h"
+#include "procedural/core/Graph/TransitionStateMachine.h"
 #include "procedural/core/Graph/StateMachine.h"
 
 namespace procedural {
 
-TransitionNetwork::TransitionNetwork(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
-                                                                                                           remap_var_(
+TransitionStateMachine::TransitionStateMachine(uint32_t type, const std::map<std::string, std::string>& remap_var) : type_(type),
+                                                                                                                     remap_var_(
                                                                                                                    remap_var),
-                                                                                                           flag_(
+                                                                                                                     flag_(
                                                                                                                    false)
 {
     for (const auto& pair: remap_var_)
         variables_.insert(std::make_pair(pair.second, nullptr));
 }
 
-void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variables)
+void TransitionStateMachine::linkVariables(std::map<std::string, Variable_t>& variables)
 {
     for (auto& pair: variables_)
         pair.second = &(variables.at(pair.first));
 }
 
-bool TransitionNetwork::match(StateMachine* network)
+bool TransitionStateMachine::match(StateMachine* stateMachine)
 {
-    if (network->getType() == type_)
+    if (stateMachine->getType() == type_)
     {
         for (const auto& pair: remap_var_)
         {
             uint32_t local_val = variables_.at(pair.second)->getValue();
             if (local_val == 0)
-                variables_.at(pair.second)->value = network->getVar(pair.first).getValue();
-            else if ((network->getVar(pair.first).getValue()!=0) && (network->getVar(pair.first).getValue() != local_val))
+                variables_.at(pair.second)->value = stateMachine->getVar(pair.first).getValue();
+            else if ((stateMachine->getVar(pair.first).getValue() != 0) && (stateMachine->getVar(pair.first).getValue() != local_val))
                 return false;
         }
         flag_ = true;
@@ -37,10 +37,10 @@ bool TransitionNetwork::match(StateMachine* network)
         return false;
 }
 
-std::string TransitionNetwork::toString() const
+std::string TransitionStateMachine::toString() const
 {
     std::string res =
-            "Network Transition type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) + ")\n";
+            "State Machine Transition type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) + ")\n";
     for (auto& pair: remap_var_)
         res += "\t" + pair.first + " ==> " + pair.second + "\n";
     res += "Variables : \n";
