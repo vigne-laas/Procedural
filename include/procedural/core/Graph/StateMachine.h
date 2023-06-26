@@ -44,14 +44,14 @@ struct MultiInitialStateNetworkException : public NetworkException
     }
 };
 
-class Network
+class StateMachine
 {
 public:
-    Network(const std::string& name, int id, uint32_t level = 0);
-    Network(const Network& other) = delete;
+    StateMachine(const std::string& name, int id, uint32_t level = 0);
+    StateMachine(const StateMachine& other) = delete;
 
     bool evolve(Fact* fact);
-    bool evolve(Network* net);
+    bool evolve(StateMachine* net);
 
     const State* getCurrentState() const { return current_state_; }
     std::string getTypeStr() const { return type_str_; }
@@ -79,7 +79,7 @@ public:
 
     std::string toString();
 
-    Network* clone(int new_id,int last_state_required);
+    StateMachine* clone(int new_id, int last_state_required);
     void displayVariables();
     std::string describe(bool expl = false);
     std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; }
@@ -90,7 +90,7 @@ public:
 
     static void displayTypesTable();
 
-    std::vector<Network*> getUpdatedNetworks() { return updated_sub_networks_;};
+    std::vector<StateMachine*> getUpdatedNetworks() { return updated_sub_networks_;};
 
     void addTimeoutTransition(int last_state_required);
 
@@ -132,7 +132,7 @@ private:
     TimeStamp_t last_update_;
     std::vector<IncompleteNetwork_t> incompletes_networks_;
 
-    std::vector<Network*> updated_sub_networks_;
+    std::vector<StateMachine*> updated_sub_networks_;
 
 
 };

@@ -1,55 +1,70 @@
-#ifndef PROCEDURAL_ACTION_H
-#define PROCEDURAL_ACTION_H
+#ifndef PROCEDURAL_SPECIALIZEDACTION_H
+#define PROCEDURAL_SPECIALIZEDACTION_H
 
-#include <string>
 #include <vector>
-#include <map>
-
+#include "procedural/core/Types/PatternTransitionFact.h"
+#include "procedural/core/Graph/StateMachine.h"
+#include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Types/Fact.h"
-#include "procedural/core/Types/SpecializedAction.h"
+
 
 namespace procedural {
-
+class ActionType;
 class Action
 {
 public:
-    explicit Action(const std::string& name);
+    Action(const std::string& name,
+           const std::vector<PatternTransitionFact_t>& patterns,
+           const std::vector<PatternTransitionNetwork_t>& patterns_network,
+           const std::vector<ActionDescription_t>& descriptions,
+           int last_state_required,
+           ObjectPropertyClient* object_client,
+           double ttl=30);
 
-    bool addPatterns(const SpecializedAction& pattern);
+    bool isValid() const { return is_valid_; }
+    double getTtl() const {return time_to_live_;}
+    std::string getName() const { return name_;}
+    int getNextId();
+    std::set<uint32_t> checkNetwork(TimeStamp_t current_timestamp);
 
-    bool feed(Fact* fact, TimeStamp_t currentTimestamp);
-
-    std::set<uint32_t> checkCompleteNetworks(TimeStamp_t currentTimestamp);
-
-    void displayCurrentState();
-
-    void cleanPatterns(std::set<uint32_t> set_id);
+    void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
     void clean();
+
+    std::unordered_set<StateMachine*> getCompleteNetwork() { return complete_networks_;};
+
+    bool feed(Fact* fact);
 
     std::string toString();
 
     std::string currentState(bool shortVersion = true);
 
-    bool checkSubAction(Action* action);
+    bool checksubAction(ActionType* action);
+    bool checkNewUpdatedSubNetwork(){return updated_networks.empty() == false;};
+    std::vector<StateMachine*> getUpdatedNetworks() {return updated_networks;};
 
-    std::unordered_set<Network*> getCompleteNetworks() { return complete_networks_;};
-    std::string getName() const { return name_;};
-    bool checkNewExplanation();
-    std::vector<Network*> getNewExplanation();
+    std::vector<std::string> getLiteralVariables() {return state_machine_factory_->getLiteralVariables();};
 
-    double maxTtl();
 
-    std::vector<SpecializedAction> getSpecializedActions() {return patterns_;};
+    std::string getStrStructure();
 private:
-    std::string name_;
-    std::unordered_set<Network*> complete_networks_;
-    std::unordered_set<Network*> updated_sub_networks_;
-    bool flag_;
+    int id_;
 
-    std::vector<SpecializedAction> patterns_;
+    std::string name_;
+    StateMachine* state_machine_factory_; //TODO issue when i try without *
+
+    std::unordered_set<StateMachine*> networks_;
+    std::unordered_set<StateMachine*> complete_networks_;
+    std::vector<StateMachine*> updated_networks;
+
+
+    bool is_valid_;
+    bool evolve_sub_action;
+    double time_to_live_;
+
+    int last_state_required_;
 
 };
 
 } // namespace procedural
 
-#endif // PROCEDURAL_ACTION_H
+#endif //PROCEDURAL_SPECIALIZEDACTION_H

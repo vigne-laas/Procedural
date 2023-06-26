@@ -7,12 +7,12 @@
 
 namespace procedural
 {
-class Network;
+class StateMachine;
 struct IncompleteNetwork_t
 {
-    IncompleteNetwork_t(Network* net,const std::map<std::string,std::string>& remap):network_(net),remap_variables_(remap){};
+    IncompleteNetwork_t(StateMachine* net, const std::map<std::string,std::string>& remap): network_(net), remap_variables_(remap){};
 
-    Network * network_;
+    StateMachine * network_;
     std::map<std::string,std::string> remap_variables_;
 };
 }

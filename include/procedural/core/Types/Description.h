@@ -4,7 +4,7 @@
 #include <map>
 #include "procedural/core/Types/Variable.h"
 #include "procedural/core/Types/ActionDescription.h"
-#include "procedural/core/Graph/Network.h"
+#include "procedural/core/Graph/StateMachine.h"
 #include "procedural/core/Types/Fact.h"
 
 namespace procedural {

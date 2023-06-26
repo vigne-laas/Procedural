@@ -16,7 +16,7 @@ public:
     explicit State(const std::string& name, int id);
 
     State* evolve(Fact* fact);
-    std::pair<State*, TransitionNetwork*> evolve(Network* network);
+    std::pair<State*, TransitionNetwork*> evolve(StateMachine* network);
 
     void addTransition(const TransitionFact& transition, State* next_state);
     void addTransition(const TransitionNetwork& transition, State* next_state);

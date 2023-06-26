@@ -80,11 +80,11 @@ add_library(${PROJECT_NAME}_types_lib
         )
 
 add_library(${PROJECT_NAME}_graph_lib
+        src/core/Types/ActionType.cpp # TODO pb de lien si dans types_lib
         src/core/Types/Action.cpp # TODO pb de lien si dans types_lib
-        src/core/Types/SpecializedAction.cpp # TODO pb de lien si dans types_lib
         src/core/Graph/TransitionFact.cpp
         src/core/Graph/State.cpp
-        src/core/Graph/Network.cpp
+        src/core/Graph/StateMachine.cpp
         src/core/Graph/TransitionNetwork.cpp)
 target_link_libraries(${PROJECT_NAME}_graph_lib ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
 

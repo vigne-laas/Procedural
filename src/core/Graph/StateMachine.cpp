@@ -1,27 +1,27 @@
 #include <iostream>
 #include <set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
-#include "procedural/core/Graph/Network.h"
+#include "procedural/core/Graph/StateMachine.h"
 #include "procedural/core/Graph/TransitionNetwork.h"
 
 namespace procedural {
 
-WordTable Network::types_table;
+WordTable StateMachine::types_table;
 
-Network::Network(const std::string& name, int id, uint32_t level) : type_str_(name),
-                                                                    id_(id),
-                                                                    closed_(false),
-                                                                    valid_(false),
-                                                                    age_(0, 0),
-                                                                    last_update_(0, 0),
-                                                                    level_(level), new_explanations_(false)
+StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : type_str_(name),
+                                                                              id_(id),
+                                                                              closed_(false),
+                                                                              valid_(false),
+                                                                              age_(0, 0),
+                                                                              last_update_(0, 0),
+                                                                              level_(level), new_explanations_(false)
 {
     full_name_ = type_str_ + "_" + std::to_string(id);
     variables_.emplace("self", full_name_);
-    type_ = Network::types_table.get(type_str_);
+    type_ = StateMachine::types_table.get(type_str_);
 }
 
-bool Network::evolve(Fact* fact)
+bool StateMachine::evolve(Fact* fact)
 {
     if ((valid_ && closed_) == false)
         return false;
@@ -39,7 +39,7 @@ bool Network::evolve(Fact* fact)
     return true;
 }
 
-bool Network::evolve(Network* net)
+bool StateMachine::evolve(StateMachine* net)
 {
     if (level_ < net->getLevel())
         return false;
@@ -64,7 +64,7 @@ bool Network::evolve(Network* net)
 }
 
 
-float Network::getCompletionRatio() const
+float StateMachine::getCompletionRatio() const
 {
     float incomplete = 0;
     for (const auto& var: variables_)
@@ -82,7 +82,7 @@ float Network::getCompletionRatio() const
 //    return res;
 //}
 
-std::vector<std::string> Network::getLiteralVariables()
+std::vector<std::string> StateMachine::getLiteralVariables()
 {
     std::vector<std::string> res;
     for (auto const& map_elemet: variables_)
@@ -91,7 +91,7 @@ std::vector<std::string> Network::getLiteralVariables()
 }
 
 
-bool Network::addTransition(const PatternTransitionFact_t& pattern)
+bool StateMachine::addTransition(const PatternTransitionFact_t& pattern)
 {
     if (closed_ == false)
     {
@@ -109,7 +109,7 @@ bool Network::addTransition(const PatternTransitionFact_t& pattern)
 
 }
 
-bool Network::addNetwork(const PatternTransitionNetwork_t& network)
+bool StateMachine::addNetwork(const PatternTransitionNetwork_t& network)
 {
     if (closed_ == false)
     {
@@ -118,7 +118,7 @@ bool Network::addNetwork(const PatternTransitionNetwork_t& network)
         for (auto& var: network.remap_var_)
             insertVariable(var.second);
 
-        auto type = Network::types_table.get(network.type_);
+        auto type = StateMachine::types_table.get(network.type_);
         TransitionNetwork transition(type, network.remap_var_);
         states_[network.origin_]->addTransition(transition, states_[network.next_]);
         return true;
@@ -126,13 +126,13 @@ bool Network::addNetwork(const PatternTransitionNetwork_t& network)
         return false;
 }
 
-bool Network::addDescription(const ActionDescription_t& des)
+bool StateMachine::addDescription(const ActionDescription_t& des)
 {
     descriptions_.emplace_back(des, variables_);
     return true;
 }
 
-bool Network::closeNetwork()
+bool StateMachine::closeNetwork()
 {
     linkNetwork();
     closed_ = true;
@@ -141,7 +141,7 @@ bool Network::closeNetwork()
     return valid_;
 }
 
-std::string Network::toString()
+std::string StateMachine::toString()
 {
     std::string res;
     for (auto& state: states_)
@@ -154,12 +154,12 @@ std::string Network::toString()
     return res;
 }
 
-Network* Network::clone(int new_id, int last_state_required)
+StateMachine* StateMachine::clone(int new_id, int last_state_required)
 {
     if ((valid_ && closed_) == false)
         return nullptr;
 
-    Network* N = new Network(type_str_, new_id);
+    StateMachine* N = new StateMachine(type_str_, new_id);
     N->variables_ = variables_;
     N->variables_.at("self").literal = N->getName();
     N->descriptions_ = descriptions_;
@@ -185,13 +185,13 @@ Network* Network::clone(int new_id, int last_state_required)
     return N;
 }
 
-void Network::displayVariables()
+void StateMachine::displayVariables()
 {
     for (auto& var: variables_)
         std::cout << "key : " << var.first << " => " << var.second.toString() << std::endl;
 }
 
-std::string Network::describe(bool expl)
+std::string StateMachine::describe(bool expl)
 {
     if ((valid_ && closed_) == false)
         return "";
@@ -220,7 +220,7 @@ std::string Network::describe(bool expl)
     return msg;
 }
 
-bool Network::involveFacts(const std::set<uint32_t>& facts)
+bool StateMachine::involveFacts(const std::set<uint32_t>& facts)
 {
     for (auto id_fact: id_facts_involve)
         if (facts.find(id_fact) == facts.end())
@@ -228,7 +228,7 @@ bool Network::involveFacts(const std::set<uint32_t>& facts)
     return true;
 }
 
-void Network::addTimeoutTransition(int last_state_required)
+void StateMachine::addTimeoutTransition(int last_state_required)
 {
     states_.at(last_state_required)->addTimeoutTransition();
 }
@@ -236,7 +236,7 @@ void Network::addTimeoutTransition(int last_state_required)
 
 /* ------------------------------ private part ------------------------------ */
 
-bool Network::checkIncompletsNetworks()
+bool StateMachine::checkIncompletsNetworks()
 {
     updated_sub_networks_.clear();
     if (incompletes_networks_.empty())
@@ -249,13 +249,13 @@ bool Network::checkIncompletsNetworks()
 }
 
 
-void Network::addState(int id_state)
+void StateMachine::addState(int id_state)
 {
     if (states_.find(id_state) == states_.end())
         states_.emplace(id_state, new State(getName(), id_state));
 }
 
-void Network::linkNetwork()
+void StateMachine::linkNetwork()
 {
     for (auto& state: states_)
     {
@@ -266,13 +266,13 @@ void Network::linkNetwork()
         des.linkVariables(variables_);
 }
 
-void Network::insertVariable(const std::string& variable)
+void StateMachine::insertVariable(const std::string& variable)
 {
     variables_.emplace(variable, variable);
 }
 
 
-void Network::processInitialState()
+void StateMachine::processInitialState()
 {
     std::unordered_set<uint32_t> id_states_nexts;
     for (auto& pair_states: states_)
@@ -310,7 +310,7 @@ void Network::processInitialState()
     }
 }
 bool
-Network::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
+StateMachine::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
 {
     bool res = false;
     for (const auto& pair: remap)
@@ -323,12 +323,12 @@ Network::updateVar(const std::map<std::string, std::string>& remap, const std::m
     }
     return res;
 }
-void Network::displayTypesTable()
+void StateMachine::displayTypesTable()
 {
-    for (int index = 0; index < Network::types_table.size(); index++)
+    for (int index = 0; index < StateMachine::types_table.size(); index++)
         std::cout << " types_table[" << index << "] : " << types_table[index] << std::endl;
 }
-void Network::setId(int new_id)
+void StateMachine::setId(int new_id)
 {
     id_ = new_id;
     full_name_ = type_str_ + "_" + std::to_string(new_id);
@@ -338,7 +338,7 @@ void Network::setId(int new_id)
 //              << descriptions_.at(0).var_object_str_ << std::endl;
 
 }
-std::string Network::getStrStructure()
+std::string StateMachine::getStrStructure()
 {
     std::string res;
     for (auto& state: states_)
@@ -349,7 +349,7 @@ std::string Network::getStrStructure()
     }
     return res;
 }
-void Network::expandProperties(ObjectPropertyClient* object_client)
+void StateMachine::expandProperties(ObjectPropertyClient* object_client)
 {
     for (auto& state: states_)
         (state.second)->expandTransitions(object_client);

@@ -1,5 +1,5 @@
 #include "procedural/core/Graph/TransitionNetwork.h"
-#include "procedural/core/Graph/Network.h"
+#include "procedural/core/Graph/StateMachine.h"
 
 namespace procedural {
 
@@ -19,7 +19,7 @@ void TransitionNetwork::linkVariables(std::map<std::string, Variable_t>& variabl
         pair.second = &(variables.at(pair.first));
 }
 
-bool TransitionNetwork::match(Network* network)
+bool TransitionNetwork::match(StateMachine* network)
 {
     if (network->getType() == type_)
     {
@@ -40,7 +40,7 @@ bool TransitionNetwork::match(Network* network)
 std::string TransitionNetwork::toString() const
 {
     std::string res =
-            "Network Transition type : " + std::to_string(type_) + "(" + Network::types_table.get(type_) + ")\n";
+            "Network Transition type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) + ")\n";
     for (auto& pair: remap_var_)
         res += "\t" + pair.first + " ==> " + pair.second + "\n";
     res += "Variables : \n";

@@ -53,12 +53,12 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
         if (ttl == 0)
             ttl = 30;
 
-        SpecializedAction new_spe_action(action.getName(), facts, networks, descriptions,
-                                         last_required,
-                                         property_client_,
-                                         ttl);
+        Action new_spe_action(action.getName(), facts, networks, descriptions,
+                              last_required,
+                              property_client_,
+                              ttl);
         auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
-                                          [action](Action* act) { return act->getName() == action.type; });
+                                          [action](ActionType* act) { return act->getName() == action.type; });
         (*action_to_add)->addPatterns(new_spe_action);
     }
 
@@ -135,12 +135,12 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
             int ttl = action.parameters.ttl;
             if (ttl == 0)
                 ttl = 30;
-            SpecializedAction new_spe_action(action.getName(), facts, networks, descriptions,
-                                             last_required,
-                                             property_client_,
-                                             ttl);
+            Action new_spe_action(action.getName(), facts, networks, descriptions,
+                                  last_required,
+                                  property_client_,
+                                  ttl);
             auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
-                                              [action](Action* act) { return act->getName() == action.type; });
+                                              [action](ActionType* act) { return act->getName() == action.type; });
             (*action_to_add)->addPatterns(new_spe_action);
         }
 
@@ -157,12 +157,12 @@ void ActionBuilder::display()
 bool ActionBuilder::completeRemap(SubNetwork_t& network)
 {
     std::vector<std::string> sub_net_variables;
-    auto test = [network](const Action* action) { return action->getName() == network.type; };
+    auto test = [network](const ActionType* action) { return action->getName() == network.type; };
     auto result = std::find_if(actions_.begin(), actions_.end(), test);
     if (result != actions_.end())
     {
         auto specialized_action = (*result)->getSpecializedActions();
-        auto test_specialized = [network](const SpecializedAction& action) {
+        auto test_specialized = [network](const Action& action) {
             return action.getName() == network.getName();
         };
         auto result_specialized = std::find_if(specialized_action.begin(), specialized_action.end(), test_specialized);
@@ -190,11 +190,11 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
     for (auto& action: simple_actions)
     {
         auto result = std::find_if(actions_.begin(), actions_.end(),
-                                   [action](Action* act) { return act->getName() == action.type; });
+                                   [action](ActionType* act) { return act->getName() == action.type; });
         if (result == actions_.end())
         {
 //            std::cout << "create new action :" << action.type << std::endl;
-            auto action_ = new Action(action.type);
+            auto action_ = new ActionType(action.type);
             actions_.push_back(action_);
         }
 
@@ -202,11 +202,11 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
     for (auto& action: composed_actions)
     {
         auto result = std::find_if(actions_.begin(), actions_.end(),
-                                   [action](Action* act) { return act->getName() == action.type; });
+                                   [action](ActionType* act) { return act->getName() == action.type; });
         if (result == actions_.end())
         {
 //            std::cout << "create new action :" << action.type << std::endl;
-            auto action_ = new Action(action.type);
+            auto action_ = new ActionType(action.type);
             actions_.push_back(action_);
         }
 
@@ -221,12 +221,12 @@ void ActionBuilder::buildIncomplete()
     {
         for (auto& subnet: net.pattern.subnetworks)
         {
-            auto test = [subnet](const Action* action) { return action->getName() == subnet.type; };
+            auto test = [subnet](const ActionType* action) { return action->getName() == subnet.type; };
             auto result = std::find_if(actions_.begin(), actions_.end(), test);
             if (result != actions_.end())
             {
                 auto specialized_action = (*result)->getSpecializedActions();
-                auto test_specialized = [subnet](const SpecializedAction& action) {
+                auto test_specialized = [subnet](const Action& action) {
                     return action.getName() == subnet.getName();
                 };
                 auto result_specialized = std::find_if(specialized_action.begin(), specialized_action.end(),

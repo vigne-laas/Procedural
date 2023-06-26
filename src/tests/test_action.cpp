@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
-#include "procedural/core/Types/SpecializedAction.h"
 #include "procedural/core/Types/Action.h"
+#include "procedural/core/Types/ActionType.h"
 
 #include "ros/ros.h"
 

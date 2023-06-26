@@ -59,7 +59,7 @@ bool RosInterface::build()
 //        for (auto sub_action: action->getSpecializedActions())
 //            std::cout << sub_action.getStrStructure() << "\n\n" << std::endl;
 //            std::cout << sub_action.toString() << std::endl;
-    Network::displayTypesTable();
+    StateMachine::displayTypesTable();
 
     node_->param<double>("TTL_BUFFER", ttl_buffer_, 25);
     node_->param<int>("MAX_SIZE_BUFFER", buffer_max_size_, 500);

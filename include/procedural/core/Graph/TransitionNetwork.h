@@ -8,7 +8,7 @@
 
 namespace procedural {
 
-class Network;
+class StateMachine;
 
 class TransitionNetwork
 {
@@ -17,7 +17,7 @@ public:
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
-    bool match(Network * network) ;
+    bool match(StateMachine * network) ;
 
     bool checkMatch(){return flag_;}
     std::map<std::string,std::string> getRemap(){return remap_var_;}

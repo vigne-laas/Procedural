@@ -9,11 +9,11 @@
 #include "procedural/core/Types/NetworkOutput.h"
 
 namespace procedural {
-    class Action;
+    class ActionType;
 
     class ActionRecognition {
     public:
-        explicit ActionRecognition(const std::vector<Action *>& actions,double tll = 25,int max_size=500);
+        explicit ActionRecognition(const std::vector<ActionType *>& actions, double tll = 25, int max_size=500);
 
         void addToQueue(Fact *fact) const;
 
@@ -24,7 +24,7 @@ namespace procedural {
     private:
         static void defaultCallback(const std::vector<NetworkOutput>& outputs);
         BufferFacts* buffer_;
-        std::vector<Action *> actions_;
+        std::vector<ActionType *> actions_;
 
         std::function<void(const std::vector<NetworkOutput>&)> callback_output_;
     };

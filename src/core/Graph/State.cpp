@@ -20,7 +20,7 @@ State* State::evolve(Fact* fact)
     return nullptr;
 }
 
-std::pair<State*, TransitionNetwork*> State::evolve(Network* network)
+std::pair<State*, TransitionNetwork*> State::evolve(StateMachine* network)
 {
     for (auto& pair: nexts_networks_)
         if (pair.first.match(network))

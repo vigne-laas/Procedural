@@ -1,6 +1,6 @@
 #include "procedural/core/Types/PatternFact.h"
 #include "procedural/core/Types/ActionDescription.h"
-#include "procedural/core/Graph/Network.h"
+#include "procedural/core/Graph/StateMachine.h"
 #include <iostream>
 #include <exception>
 #include <vector>
