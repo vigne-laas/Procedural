@@ -199,6 +199,14 @@ target_link_libraries(recognition
         ${ontologenius_LIBRARIES}
         )
 
+add_executable(recognition_multi src/nodes/recognition_multi.cpp)
+add_dependencies(recognition_multi ${catkin_EXPORTED_TARGETS})
+target_link_libraries(recognition_multi
+        ${PROJECT_NAME}_interface_lib
+        ${catkin_LIBRARIES}
+        ${ontologenius_LIBRARIES}
+        )
+
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}

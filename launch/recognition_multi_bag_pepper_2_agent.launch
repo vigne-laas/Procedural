@@ -1,6 +1,5 @@
 <launch>
 
-    <remap from="/mementar/echo/pepper" to="/ActionRecognition/inputFacts/pepper"/>
     <group>
         <include file="$(find procedural)/launch/ontologenius_mementar_multi.launch">
             <arg name="onto_files" value="
@@ -23,31 +22,8 @@
         <param name="TTL_BUFFER" type="double" value="25"/>
         <param name="MAX_SIZE_BUFFER" type="int" value="500"/>
 
-        <arg name="name" default="pepper"/>
-        <remap from="/mementar/echo/$(arg name)" to="/ActionRecognition/inputFacts/$(arg name)"/>
-        <node name="recognition_$(arg name)" pkg="procedural" type="recognition" output="screen" args="-n $(arg name)"/>
+        <node name="recognition_multi" pkg="procedural" type="recognition_multi" output="screen"/>
     </group>
-     <group>
 
-        <param name="PATH_YAML" type="string"
-               value="/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/test.yaml"/>
-        <param name="TTL_BUFFER" type="double" value="25"/>
-        <param name="MAX_SIZE_BUFFER" type="int" value="500"/>
-
-        <arg name="name" default="human_1"/>
-        <remap from="/mementar/echo/$(arg name)" to="/ActionRecognition/inputFacts/$(arg name)"/>
-        <node name="recognition_$(arg name)" pkg="procedural" type="recognition" output="screen" args="-n $(arg name)"/>
-    </group>
-     <group>
-
-        <param name="PATH_YAML" type="string"
-               value="/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/test.yaml"/>
-        <param name="TTL_BUFFER" type="double" value="25"/>
-        <param name="MAX_SIZE_BUFFER" type="int" value="500"/>
-
-        <arg name="name" default="human_2"/>
-        <remap from="/mementar/echo/$(arg name)" to="/ActionRecognition/inputFacts/$(arg name)"/>
-        <node name="recognition_$(arg name)" pkg="procedural" type="recognition" output="screen" args="-n $(arg name)"/>
-    </group>
 
 </launch>
