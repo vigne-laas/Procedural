@@ -9,13 +9,10 @@
 #include "procedural/utils/ActionRecognition.h"
 #include "procedural/core/Types/StateMachineOutput.h"
 
-#include "mementar/StampedFact.h"
-#include "mementar/ActionsPublisher.h"
-
-#include "ontologenius/clients/ontologyClients/ObjectPropertyClient.h"
 #include "ontologenius/OntologiesManipulator.h"
 
-#include "std_msgs/String.h"
+#include "mementar/TimelinesManipulator.h"
+#include "mementar/StampedFact.h"
 
 
 namespace procedural {
@@ -23,11 +20,16 @@ namespace procedural {
 class RosInterface
 {
 public:
-    explicit RosInterface(ros::NodeHandle* n, const std::string& name = "");
+    explicit RosInterface(ros::NodeHandle* n, OntologiesManipulator& onto_manipulators,
+                          mementar::TimelinesManipulator& time_manipulators, const std::string& name = "");
 
     void run();
+    void stop() { run_ = false; }
+    inline bool isRunning() const { return run_; }
 
 private:
+    bool run_;
+
     bool parse();
     bool build();
     bool link();
@@ -37,16 +39,12 @@ private:
     void OntologeniusPublisher(const StateMachineOutput& output);
 
 
-
     ros::NodeHandle* node_;
     ros::Publisher output_pub_;
     ros::Subscriber sub_input_stamped_facts_;
 
-    OntologyManipulator* manipulator_;
-    mementar::ActionsPublisher* actions_publisher_;
-//    ObjectPropertyClient* objectClient_;
-
-
+    OntologyManipulator* onto_manipulator_;
+    mementar::TimelineManipulator* timeline_manipulator_;
 
     std::string name_;
 
@@ -60,6 +58,7 @@ private:
 
     std::string getTopicName(const std::string& topic_name);
     std::string getTopicName(const std::string& topic_name, const std::string& onto_name);
+    std::string getMementarTopicName();
 };
 
 } // procedural
