@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://github.com/RIS-WITH/exp_director_task/blob/master/dt_resources/ontologies/dt_humans#"
+     xmlns:dt_humans="https://github.com/RIS-WITH/exp_director_task/blob/master/dt_resources/ontologies/dt_humans#"
+     xmlns:cg_agents="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_agents#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/exp_director_task/blob/master/dt_resources/ontologies/dt_humans">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_agents"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    
+
+
+    <!-- dt_humans#Glove_1 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Glove_1">
+        <rdf:type rdf:resource="cg_agents#RightHand"/>
+    </owl:NamedIndividual>
+
+    <!-- dt_humans#Glove_1 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Glove_mockRight">
+        <rdf:type rdf:resource="cg_agents#RightHand"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#Glove_2 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Glove_2">
+        <rdf:type rdf:resource="cg_agents#LeftHand"/>
+    </owl:NamedIndividual>
+
+    <!-- dt_humans#Glove_2 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Glove_mockLeft">
+        <rdf:type rdf:resource="cg_agents#LeftHand"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#Helmet_2 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Helmet_2">
+        <rdf:type rdf:resource="cg_agents#Head"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#Helmet_4 -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#Helmet_4">
+        <rdf:type rdf:resource="cg_agents#Head"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#herakles -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#herakles">
+        <rdf:type rdf:resource="cg_agents#Head"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#mocap_fov -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#mocap_fov">
+        <rdf:type rdf:resource="cg_agents#FieldOfView"/>
+        <cg_agents:fovHasClipNear rdf:datatype="http://www.w3.org/2002/07/owl#real">0.1</cg_agents:fovHasClipNear>
+        <cg_agents:fovHasClipFar rdf:datatype="http://www.w3.org/2002/07/owl#real">9</cg_agents:fovHasClipFar>
+        <cg_agents:fovHasHeight rdf:datatype="http://www.w3.org/2002/07/owl#real">70</cg_agents:fovHasHeight>
+        <cg_agents:fovHasWidth rdf:datatype="http://www.w3.org/2002/07/owl#real">102.4</cg_agents:fovHasWidth>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#idiap_head -->
+
+    <owl:NamedIndividual rdf:about="dt_humans#idiap_head">
+        <rdf:type rdf:resource="dt_humans#Head"/>
+        <common_ground:hasMesh rdf:datatype="http://www.w3.org/2001/XMLSchema#string">package://dt_resources/mesh/humans/head_flip.obj</common_ground:hasMesh>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- dt_humans#human_0 -->
+    
+    <owl:NamedIndividual rdf:about="dt_humans#human_0">
+        <rdf:type rdf:resource="common_ground#Human"/>
+        <dt_humans:hasHead rdf:resource="dt_humans#idiap_head"/>
+        <cg_agents:hasFieldOfView rdf:resource="dt_humans#mocap_fov"/>
+    </owl:NamedIndividual>
+
+
+    <!-- dt_humans#human_1 -->
+    
+    <owl:NamedIndividual rdf:about="dt_humans#human_1">
+        <rdf:type rdf:resource="cg_agents#Human"/>
+        <cg_agents:hasFieldOfView rdf:resource="dt_humans#mocap_fov"/>
+        <cg_agents:hasHead rdf:resource="dt_humans#Helmet_4"/>
+        <cg_agents:hasLeftHand rdf:resource="dt_humans#Glove_1"/>
+        <cg_agents:hasRightHand rdf:resource="dt_humans#Glove_mockRight"/>
+    </owl:NamedIndividual>
+
+    <!-- Modif pour test avec 2 humains mocap pour papier hai -->
+    <!-- dt_humans#human_2 -->
+    
+    <owl:NamedIndividual rdf:about="dt_humans#human_2">
+        <rdf:type rdf:resource="cg_agents#Human"/>
+        <cg_agents:hasFieldOfView rdf:resource="dt_humans#mocap_fov"/>
+        <cg_agents:hasHead rdf:resource="dt_humans#Helmet_2"/>
+        <cg_agents:hasRightHand rdf:resource="dt_humans#Glove_2"/>
+        <cg_agents:hasLeftHand rdf:resource="dt_humans#Glove_mockLeft"/>
+    </owl:NamedIndividual>
+
+</rdf:RDF>

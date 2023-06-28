@@ -1,0 +1,243 @@
+#PickSimple_over:
+#  sequence:
+#    - ?A hasHandMovingToward ?O
+#    - ?A isHolding ?O
+#    - NOT ?O isOnTopOf ?S REQUIRED
+#  description:
+#    - ?? isA PickSimpleOverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+#
+#PickSimple_into:
+#  sequence:
+#    - ?A hasHandMovingToward ?O
+#    - ?A isHolding ?O
+#    - NOT ?O isInContainer ?S REQUIRED
+#  description:
+#    - ?? isA PickSimpleIntoAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+#  parameters:
+#    ttl: 20
+#
+#PlaceSimple_over:
+#  parameters:
+#    ttl: 20
+#  sequence:
+#    - ?A hasHandMovingToward ?S
+#    - ?O isOnTopOf ?S REQUIRED
+#    - NOT ?A isHolding ?O REQUIRED
+#  description:
+#    - ?? isA PlaceSimpleOverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+#
+#PlaceSimple_into:
+#  parameters:
+#    ttl: 20
+#  sequence:
+#    - ?A hasHandMovingToward ?S
+#    - ?O isInContainer ?S REQUIRED
+#    - NOT ?A isHolding ?O REQUIRED
+#  description:
+#    - ?? isA PlaceSimpleOverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+
+Release:
+  parameters:
+    ttl: 10
+  sequence:
+    - ?A hasHandMovingToward ?S
+    - NOT ?A isHolding ?O REQUIRED
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedOver ?S
+
+
+
+#Release:
+#  sequence:
+#    - NOT ?A isHolding ?O REQUIRED
+#    - parallel:
+#        - ?O isInContainer ?S
+#        - ?O isOnTopOf ?S
+#  description:
+#    - ?? isA ReleaseAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+
+
+Grasp:
+  parameters:
+    ttl: 10
+  sequence:
+    - ?A hasHandMovingToward ?C
+    - ?A isHolding ?C REQUIRED
+  description:
+    - ?? isA GraspAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?C
+#
+#
+Pick_Over:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+    - G: Grasp
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverRobotAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+#Pick_Over:
+#  parameters:
+#    ttl: 15
+#  composed_sequence:
+#    - G: Grasp
+#    - NOT ?O isOnTopOf ?S REQUIRED
+#  remap:
+#    - G.C: O
+#  description:
+#    - ?? isA Pick_OverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+
+
+Pick_Into:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - G: Grasp
+    - NOT ?O isInContainer ?S REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_IntoAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Place_Into:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - R: Release
+    - ?O isInContainer ?S REQUIRED
+  description:
+    - ?? isA Place_IntoRobotAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+#Place_Into:
+#  parameters:
+#    ttl: 15
+#  composed_sequence:
+#    - ?O isInContainer ?S REQUIRED
+#    - R: Release
+#  description:
+#    - ?? isA Place_IntoAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+
+
+Place_Over:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - R: Release
+    - ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA Place_OverRobotAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+#Place_Over:
+#  parameters:
+#    ttl: 15
+#  composed_sequence:
+#    - ?O isOnTopOf ?S REQUIRED
+#    - R: Release
+#  description:
+#    - ?? isA Place_OverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+
+#
+#Pick&Place_Over:
+#  parameters:
+#    ttl: 20
+#  composed_sequence:
+#    - Pick: Pick_Over REQUIRED
+#    - Place: Place_Over REQUIRED
+#  remap:
+#    - Pick.S: S1
+#    - Place.S: S2
+#  description:
+#    - ?? isA Pick&Place_OverAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S1
+#    - ?? isPerformedTo ?S2
+#    -
+#Pick&Place_OverOverRobot:
+#  parameters:
+#    ttl: 20
+#  composed_sequence:
+#    - Pick: Pick_Over REQUIRED
+#    - Place: Place_OverRobot REQUIRED
+#  remap:
+#    - Pick.S: S1
+#    - Place.S: S2
+#  description:
+#    - ?? isA Pick&Place_OverOverRobotAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S1
+#    - ?? isPerformedTo ?S2
+#
+#Pick&Place_OverRobot:
+#  parameters:
+#    ttl: 20
+#  composed_sequence:
+#    - NOT ?O isOnTopOf ?S REQUIRED
+#    - Place: Place_OverRobot REQUIRED
+#  remap:
+#    - Place.S: S2
+#  description:
+#    - ?? isA Pick&Place_OverRobotAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
+#    - ?? isPerformedTo ?S2
+#    -
+#Pick&Place_OverIntoRobot:
+#  parameters:
+#    ttl: 20
+#  composed_sequence:
+#    - Pick: Pick_OverRobot REQUIRED
+#    - Place: Place_IntoRobot REQUIRED
+#  remap:
+#    - Pick.S: S1
+#    - Place.S: S2
+#  description:
+#    - ?? isA Pick&Place_OverIntoRobotAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S1
+#    - ?? isPerformedTo ?S2

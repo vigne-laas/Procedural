@@ -1,0 +1,37 @@
+Pick:
+  ordered_facts:
+    - ?A hasHandMovingToward ?O
+    - ?A hasInHand ?O
+    - or_facts:
+        - NOT ?O isInContainer ?S REQUIRED
+        - NOT ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA PickAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Place:
+  ordered_facts:
+    - ?A hasHandMovingToward ?S
+    - or_facts:
+        - ?O isInContainer ?S REQUIRED
+        - ?O isOnTopOf ?S REQUIRED
+    - NOT ?A hasInHand ?O REQUIRED
+  description:
+    - ?? isA PlaceAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Release:
+  ordered_facts:
+    - NOT ?A hasInHand ?O REQUIRED
+    - or_facts:
+        - ?O isInContainer ?S
+        - ?O isOnTopOf ?S
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S

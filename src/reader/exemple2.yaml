@@ -1,0 +1,109 @@
+#Pick:
+#  over:
+#    ordered_facts:
+#      - ?A hasHandMovingToward ?O
+#      - ?A hasInHand ?O
+#      - NOT ?O isOnTopOf ?S REQUIRED
+#    description:
+#      - ?? isA PickOverAction
+#      - ?? isPerformedBy ?A
+#      - ?? isPerformedOn ?O
+#      - ?? isPerformedFrom ?S
+#  into:
+#    ordered_facts:
+#      - ?A hasHandMovingToward ?O
+#      - ?A hasInHand ?O
+#      - NOT ?O isInContainer ?S REQUIRED
+#    description:
+#      - ?? isA PickIntoAction
+#      - ?? isPerformedBy ?A
+#      - ?? isPerformedOn ?O
+#      - ?? isPerformedFrom ?S
+#  parameters:
+#    ttl: 4
+#
+#Place:
+#  parameters:
+#    ttl: 4
+#  over:
+#    ordered_facts:
+#      - ?A hasHandMovingToward ?S
+#      - ?O isOnTopOf ?S REQUIRED
+#      - NOT ?A hasInHand ?O REQUIRED
+#    description:
+#      - ?? isA PlaceOverAction
+#      - ?? isPerformedBy ?A
+#      - ?? isPerformedOn ?O
+#      - ?? isPerformedFrom ?S
+#  into:
+#    ordered_facts:
+#      - ?A hasHandMovingToward ?S
+#      - ?O isInContainer ?S REQUIRED
+#      - NOT ?A hasInHand ?O REQUIRED
+#    description:
+#      - ?? isA PlaceOverAction
+#      - ?? isPerformedBy ?A
+#      - ?? isPerformedOn ?O
+#      - ?? isPerformedFrom ?S
+
+ReleaseSimple:
+  ordered_facts:
+    - NOT ?A hasInHand ?O REQUIRED
+    - ?O isInContainer ?S
+    - ?O isOnTopOf ?S
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+
+Release:
+  ordered_facts:
+    - NOT ?A hasInHand ?O REQUIRED
+    - or_facts:
+        - ?O isInContainer ?S
+        - ?O isOnTopOf ?S
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+Grasp:
+  parameters:
+    ttl: 20
+  ordered_facts:
+    - ?A hasHandMovingToward ?C
+    - ?A hasInHand ?C REQUIRED
+  description:
+    - ?? isA Grasp
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?C
+
+
+Pick_into:
+  pattern:
+    - G: Pick_over REQUIRED
+    - NOT ?O isOnTopOf ?S REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA PickIntoAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Pick_over:
+  pattern:
+    - G: Grasp
+    - NOT ?O isInContainer ?S REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA PickOverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S

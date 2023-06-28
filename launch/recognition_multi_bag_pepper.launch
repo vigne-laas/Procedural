@@ -1,0 +1,31 @@
+<launch>
+
+    <remap from="/mementar/echo/pepper" to="/ActionRecognition/inputFacts/pepper"/>
+    <group>
+        <include file="$(find procedural)/launch/ontologenius_mementar_multi.launch">
+            <arg name="onto_files" value="
+            $(find common_ground_ontology)/CG_root.owl
+            $(find common_ground_ontology)/ris_agents.owl
+            $(find overworld)/ontologies/adream_building.owl
+            $(find dt_resources)/ontologies/dt_objects.owl
+            $(find procedural)/ontologies/recognition.owl
+            $(find procedural)/ontologies/agents.owl"/>
+            <arg name="mementar_config_file" value="$(find procedural)/configs/mementar.yaml"/>
+            <arg name="onto_config_file" value="$(find procedural)/configs/ontologenius.yaml" />
+        </include>
+    </group>
+
+
+     <group>
+
+        <param name="PATH_YAML" type="string"
+               value="/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/test.yaml"/>
+        <param name="TTL_BUFFER" type="double" value="25"/>
+        <param name="MAX_SIZE_BUFFER" type="int" value="500"/>
+
+        <arg name="name" default="pepper"/>
+        <remap from="/mementar/echo/pepper" to="/ActionRecognition/inputFacts/pepper"/>
+        <node name="recognition" pkg="procedural" type="recognition" output="screen" args="-n $(arg name)"/>
+    </group>
+
+</launch>

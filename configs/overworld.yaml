@@ -1,0 +1,25 @@
+modules:
+  robot:
+    JointStatePerceptionModule: robot_joints
+  objects:
+    ArTrackPerceptionModule: ar_track
+    StaticObjectsPerceptionModule: static
+    Pr2GripperPerceptionModule:
+      - pr2_left_gripper
+      - pr2_right_gripper
+
+robot_joints:
+  robot_name : pr2
+
+pr2_left_gripper:
+  side: 0 # = left
+  distance_threshold: 0.04
+  pressure_threshold: 150
+
+pr2_right_gripper:
+  side: 1 # = right
+  distance_threshold: 0.04
+  pressure_threshold: 150
+
+static:
+  file: package://overworld/config/adream.yaml

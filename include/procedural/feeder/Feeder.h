@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "procedural/core/Fact.h"
+#include "procedural/core/Types/Fact.h"
 
 namespace procedural {
 
@@ -12,8 +12,16 @@ class Feeder
 {
 public:
     Feeder();
-    Fact* parse(const std::string& fact);
+    void feed(const std::string& fact, int id, TimeStamp_t fact_timstamp);
+    void feed(bool added, const std::string& subject, const std::string& property, const std::string& object, int id,
+              TimeStamp_t fact_timstamp);
+    void setCallback(const std::function<void(Fact*)>& new_callback)
+    { callback_buffer = new_callback; };
+
 private:
+    Fact* parse(const std::string& fact, int id, TimeStamp_t fact_timestamp);
+    static void default_callback(Fact*);
+    std::function<void(Fact*)> callback_buffer;
     std::regex const pattern;
 
 
