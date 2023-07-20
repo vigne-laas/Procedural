@@ -1,7 +1,5 @@
 <launch>
 
-    <remap from="/mementar/echo/pr2" to="/ActionRecognition/inputFacts/pr2"/>
-
     <include file="$(find procedural)/launch/ontologenius_mementar_multi.launch">
         <arg name="onto_files" value="
         $(find common_ground_ontology)/CG_root.owl

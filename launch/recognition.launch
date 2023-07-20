@@ -1,7 +1,5 @@
 <launch>
 
-    <remap from="/mementar/echo" to="/ActionRecognition/inputFacts"/>
-
     <arg name="name" default="PR2"/>
     <arg name="yaml_path" default="$(find procedural)/src/reader/test.yaml"/>
     <arg name="ttl_buffer" default="25"/>
