@@ -21,8 +21,6 @@ public:
 
     bool checkMatch(){return flag_;}
     std::map<std::string,std::string> getRemap(){return remap_var_;}
-
-
     
     std::string toString() const ;
     
