@@ -11,9 +11,9 @@ struct PatternTransitionStateMachine_t
     PatternTransitionStateMachine_t(int origin, int next,
                                     const std::string& state_machine_type,
                                     const std::map<std::string, std::string>& remap_var) : origin_(origin),
-                                                                                      next_(next),
-                                                                                      type_(state_machine_type),
-                                                                                      remap_var_(remap_var)
+                                                                                           next_(next),
+                                                                                           type_(state_machine_type),
+                                                                                           remap_var_(remap_var)
     {}
 
     int origin_;

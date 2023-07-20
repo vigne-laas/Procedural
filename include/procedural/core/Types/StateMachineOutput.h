@@ -10,7 +10,8 @@ struct StateMachineOutput
                                                                           start_time(net->getAge()),
                                                                           stop_time(net->getLastupdate()),
                                                                           name(net->getName()), type(net->getTypeStr())
-    {};
+    {}
+    
     friend std::ostream& operator<<(std::ostream& os, const StateMachineOutput& val)
     {
         if (val.updated)

@@ -43,8 +43,6 @@ private:
     uint32_t object_;
     uint32_t id_;
     TimeStamp_t timestamp_;
-
-
 };
 
 } // procedural
