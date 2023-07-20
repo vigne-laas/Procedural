@@ -1,15 +1,18 @@
 #ifndef PROCEDURAL_PARSEDCOMPOSEDACTION_H
 #define PROCEDURAL_PARSEDCOMPOSEDACTION_H
+
 #include "procedural/reader/types/ParsedPattern.h"
 #include "procedural/reader/types/ParsedDescription.h"
 #include "procedural/reader/types/ParsedParameters.h"
 #include "procedural/reader/types/ParsedRemap.h"
+
 #include <iostream>
 
 namespace procedural {
+
 struct ParsedComposedAction_t
 {
-    ParsedComposedAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)")
+    ParsedComposedAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)"), max_level(0)
     {};
 
     std::regex regex_type;
@@ -19,6 +22,7 @@ struct ParsedComposedAction_t
     procedural::ParsedPattern_t pattern;
     procedural::ParsedDescriptions_t descriptions;
     procedural::ParsedRemaps_t remaps;
+    int max_level;
 
     void linkRemapPattern()
     {
@@ -32,13 +36,11 @@ struct ParsedComposedAction_t
             else
                 std::cout << "Warning : not state machine find for this remap literal : " << literal << std::endl;
         }
-
-
     }
-    std::string getName()
+
+    std::string getName() const
     {
-        std::string res = type;
-        return subtype.empty() ? res : res + "_" + subtype;
+        return subtype.empty() ? type : type + "_" + subtype;
     }
 
     void addPattern(const ParsedPattern_t& new_pattern)
@@ -48,6 +50,7 @@ struct ParsedComposedAction_t
         if (remaps.empty() == false)
             linkRemapPattern();
     }
+
     void addRemap(const ParsedRemaps_t& new_remap)
     {
         remaps = new_remap;
@@ -73,9 +76,8 @@ struct ParsedComposedAction_t
         type = results[1];
         subtype = results[2];
     }
-    int max_level;
 };
-}
 
+} // namespace procedural
 
 #endif //PROCEDURAL_PARSEDCOMPOSEDACTION_H

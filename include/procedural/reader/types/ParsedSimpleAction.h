@@ -1,13 +1,16 @@
 #ifndef PROCEDURAL_PARSEDSIMPLEACTION_H
 #define PROCEDURAL_PARSEDSIMPLEACTION_H
+
 #include "procedural/reader/types/ParsedParameters.h"
 #include "procedural/reader/types/ParsedDescription.h"
 #include "procedural/reader/types/ParsedFacts.h"
+
 namespace procedural {
+
 struct ParsedSimpleAction_t
 {
-    ParsedSimpleAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)")
-    {};
+    ParsedSimpleAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)") {}
+    
     std::regex regex_type;
     std::string type;
     std::string subtype;
@@ -17,10 +20,8 @@ struct ParsedSimpleAction_t
 
     std::string getName() const
     {
-        std::string res = type;
-        return subtype.empty() ? res : res + "_" + subtype;
+        return subtype.empty() ? type : type + "_" + subtype;
     }
-
 
     friend std::ostream& operator<<(std::ostream& os, const ParsedSimpleAction_t& lhs)
     {
@@ -32,6 +33,7 @@ struct ParsedSimpleAction_t
 
         return os;
     }
+
     void setType(const std::string& str_type)
     {
         std::smatch results;
@@ -40,7 +42,7 @@ struct ParsedSimpleAction_t
         subtype = results[2];
     }
 };
-}
 
+}
 
 #endif //PROCEDURAL_PARSEDSIMPLEACTION_H
