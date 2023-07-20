@@ -3,6 +3,7 @@
 #include "procedural/RosInterface.h"
 #include "std_msgs/String.h"
 
+#include "procedural/utils/Parameters.h"
 
 ros::NodeHandle* node_;
 std::map<std::string, procedural::RosInterface*> interfaces_;
@@ -10,6 +11,7 @@ std::map<std::string, std::thread> interfaces_threads_;
 OntologiesManipulator* onto_manipulators;
 mementar::TimelinesManipulator* time_manipulators;
 
+procedural::Parameters params;
 
 bool deleteInterface(const std::string& name)
 {
@@ -34,8 +36,6 @@ bool deleteInterface(const std::string& name)
     return true;
 }
 
-
-
 std::vector<std::string> parse_msg(const std::string& msg)
 {
     std::regex regex("\\|");
@@ -46,29 +46,28 @@ std::vector<std::string> parse_msg(const std::string& msg)
     return out;
 }
 
-
 void callback_manager(const std_msgs::String::ConstPtr& msg)
 {
     std::cout << "msg received : " << msg << std::endl;
-    std::vector<std::string> params = parse_msg(msg->data);
-    if(params[0]=="ADD")
+    std::vector<std::string> msg_params = parse_msg(msg->data);
+    if(msg_params[0]=="ADD")
     {
-        auto it = interfaces_.find(params[1]);
+        auto it = interfaces_.find(msg_params[1]);
         if(it != interfaces_.end())
             return;
         else
         {
-            auto tmp = new procedural::RosInterface(node_,*onto_manipulators,*time_manipulators,params[1]);
-            interfaces_[params[1]] = tmp;
-            std::thread th(&procedural::RosInterface::run,tmp);
-            interfaces_threads_[params[1]] = std::move(th);
-            std::cout <<"ActionRecognition : " << params[1] << " STARTED" << std::endl;
+            auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, msg_params[1]);
+            if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("namax_sizeme").getFirst())))
+            {
+                interfaces_[msg_params[1]] = tmp;
+                std::thread th(&procedural::RosInterface::run, tmp);
+                interfaces_threads_[msg_params[1]] = std::move(th);
+                std::cout <<"ActionRecognition : " << msg_params[1] << " STARTED" << std::endl;
+            }
         }
     }
-
-
 }
-
 
 int main(int argc, char** argv)
 {
@@ -79,18 +78,23 @@ int main(int argc, char** argv)
     onto_manipulators = new OntologiesManipulator(node_);
     time_manipulators = new mementar::TimelinesManipulator(node_);
 
-    int buffer_max_size_ = 10;
-    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/new_human",buffer_max_size_,callback_manager);
+    params.insert(procedural::Parameter("yaml_path", {"-d", "--description"}));
+    params.insert(procedural::Parameter("ttl", {"-t", "--ttl"}, {"25"}));
+    params.insert(procedural::Parameter("max_size", {"-s", "--max_size"}, {"500"}));
+
+    params.set(argc, argv);
+    params.display();
+
+    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/new_human", 10, callback_manager);
     ros::spin();
 
     std::vector<std::string> interfaces_names;
     std::transform(interfaces_.cbegin(), interfaces_.cend(), std::back_inserter(interfaces_names), [](const auto& interface){ return interface.first; });
 
-    for(size_t i = 0; i < interfaces_names.size(); i++)
-        deleteInterface(interfaces_names[i]);
+    for(auto& interfaces_name : interfaces_names)
+        deleteInterface(interfaces_name);
 
     ROS_DEBUG("KILL action recognition");
-
 
     return 0;
 }

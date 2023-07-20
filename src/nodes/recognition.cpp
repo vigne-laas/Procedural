@@ -1,6 +1,8 @@
 #include "ros/ros.h"
 #include "procedural/RosInterface.h"
 
+#include "procedural/utils/Parameters.h"
+
 int main(int argc, char** argv)
 {
     std::cout << "<<<<<<<<<<<<<<<<<< Launching Action Recognition <<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -8,21 +10,18 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
     auto onto_manipulators = OntologiesManipulator(&n);
     auto time_manipulators = mementar::TimelinesManipulator(&n);
-    bool var_name = false;
-    std::string name;
-    if (argc > 1)
-        for (int i = 0; i < argc; i++)
-        {
-            std::string arg(argv[i]);
-            if (var_name)
-                name = arg;
-            if (arg.find("-n") != std::string::npos)
-                var_name = true;
-            else
-                var_name = false;
-     }
 
-    procedural::RosInterface ros_interface(&n, onto_manipulators, time_manipulators, name);
-    ros_interface.run();
+    procedural::Parameters params;
+    params.insert(procedural::Parameter("name", {"-n", "--name"}));
+    params.insert(procedural::Parameter("yaml_path", {"-d", "--description"}));
+    params.insert(procedural::Parameter("ttl", {"-t", "--ttl"}, {"25"}));
+    params.insert(procedural::Parameter("max_size", {"-s", "--max_size"}, {"500"}));
+
+    params.set(argc, argv);
+    params.display();
+
+    procedural::RosInterface ros_interface(&n, onto_manipulators, time_manipulators, params.at("name").getFirst());
+    if(ros_interface.init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("namax_sizeme").getFirst())))
+        ros_interface.run();
     return 0;
 }
