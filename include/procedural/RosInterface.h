@@ -47,8 +47,8 @@ private:
     ActionRecognition* recognition_;
     Feeder feeder_;
 
-    bool build();
-    bool link();
+    void build();
+    void link();
 
     std_msgs::String outputConverter(const StateMachineOutput& output);
     void inputConverter(const mementar::StampedFact::ConstPtr& msg);

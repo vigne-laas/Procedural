@@ -34,11 +34,9 @@ bool RosInterface::init(const std::string& descriptions_path, double ttl_buffer,
     ttl_buffer_ = ttl_buffer;
     buffer_max_size_ = buffer_max_size;
 
-    if(build() == false)
-        return false;
-    if(link() == false)
-        return false;
-        
+    build();
+    link();
+
     return true;
 }
 
@@ -55,30 +53,16 @@ void RosInterface::run()
 }
 
 /// ------------------------------- Private PART ----------------------------------------------- ///
-bool RosInterface::build()
+void RosInterface::build()
 {
-//    std::cout << "simple action : " << std::endl;
-//    for (auto& action: reader_.getSimpleActions())
-//        std::cout << action << std::endl;
-//    std::cout << "composed action : " << std::endl;
-//    for (auto& action: reader_.getComposedActions())
-//        std::cout << action << std::endl;
-//    auto onto = manipulator_.get(name_);
-//    objectClient_ = &(onto->objectProperties);
-
     builder_.build(reader_.getSimpleActions(), reader_.getComposedActions(), &(onto_manipulator_->objectProperties));
-//    auto Actions_ = builder_.getActions();
-//    for (auto action: Actions_)
-//        for (auto sub_action: action->getActions())
-//            std::cout << sub_action.getStrStructure() << "\n\n" << std::endl;
-//            std::cout << sub_action.toString() << std::endl;
+
     StateMachine::displayTypesTable();
 
     recognition_ = new ActionRecognition(builder_.getActions(), ttl_buffer_, buffer_max_size_);
-    return true;
 }
 
-bool RosInterface::link()
+void RosInterface::link()
 {
     feeder_.setCallback([&](procedural::Fact* fact) { recognition_->addToQueue(fact); });
     output_pub_ = node_->advertise<std_msgs::String>(getTopicName("outputStateMachines"), 1);
@@ -89,7 +73,6 @@ bool RosInterface::link()
         for (auto& output : outputs)
             output_pub_.publish(outputConverter(output));
     });
-    return false;
 }
 
 void RosInterface::ontologeniusPublisher(const StateMachineOutput& output)
