@@ -11,13 +11,12 @@ namespace procedural {
 class YamlReader
 {
 public:
-    YamlReader();
+    YamlReader() {}
+    
     bool read(const std::string& path);
 
-    std::vector<ParsedSimpleAction_t> getSimpleActions()
-    { return simple_actions_; };
-    std::vector<ParsedComposedAction_t>& getComposedActions()
-    { return composed_actions_; };
+    std::vector<ParsedSimpleAction_t> getSimpleActions() { return simple_actions_; };
+    std::vector<ParsedComposedAction_t>& getComposedActions() { return composed_actions_; };
 
 private :
     bool parse();
@@ -29,15 +28,10 @@ private :
     std::vector<ParsedSimpleAction_t> simple_actions_;
     std::vector<ParsedComposedAction_t> composed_actions_;
 
-    bool isSimpleAction(const YAML::Node& node)
-    { return node["sequence"] && node["description"]; };
-    bool isComposedAction(const YAML::Node& node)
-    {
-        return node["composed_sequence"] && node["description"];
-    };
-
+    bool isSimpleAction(const YAML::Node& node);
+    bool isComposedAction(const YAML::Node& node);
 };
 
-} // procedural
+} // namespace procedural
 
 #endif //PROCEDURAL_YAMLREADER_H

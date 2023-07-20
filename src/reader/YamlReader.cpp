@@ -3,21 +3,18 @@
 #include "procedural/reader/YamlReader.h"
 #include "procedural/reader/types/Yaml-Converter/ParsedComposedAction_YAMLConverter.h"
 #include "procedural/reader/types/Yaml-Converter/ParsedSimpleAction_YAMLConverter.h"
-namespace procedural {
-YamlReader::YamlReader() : yaml_file_()
-{
 
-}
+namespace procedural {
 
 bool YamlReader::read(const std::string& path)
 {
     if (std::filesystem::exists(path))
     {
         yaml_file_ = YAML::LoadFile(path);
-        parse();
-    } else
+        return parse();
+    }
+    else
         return false;
-    return true;
 }
 // ------------------------------------------------------------------ private part ----------------------------------------------------------- //
 
@@ -41,5 +38,14 @@ bool YamlReader::parse()
     return (composed_actions_.empty() == false) || (simple_actions_.empty() == false);
 }
 
+bool YamlReader::isSimpleAction(const YAML::Node& node)
+{
+    return node["sequence"] && node["description"];
+}
 
-} // procedural
+bool YamlReader::isComposedAction(const YAML::Node& node)
+{
+    return node["composed_sequence"] && node["description"];
+}
+
+} // namespace procedural
