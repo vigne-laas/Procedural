@@ -9,26 +9,28 @@
 #include "procedural/core/Types/StateMachineOutput.h"
 
 namespace procedural {
-    class ActionType;
 
-    class ActionRecognition {
-    public:
-        explicit ActionRecognition(const std::vector<ActionType *>& actions, double tll = 25, int max_size=500);
+class ActionType;
 
-        void addToQueue(Fact *fact) const;
+class ActionRecognition
+{
+public:
+    explicit ActionRecognition(const std::vector<ActionType*>& actions, double tll = 25, int max_size=500);
 
-        void processQueue(TimeStamp_t current_time);
+    void addToQueue(Fact *fact) const;
 
-        void setCallback(const std::function<void(const std::vector<StateMachineOutput>&)>& callback){ callback_output_ = callback;}
+    void processQueue(TimeStamp_t current_time);
 
-    private:
-        static void defaultCallback(const std::vector<StateMachineOutput>& outputs);
-        BufferFacts* buffer_;
-        std::vector<ActionType *> actions_;
+    void setCallback(const std::function<void(const std::vector<StateMachineOutput>&)>& callback){ callback_output_ = callback;}
 
-        std::function<void(const std::vector<StateMachineOutput>&)> callback_output_;
-    };
+private:
+    static void defaultCallback(const std::vector<StateMachineOutput>& outputs);
+    BufferFacts* buffer_;
+    std::vector<ActionType *> actions_;
 
-} // procedural
+    std::function<void(const std::vector<StateMachineOutput>&)> callback_output_;
+};
+
+} // namespace procedural
 
 #endif //PROCEDURAL_ACTIONRECOGNITION_H

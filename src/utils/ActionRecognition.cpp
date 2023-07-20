@@ -25,9 +25,9 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 {
     std::vector<Fact*> list_facts = buffer_->getFacts(current_time);
     std::set<uint32_t> facts_used;
+
     for (auto fact: list_facts)
     {
-
          std::cout << "--------------" << std::endl;
          std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
                    << std::endl;
@@ -41,7 +41,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         do
         {
             nb_update = 0;
-            std::vector<StateMachineOutput> outputs;
+            std::vector<StateMachineOutput> outputs; // TODO rename
             for (auto& action: actions_)
             {
                 std::set<uint32_t> temp_set = action->checkCompleteStateMachines(current_time);
@@ -50,7 +50,8 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     set_id_facts.insert(temp_set.begin(), temp_set.end());
                     complete_actions.push_back(action);
                     nb_update++;
-                } else
+                }
+                else
                 {
                     if (action->checkNewExplanation())
                     {
@@ -59,10 +60,8 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                             outputs.emplace_back(net, true);
                     }
                 }
-
             }
-//            std::cout<< "nb complete state machine : " << nb_update << std::endl;
-//            nb_update = (int)complete_actions.size();
+
             for (auto& action_complete: complete_actions)
             {
                 for (auto& action: actions_)
@@ -70,9 +69,6 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     {
                         if (action->checkSubAction(action_complete))
                         {
-                            // std::cout << "\t\t\t update for " << action->getName()
-                            //           << "evolve thanks to complete of sub action : " << action_complete->getName()
-                            //           << std::endl;
                             if (action->checkNewExplanation())
                             {
                                 auto nets = action->getNewExplanation();
@@ -85,17 +81,10 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
                 auto complete_state_machines = action_complete->getCompletesStateMachines();
                 for (auto& complete_state_machine: complete_state_machines)
-                {
-//                    auto output = NetworkOutput(net);
-//                    outputs.push_back(output);
                     outputs.emplace_back(complete_state_machine);
-                }
-
-
             }
 
             callback_output_(outputs);
-
 
             if (nb_update != 0)
                 for (auto& action: actions_)
@@ -109,14 +98,14 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
         facts_used.insert(set_id_facts.begin(), set_id_facts.end());
     }
+    
     buffer_->cleanUsedFacts(facts_used);
 }
+
 void ActionRecognition::defaultCallback(const std::vector<StateMachineOutput>& outputs)
 {
     for (const auto& output: outputs)
         std::cout << ">> " << output << std::endl;
-
 }
 
-
-} // procedural
+} // namespace procedural
