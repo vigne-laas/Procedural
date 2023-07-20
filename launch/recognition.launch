@@ -1,22 +1,15 @@
 <launch>
 
     <remap from="/mementar/echo" to="/ActionRecognition/inputFacts"/>
-    <group>
-        <include file="$(find procedural)/launch/ontologenius_mementar.launch">
-<!--            <arg name="name" value="$(arg onto_display)"/>-->
-        </include>
-    </group>
 
+    <arg name="name" default="PR2"/>
+    <arg name="yaml_path" default="$(find procedural)/src/reader/test.yaml"/>
+    <arg name="ttl_buffer" default="25"/>
+    <arg name="max_size_buffer" default="500"/>
 
-    <group>
+    <include file="$(find procedural)/launch/ontologenius_mementar.launch">
+        <!-- arg name="name" value="$(arg onto_display)"/-->
+    </include>
+    <node name="recognition" pkg="procedural" type="recognition" output="screen" args="-n $(arg name) -d $(arg yaml_path) -t $(arg ttl_buffer) -s $(arg max_size_buffer)"/>
 
-        <param name="PATH_YAML" type="string"
-               value="/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/test.yaml"/>
-        <param name="TTL_BUFFER" type="double" value="25"/>
-        <param name="MAX_SIZE_BUFFER" type="int" value="500"/>
-
-        <arg name="name" default="PR2"/>
-
-        <node name="recognition" pkg="procedural" type="recognition" output="screen" args="-n $(arg name)"/>
-    </group>
 </launch>
