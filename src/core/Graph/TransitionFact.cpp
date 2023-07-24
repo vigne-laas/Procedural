@@ -14,7 +14,7 @@ TransitionFact::TransitionFact(const PatternFact& pattern) : var_subject_(nullpt
     insertion_ = (*properties_.begin())>0 ? true : false;
 }
 
-void TransitionFact::expandProperty(ObjectPropertyClient* object_client)
+void TransitionFact::expandProperty(onto::ObjectPropertyClient* object_client)
 {
 
     auto res = object_client->getDown(str_initial_property);

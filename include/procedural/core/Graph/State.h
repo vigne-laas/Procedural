@@ -22,7 +22,7 @@ public:
     void addTransition(const TransitionStateMachine& transition, State* next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
-    void expandTransitions(ObjectPropertyClient* object_client);
+    void expandTransitions(onto::ObjectPropertyClient* object_client);
     bool isFinalNode() const { return nexts_facts_.empty() && nexts_state_machines_.empty(); }
     uint32_t getId() const { return id_; };
     std::string toString() const;

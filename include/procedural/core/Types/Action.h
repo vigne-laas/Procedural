@@ -18,7 +18,7 @@ public:
            const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
            const std::vector<ActionDescription_t>& descriptions,
            int last_state_required,
-           ObjectPropertyClient* object_client,
+           onto::ObjectPropertyClient* object_client,
            double ttl=30);
 
     bool isValid() const { return is_valid_; }

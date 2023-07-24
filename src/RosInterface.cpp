@@ -5,7 +5,7 @@
 namespace procedural {
 
 
-RosInterface::RosInterface(ros::NodeHandle* n, OntologiesManipulator& onto_manipulators,
+RosInterface::RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto_manipulators,
                            mementar::TimelinesManipulator& time_manipulators, const std::string& name) : node_(n),
                                                                                                          run_(true),
                                                                                                          name_(name)

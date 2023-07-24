@@ -19,7 +19,7 @@ public:
     const std::string& getVarSubject() const { return var_subject_->literal; }
     const std::string& getVarObject() const { return var_object_->literal; }
 
-    void expandProperty(ObjectPropertyClient* object_client);
+    void expandProperty(onto::ObjectPropertyClient* object_client);
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
 

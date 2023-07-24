@@ -20,7 +20,7 @@ namespace procedural {
 class RosInterface
 {
 public:
-    RosInterface(ros::NodeHandle* n, OntologiesManipulator& onto_manipulators,
+    RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto_manipulators,
                  mementar::TimelinesManipulator& time_manipulators, const std::string& name = "");
 
     bool init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size);
@@ -30,7 +30,7 @@ public:
 
 private:
     ros::NodeHandle* node_;
-    OntologyManipulator* onto_manipulator_;
+    onto::OntologyManipulator* onto_manipulator_;
     mementar::TimelineManipulator* timeline_manipulator_;
 
     bool run_;

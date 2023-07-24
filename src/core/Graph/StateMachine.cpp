@@ -337,7 +337,7 @@ std::string StateMachine::getStrStructure()
     return res;
 }
 
-void StateMachine::expandProperties(ObjectPropertyClient* object_client)
+void StateMachine::expandProperties(onto::ObjectPropertyClient* object_client)
 {
     for (auto& state: states_)
         (state.second)->expandTransitions(object_client);

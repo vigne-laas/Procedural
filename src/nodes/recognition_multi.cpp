@@ -8,7 +8,7 @@
 ros::NodeHandle* node_;
 std::map<std::string, procedural::RosInterface*> interfaces_;
 std::map<std::string, std::thread> interfaces_threads_;
-OntologiesManipulator* onto_manipulators;
+onto::OntologiesManipulator* onto_manipulators;
 mementar::TimelinesManipulator* time_manipulators;
 
 procedural::Parameters params;
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "Action_Recognition_multi");
     ros::NodeHandle node;
     node_ = &node;
-    onto_manipulators = new OntologiesManipulator(node_);
+    onto_manipulators = new onto::OntologiesManipulator(node_);
     time_manipulators = new mementar::TimelinesManipulator(node_);
 
     params.insert(procedural::Parameter("yaml_path", {"-d", "--description"}));

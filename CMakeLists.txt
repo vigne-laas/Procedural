@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
         )
 
 find_package(yaml-cpp REQUIRED)
+find_package(ontologenius 0.3.0 REQUIRED)
 
 ################################################
 ## Declare ROS messages, services and actions ##

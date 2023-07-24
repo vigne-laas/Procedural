@@ -19,13 +19,13 @@ public:
 
     void build(const std::vector<ParsedSimpleAction_t>& simple_actions,
                std::vector<ParsedComposedAction_t>& composed_actions,
-               ObjectPropertyClient* client);
+               onto::ObjectPropertyClient* client);
 
     void display();
 
     std::vector<ActionType*> getActions() { return actions_; };
 private:
-    ObjectPropertyClient* property_client_;
+    onto::ObjectPropertyClient* property_client_;
     std::vector<ParsedComposedAction_t> incomplete_creation_state_machine_;
     std::vector<ActionType*> actions_;
 

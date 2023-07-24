@@ -13,7 +13,7 @@ ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_act
 
 void ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_actions,
                           std::vector<ParsedComposedAction_t>& composed_actions,
-                          ObjectPropertyClient* client = nullptr)
+                          onto::ObjectPropertyClient* client = nullptr)
 {
     property_client_ = client;
     combineActions(simple_actions, composed_actions);

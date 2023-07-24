@@ -96,7 +96,7 @@ public:
 
     void setId(int new_id);
     std::string getStrStructure();
-    void expandProperties(ObjectPropertyClient* object_client);
+    void expandProperties(onto::ObjectPropertyClient* object_client);
 private:
 
     bool checkIncompletsStateMachines();
