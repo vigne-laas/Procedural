@@ -1,0 +1,78 @@
+
+Release:
+  parameters:
+    ttl: 10
+  sequence:
+    - ?A hasHandMovingToward ?S
+    - NOT ?A isHolding ?O REQUIRED
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedOver ?S
+
+
+Grasp:
+  parameters:
+    ttl: 10
+  sequence:
+    - ?A hasHandMovingToward ?C
+    - ?A isHolding ?C REQUIRED
+  description:
+    - ?? isA GraspAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?C
+#
+#
+
+Pick_Over:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+    - G: Grasp
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+Place_Into:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - R: Release
+    - ?O isInContainer ?S REQUIRED
+  description:
+    - ?? isA Place_IntoAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Place_Over:
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - R: Release
+    - ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA Place_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Give:
+  parameters:
+    ttl: 20
+  composed_sequence:
+    - G: Grasp
+    - NOT ?A2 isHolding ?G.O REQUIRED
+  description:
+    - ?? isA GiveAction
+    - ?? isPerformedBy ?G.A
+    - ?? isPerformedOn ?G.O
+    - ?? isPerformedBy ?A2
+

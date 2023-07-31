@@ -1,0 +1,280 @@
+// CHRIS Scenario: Clean The Table
+// DYNAMIC domain (to test with SHARY)
+// Version with HRP2TABLE
+// last Update: jguitton 7 sept. 2012
+
+factdatabase {
+
+	// entity types
+	define entityType Table;
+	define entityType Trashbin;
+	define entityType GameArtifact;
+
+	// entity attributes
+	define entityAttributes Agent {
+		static atom string type;
+		dynamic atom GameArtifact hasInRightHand;
+	}
+	define entityAttributes Table {
+		static atom string hasColor;
+	}
+	define entityAttributes Trashbin {
+		static atom string hasColor;
+		dynamic set Agent isReachable;
+	}
+	define entityAttributes GameArtifact {
+		static atom string hasColor;
+		dynamic set Agent isVisible;
+		dynamic set Agent isReachable;
+		dynamic atom Table isOn;
+		dynamic atom Trashbin isIn;
+	}
+
+	// entity declaration
+	ACHILE_HUMAN1 = new Agent;
+	JIDOKUKA_ROBOT = new Agent;
+	HRP2TABLE = new Table;
+	BLUE_TRASHBIN = new Trashbin;
+	PINK_TRASHBIN = new Trashbin;
+	BLACK_TAPE = new GameArtifact;
+	GREY_TAPE = new GameArtifact;
+	BLUE_CUBE = new GameArtifact;
+	//BLUE_CUBE_2 = new GameArtifact;
+	RED_CUBE = new GameArtifact;
+	//RED_CUBE_2 = new GameArtifact;
+
+	// static initialisation
+	ACHILE_HUMAN1.type = "Human";
+	JIDOKUKA_ROBOT.type = "Robot";
+	BLUE_TRASHBIN.hasColor = "blue";
+	PINK_TRASHBIN.hasColor = "pink";
+	BLACK_TAPE.hasColor = "black";
+	GREY_TAPE.hasColor = "grey";
+	BLUE_CUBE.hasColor = "blue";
+	//BLUE_CUBE_2.hasColor = "blue";
+	RED_CUBE.hasColor = "red";
+	//RED_CUBE_2.hasColor = "red";
+
+
+}
+
+// ----------------------------------------------
+
+HTN {
+
+	// ----------------------------------------------
+
+	action TakeObject(Agent A, GameArtifact C, Table T) {
+		preconditions {
+			C.isOn == T;
+			A >> C.isVisible;
+			A >> C.isReachable;
+			A.hasInRightHand == NULL;
+		};
+		effects {
+			FORALL(Agent Ag, {Ag >> C.isVisible;}, {C.isVisible =>> Ag;});
+			A.hasInRightHand = C;
+			C.isOn = NULL;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action PutObject(Agent A, GameArtifact C, Table T) {
+		preconditions {
+			A.hasInRightHand == C;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			C.isOn = T;
+			FORALL(Agent Ag1, {}, {C.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {C.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action PutObjectUnvisible(Agent A, GameArtifact C, Table T) {
+		preconditions {
+			A.hasInRightHand == C;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			C.isOn = T;
+			C.isVisible <<= A;
+			C.isReachable <<= A;
+			FORALL(Agent Ag1, {Ag1 != A;}, {C.isVisible =>> Ag1;});
+			FORALL(Agent Ag2, {Ag2 != A;}, {C.isReachable =>> Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action PutObjectVisible(Agent A, GameArtifact C, Table T) {
+		preconditions {
+			A.hasInRightHand == C;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			C.isOn = T;
+			C.isReachable <<= A;
+			FORALL(Agent Ag, {}, {C.isVisible <<= Ag;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action PutObjectVisibleAndReachable(Agent A, GameArtifact C, Table T) {
+		preconditions {
+			A.hasInRightHand == C;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			C.isOn = T;
+			C.isVisible <<= A;
+			FORALL(Agent Ag1, {}, {C.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {C.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action ThrowObject(Agent A, GameArtifact C, Trashbin T) {
+		preconditions {
+				A.hasInRightHand == C;
+				A >> T.isReachable;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			C.isIn = T;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action GiveObject(Agent A1, GameArtifact C, Agent A2) {
+		preconditions {
+			A1.hasInRightHand == C;
+			A2.hasInRightHand == NULL;
+		};
+		effects {
+			A1.hasInRightHand = NULL;
+			A2.hasInRightHand = C;
+		};
+		cost{cost10()};
+		duration{duration1()};
+	}
+
+	// ----------------------------------------------
+
+	method Get(Agent A, GameArtifact C) {
+		goal{A.hasInRightHand == C;};
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A >> C.isReachable;
+			};
+			subtasks {
+				T = SELECT(Table, {C.isOn == T;});
+				1:TakeObject(A, C, T);
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A >> C.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(GameArtifact, {A.hasInRightHand == C2;});
+				T = SELECT(Table, {C.isOn == T;});
+				1:Place(A, C2, T);
+				2:TakeObject(A, C, T)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A !>> C.isReachable;
+			};
+			subtasks {
+				B = SELECT(Agent, {B >> C.isReachable;});
+				1:Get(B, C);
+				2:Give(B, C, A)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A !>> C.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(GameArtifact, {A.hasInRightHand == C2;});
+				B = SELECT(Agent, {B >> C.isReachable;});
+				T = SELECT(Table, {});
+				1:Place(A, C2, T);
+				2:Get(B, C);
+				3:Give(B, C, A)>1,>2;
+			};
+		}
+	}
+
+	method Place(Agent A, GameArtifact C, Table T) {
+		goal{C.isOn == T;};
+		{
+			preconditions {};
+			subtasks {
+				1:Get(A, C);
+				2:PutObject(A, C, T)>1;
+			};
+		}
+	}
+
+	method Give(Agent A, GameArtifact C, Agent B) {
+		goal{B.hasInRightHand == C;};
+		{
+			preconditions {B.hasInRightHand == NULL;};
+			subtasks {
+				1:Get(A, C);
+				2:GiveObject(A, C, B)>1;
+			};
+		}
+		{
+			preconditions {B.hasInRightHand == NULL;};
+			subtasks {
+				T = SELECT(Table, {});
+				1:Get(A, C);
+				2:PutObjectVisibleAndReachable(A, C, T)>1;
+				3:Get(B, C)>2;
+			};
+		}
+	}
+
+//	method Show(Agent A, GameArtifact C, Table T) {
+//		goal{FORALL(Agent Ag, {Ag != A;}, {C << Ag.isVisible;});}; 		 ??
+//		{
+//			preconditions {};
+//			subtasks {
+//				1:Get(A, C);
+//				2:PutObjectVisible(A, C, T)>1;
+//			};
+//		}
+//	}
+
+	method Hide(Agent A, GameArtifact C, Agent B) {
+		goal{A.hasInRightHand != C; B >> C.isVisible;};
+		{
+			preconditions {};
+			subtasks {
+				T = SELECT(Table, {});
+				1:Get(A, C);
+				2:PutObjectUnvisible(A, C, T)>1;
+			};
+		}
+	}
+
+}
+
+// ----------------------------------------------
+
+timePart { priority = 0; }
+
