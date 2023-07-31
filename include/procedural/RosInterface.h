@@ -44,7 +44,7 @@ private:
 
     YamlReader reader_;
     ActionBuilder builder_;
-    ActionRecognition* recognition_;
+    ActionRecognition recognition_;
     Feeder feeder_;
 
     void build();

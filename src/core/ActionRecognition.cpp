@@ -4,9 +4,10 @@
 #include <iostream>
 
 namespace procedural {
-ActionRecognition::ActionRecognition(const std::vector<ActionType*>& actions, double ttl, int max_size) : actions_(
-        actions), callback_output_(ActionRecognition::defaultCallback)
+void ActionRecognition::init(const std::vector<ActionType*>& actions, double ttl, int max_size)
 {
+    actions_ = actions;
+    callback_output_ = ActionRecognition::defaultCallback;
     double max_ttl = 0;
     for (auto& action: actions_)
         if (action->maxTtl() > max_ttl)
@@ -18,23 +19,27 @@ ActionRecognition::ActionRecognition(const std::vector<ActionType*>& actions, do
 
 void ActionRecognition::addToQueue(Fact* fact) const
 {
-    buffer_->addFact(fact);
+    if(buffer_ != nullptr)
+        buffer_->addFact(fact);
 }
 
 void ActionRecognition::processQueue(TimeStamp_t current_time)
 {
+    if(buffer_ == nullptr)
+        return;
+
     std::vector<Fact*> list_facts = buffer_->getFacts(current_time);
     std::set<uint32_t> facts_used;
 
     for (auto fact: list_facts)
     {
-         std::cout << "--------------" << std::endl;
-         std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
-                   << std::endl;
+        std::cout << "--------------" << std::endl;
+        std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
+                  << std::endl;
         std::set<uint32_t> set_id_facts;
         std::vector<procedural::ActionType*> complete_actions;
         for (auto& action: actions_)
-            if(action->feed(fact, current_time))
+            if (action->feed(fact, current_time))
                 facts_used.insert(fact->getId());
 
         int nb_update;
@@ -50,8 +55,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     set_id_facts.insert(temp_set.begin(), temp_set.end());
                     complete_actions.push_back(action);
                     nb_update++;
-                }
-                else
+                } else
                 {
                     if (action->checkNewExplanation())
                     {
@@ -98,7 +102,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
         facts_used.insert(set_id_facts.begin(), set_id_facts.end());
     }
-    
+
     buffer_->cleanUsedFacts(facts_used);
 }
 

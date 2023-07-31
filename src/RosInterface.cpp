@@ -46,7 +46,7 @@ void RosInterface::run()
     while (ros::ok() && isRunning())
     {
         ros::Time now = ros::Time::now();
-        recognition_->processQueue({now.sec, now.nsec});
+        recognition_.processQueue({now.sec, now.nsec});
         ros::spinOnce();
         loop_rate.sleep();
     }
@@ -59,17 +59,17 @@ void RosInterface::build()
 
     StateMachine::displayTypesTable();
 
-    recognition_ = new ActionRecognition(builder_.getActions(), ttl_buffer_, buffer_max_size_);
+    recognition_.init(builder_.getActions(), ttl_buffer_, buffer_max_size_);
 }
 
 void RosInterface::link()
 {
-    feeder_.setCallback([&](procedural::Fact* fact) { recognition_->addToQueue(fact); });
+    feeder_.setCallback([&](procedural::Fact* fact) { recognition_.addToQueue(fact); });
     output_pub_ = node_->advertise<std_msgs::String>(getTopicName("outputStateMachines"), 1);
 
     sub_input_stamped_facts_ = node_->subscribe<mementar::StampedFact>(getMementarTopicName(), buffer_max_size_,
                                                                        &RosInterface::inputConverter, this);
-    recognition_->setCallback([&](const std::vector<procedural::StateMachineFinishedMSG_>& outputs) {
+    recognition_.setCallback([&](const std::vector<procedural::StateMachineFinishedMSG_>& outputs) {
         for (auto& output : outputs)
             output_pub_.publish(outputConverter(output));
     });

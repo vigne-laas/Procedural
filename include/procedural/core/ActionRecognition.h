@@ -15,18 +15,22 @@ class ActionType;
 class ActionRecognition
 {
 public:
-    explicit ActionRecognition(const std::vector<ActionType*>& actions, double tll = 25, int max_size=500);
 
-    void addToQueue(Fact *fact) const;
+    ActionRecognition():buffer_(nullptr){};
+    void init(const std::vector<ActionType*>& actions, double tll = 25, int max_size = 500);
+
+
+    void addToQueue(Fact* fact) const;
 
     void processQueue(TimeStamp_t current_time);
 
-    void setCallback(const std::function<void(const std::vector<StateMachineFinishedMSG_>&)>& callback){ callback_output_ = callback;}
+    void setCallback(const std::function<void(const std::vector<StateMachineFinishedMSG_>&)>& callback)
+    { callback_output_ = callback; }
 
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
-    BufferFacts* buffer_;
-    std::vector<ActionType *> actions_;
+    BufferFacts* buffer_{};
+    std::vector<ActionType*> actions_;
 
     std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
 };
