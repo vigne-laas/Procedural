@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "procedural/reader/ActionBuilder.h"
+#include "procedural/builder/ActionBuilder.h"
 #include "procedural/core/Types/ActionDescription.h"
 
 namespace procedural {
