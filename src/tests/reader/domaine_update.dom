@@ -3,13 +3,13 @@ HTN {
 
 	action Pick_Over(Agent A, Pickable O) {
 		preconditions {
-		    C.isOn != NULL;
+		    O.isOn != NULL;
 			A >> O.isVisible;
 			A >> O.isReachable;
 			A.hasInRightHand == NULL;
 		};
 		effects {
-			FORALL(Agent Ag, {Ag >> C.isVisible;}, {C.isVisible =>> Ag;});
+			FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
 			A.hasInRightHand = O;
 			O.isOn = NULL;
 		};
@@ -23,18 +23,18 @@ HTN {
 		};
 		effects {
 			A.hasInRightHand = NULL;
-			C.isOn = T;
-			FORALL(Agent Ag1, {}, {C.isVisible <<= Ag1;});
-			FORALL(Agent Ag2, {}, {C.isReachable <<= Ag2;});
+			O.isOn = T;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
 		};
 		cost{cost1()};
 		duration{duration1()};
 	}
 
-	action Place_Into(Agent A, Pickable O, Container C) {
+	action Place_Into(Agent A, Pickable O, Container O) {
 		preconditions {
 				A.hasInRightHand == O;
-				A >> C.isReachable;
+				A >> O.isReachable;
 		};
 		effects {
 			A.hasInRightHand = NULL;
@@ -74,49 +74,49 @@ HTN {
 		{
 			preconditions{
 				A.hasInRightHand != NULL;
-				A >> C.isReachable;
+				A >> O.isReachable;
 			};
 			subtasks {
 				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
-				T = SELECT(Table, {C.isOn == T;});
+				T = SELECT(Table, {O.isOn == T;});
 				1:Place_Over(A, C2, T);
-				2:Pick_over(A, C)>1;
+				2:Pick_over(A, O)>1;
 			};
 		}
 		{
 			preconditions{
 				A.hasInRightHand == NULL;
-				A !>> C.isReachable;
+				A !>> O.isReachable;
 			};
 			subtasks {
-				B = SELECT(Agent, {B >> C.isReachable;});
-				1:Get(B, C);
-				2:Give(B, C, A)>1;
+				B = SELECT(Agent, {B >> O.isReachable;});
+				1:Get(B, O);
+				2:Give(B, O, A)>1;
 			};
 		}
 		{
 			preconditions{
 				A.hasInRightHand != NULL;
-				A !>> C.isReachable;
+				A !>> O.isReachable;
 			};
 			subtasks {
 				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
-				B = SELECT(Agent, {B >> C.isReachable;});
+				B = SELECT(Agent, {B >> O.isReachable;});
 				T = SELECT(Table, {});
 				1:Place_Over(A, C2, T);
-				2:Get(B, C);
-				3:Give(B, C, A)>1,>2;
+				2:Get(B, O);
+				3:Give(B, O, A)>1,>2;
 			};
 		}
 	}
 
-	method Place(Agent A, Pickable C, Table T) {
-		goal{C.isOn == T;};
+	method Place(Agent A, Pickable O, Table T) {
+		goal{O.isOn == T;};
 		{
 			preconditions {};
 			subtasks {
-				1:Get(A, C);
-				2:Place_Over(A, C, T)>1;
+				1:Get(A, O);
+				2:Place_Over(A, O, T)>1;
 			};
 		}
 	}
