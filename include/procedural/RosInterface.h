@@ -6,8 +6,7 @@
 #include "procedural/reader/YamlReader.h"
 #include "procedural/reader/ActionBuilder.h"
 #include "procedural/feeder/Feeder.h"
-#include "procedural/utils/ActionRecognition.h"
-#include "procedural/core/Types/StateMachineOutput.h"
+#include "procedural/core/ActionRecognition.h"
 #include "procedural/core/Types/StateMachineFinishedMSG_.h"
 
 #include "ontologenius/OntologiesManipulator.h"

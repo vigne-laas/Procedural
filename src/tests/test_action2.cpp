@@ -2,7 +2,7 @@
 #include <iostream>
 #include "procedural/core/Types/Action.h"
 #include "procedural/core/Types/ActionType.h"
-#include "procedural/utils/ActionRecognition.h"
+#include "procedural/core/ActionRecognition.h"
 #include "procedural/utils/TimeStamp.h"
 #include "ros/ros.h"
 

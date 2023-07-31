@@ -6,7 +6,7 @@
 #include "procedural/reader/types/ParsedSimpleAction.h"
 #include "procedural/reader/types/ParsedComposedAction.h"
 #include "procedural/core/Types/ActionType.h"
-#include "procedural/utils/ActionRecognition.h"
+#include "procedural/core/ActionRecognition.h"
 
 namespace procedural {
 
