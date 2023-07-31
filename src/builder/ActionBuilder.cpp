@@ -63,7 +63,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
 }
 void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& composed_actions)
 {
-    for (auto& action : composed_actions)
+    for (auto& action: composed_actions)
     {
         bool incomplete = false;
         std::vector<PatternTransitionFact_t> facts;
