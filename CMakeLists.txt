@@ -59,6 +59,9 @@ find_package(ontologenius 0.3.0 REQUIRED)
 #find_package(ANTLR REQUIRED)
 #antlr_target(GrammarParser  ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/htn.g4 VISITOR OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/HATPParser)
 
+#find_package(ANTLR REQUIRED)
+#antlr_target(GrammarParser  ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/htn.g4 VISITOR OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/HATPParser)
+
 ################################################
 ## Declare ROS messages, services and actions ##
 ################################################
