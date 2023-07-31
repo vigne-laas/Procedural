@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.7)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 project(procedural)
 
@@ -12,8 +12,52 @@ find_package(catkin REQUIRED COMPONENTS
         mementar
         )
 
+LIST( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+
+add_definitions(-DANTLR4CPP_SHARED)
+# compiler must be 17
+SET (CMAKE_CXX_STANDARD 17)
+# using /MD flag for antlr4_runtime (for Visual C++ compilers only)
+set(ANTLR4_WITH_STATIC_CRT OFF)
+#add_compile_options(-fPIC)
+# Specify the version of the antlr4 library needed for this project.
+# By default the latest version of antlr4 will be used.  You can specify a
+# specific, stable version by setting a repository tag value or a link
+# to a zip file containing the libary source.
+ set(ANTLR4_TAG 4.13.0)
+# add external build for antlrcpp
+include(ExternalAntlr4Cpp)
+# add antrl4cpp artifacts to project environment
+include_directories(${ANTLR4_INCLUDE_DIRS})
+# set variable pointing to the antlr tool that supports C++
+# this is not required if the jar file can be found under PATH environment
+set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/tools/antlr-4.13.0-complete.jar)
+# add macros to generate ANTLR Cpp code from grammar
+find_package(ANTLR REQUIRED)
+
+# Call macro to add lexer and grammar to your build dependencies.
+antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPLexer.g4 LEXER
+        PACKAGE procedural)
+antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
+        PACKAGE procedural
+        DEPENDS_ANTLR SampleGrammarLexer
+        COMPILE_FLAGS -lib ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
+
+message("output : ${ANTLR_SampleGrammarLexer_OUTPUT_DIR}")
+include_directories(${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
+include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
+#include_directories(${ANTLR_HATPGrammar_OUTPUT_DIR})
+# Call macro to add lexer and grammar to your build dependencies.
+# NOTE: Here, we define "antlrcpptest" as our project's namespace
+#antlr4cpp_process_grammar(demo procedural ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/htn.g4)
+# include generated files in project environment
+#include_directories(${antlr4cpp_include_dirs_procedural})
+
 find_package(yaml-cpp REQUIRED)
 find_package(ontologenius 0.3.0 REQUIRED)
+
+#find_package(ANTLR REQUIRED)
+#antlr_target(GrammarParser  ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/htn.g4 VISITOR OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/HATPParser)
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -95,11 +139,25 @@ target_link_libraries(${PROJECT_NAME}_reader_lib
         yaml-cpp
         )
 
+add_library(${PROJECT_NAME}_domain_reader_lib
+        src/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
+        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/reader/HATPListener.cpp include/procedural/reader/HATPListener.h)
+target_link_libraries(${PROJECT_NAME}_domain_reader_lib
+        antlr4_shared
+        )
+add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 add_library(${PROJECT_NAME}_builder_lib
-        src/reader/ActionBuilder.cpp)
+        src/builder/ActionBuilder.cpp
+        src/builder/HTNBuilder.cpp)
 target_link_libraries(${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_graph_lib
         ${PROJECT_NAME}_types_lib
+        ${PROJECT_NAME}_domain_reader_lib
         )
 
 add_library(${PROJECT_NAME}_utils_lib
@@ -119,6 +177,14 @@ target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
         ${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_utils_lib
         ${catkin_LIBRARIES})
+
+#add_library(${PROJECT_NAME}_domaine_parser_lib
+#        include/procedural/reader/)
+#target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_utils_lib
+#        ${catkin_LIBRARIES})
 
 ##################################
 ##      Test executables        ##
@@ -158,6 +224,15 @@ target_link_libraries(test_reader
         ${catkin_LIBRARIES}
         )
 
+
+
+add_executable(test_domain_reader src/tests/reader/test_domain_builder.cpp)
+add_dependencies(test_domain_reader ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_domain_reader
+        ${PROJECT_NAME}_reader_lib
+        ${PROJECT_NAME}_builder_lib
+        ${catkin_LIBRARIES}
+        )
 #add_executable(test_action src/tests/test_action.cpp)
 #add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action
