@@ -8,6 +8,7 @@
 #include "procedural/feeder/Feeder.h"
 #include "procedural/utils/ActionRecognition.h"
 #include "procedural/core/Types/StateMachineOutput.h"
+#include "procedural/core/Types/StateMachineFinishedMSG_.h"
 
 #include "ontologenius/OntologiesManipulator.h"
 
@@ -50,9 +51,9 @@ private:
     void build();
     void link();
 
-    std_msgs::String outputConverter(const StateMachineOutput& output);
+    std_msgs::String outputConverter(const StateMachineFinishedMSG_& output);
     void inputConverter(const mementar::StampedFact::ConstPtr& msg);
-    void ontologeniusPublisher(const StateMachineOutput& output);
+    void ontologeniusPublisher(const StateMachineFinishedMSG_& output);
 
     std::string getTopicName(const std::string& topic_name);
     std::string getTopicName(const std::string& topic_name, const std::string& onto_name);

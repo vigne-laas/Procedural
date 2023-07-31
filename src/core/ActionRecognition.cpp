@@ -41,7 +41,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         do
         {
             nb_update = 0;
-            std::vector<StateMachineOutput> outputs; // TODO rename
+            std::vector<StateMachineFinishedMSG_> msg_finished_SM_; // TODO rename
             for (auto& action: actions_)
             {
                 std::set<uint32_t> temp_set = action->checkCompleteStateMachines(current_time);
@@ -57,7 +57,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                     {
                         auto nets = action->getNewExplanation();
                         for (auto& net: nets)
-                            outputs.emplace_back(net, true);
+                            msg_finished_SM_.emplace_back(net, true);
                     }
                 }
             }
@@ -73,7 +73,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                             {
                                 auto nets = action->getNewExplanation();
                                 for (auto& net: nets)
-                                    outputs.emplace_back(net, true);
+                                    msg_finished_SM_.emplace_back(net, true);
                             }
                             nb_update++;
                         }
@@ -81,10 +81,10 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
 
                 auto complete_state_machines = action_complete->getCompletesStateMachines();
                 for (auto& complete_state_machine: complete_state_machines)
-                    outputs.emplace_back(complete_state_machine);
+                    msg_finished_SM_.emplace_back(complete_state_machine);
             }
 
-            callback_output_(outputs);
+            callback_output_(msg_finished_SM_);
 
             if (nb_update != 0)
                 for (auto& action: actions_)
@@ -102,7 +102,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
     buffer_->cleanUsedFacts(facts_used);
 }
 
-void ActionRecognition::defaultCallback(const std::vector<StateMachineOutput>& outputs)
+void ActionRecognition::defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs)
 {
     for (const auto& output: outputs)
         std::cout << ">> " << output << std::endl;

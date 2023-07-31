@@ -69,13 +69,13 @@ void RosInterface::link()
 
     sub_input_stamped_facts_ = node_->subscribe<mementar::StampedFact>(getMementarTopicName(), buffer_max_size_,
                                                                        &RosInterface::inputConverter, this);
-    recognition_->setCallback([&](const std::vector<procedural::StateMachineOutput>& outputs) {
+    recognition_->setCallback([&](const std::vector<procedural::StateMachineFinishedMSG_>& outputs) {
         for (auto& output : outputs)
             output_pub_.publish(outputConverter(output));
     });
 }
 
-void RosInterface::ontologeniusPublisher(const StateMachineOutput& output)
+void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
 {
     ros::Time stamp_time((double) output.start_time.toFloat());
     if (onto_manipulator_->individuals.exist(output.name) == false &&
@@ -111,7 +111,7 @@ void RosInterface::ontologeniusPublisher(const StateMachineOutput& output)
     }
 }
 
-std_msgs::String RosInterface::outputConverter(const StateMachineOutput& output)
+std_msgs::String RosInterface::outputConverter(const StateMachineFinishedMSG_& output)
 {
     std::cout << " new output : " << output << std::endl;
     std_msgs::String res;

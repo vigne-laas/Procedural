@@ -6,7 +6,7 @@
 #include <mutex>
 #include "procedural/core/Types/Fact.h"
 #include "procedural/utils/BufferFacts.h"
-#include "procedural/core/Types/StateMachineOutput.h"
+#include "procedural/core/Types/StateMachineFinishedMSG_.h"
 
 namespace procedural {
 
@@ -21,14 +21,14 @@ public:
 
     void processQueue(TimeStamp_t current_time);
 
-    void setCallback(const std::function<void(const std::vector<StateMachineOutput>&)>& callback){ callback_output_ = callback;}
+    void setCallback(const std::function<void(const std::vector<StateMachineFinishedMSG_>&)>& callback){ callback_output_ = callback;}
 
 private:
-    static void defaultCallback(const std::vector<StateMachineOutput>& outputs);
+    static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_;
     std::vector<ActionType *> actions_;
 
-    std::function<void(const std::vector<StateMachineOutput>&)> callback_output_;
+    std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
 };
 
 } // namespace procedural
