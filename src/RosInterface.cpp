@@ -9,7 +9,7 @@ RosInterface::RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto
                            mementar::TimelinesManipulator& time_manipulators, const std::string& name) : node_(n),
                                                                                                          run_(true),
                                                                                                          name_(name)
-                                                                                                         
+
 {
     ROS_INFO("Action Recognition start : %s", name_.c_str());
 
