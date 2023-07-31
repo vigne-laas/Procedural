@@ -142,8 +142,7 @@ std_msgs::String RosInterface::outputConverter(const StateMachineOutput& output)
 //    std::cout << "start time :" << start_time << std::endl;
 //    std::cout << "stop time :" << stop_time << std::endl;
 
-    timeline_manipulator_->action_feeder.insert(output.name, {(uint32_t) start_time.sec_, (uint32_t) start_time.nsec_},
-                                                {(uint32_t) stop_time.sec_, (uint32_t) stop_time.nsec_});
+    timeline_manipulator_->action_feeder.insert(output.name, {(uint32_t) start_time.sec_, (uint32_t) start_time.nsec_},{(uint32_t) stop_time.sec_, (uint32_t) stop_time.nsec_});
     OntologeniusPublisher(output);
 //    usleep(500);
     return res;

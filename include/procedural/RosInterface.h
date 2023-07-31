@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 
 #include "procedural/reader/YamlReader.h"
-#include "procedural/reader/ActionBuilder.h"
+#include "procedural/builder/ActionBuilder.h"
 #include "procedural/feeder/Feeder.h"
 #include "procedural/utils/ActionRecognition.h"
 #include "procedural/core/Types/StateMachineOutput.h"

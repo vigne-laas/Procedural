@@ -1,6 +1,6 @@
 #include <iostream>
 #include "procedural/reader/YamlReader.h"
-#include "procedural/reader/ActionBuilder.h"
+#include "procedural/builder/ActionBuilder.h"
 #include "procedural/utils/ActionRecognition.h"
 
 int main()
