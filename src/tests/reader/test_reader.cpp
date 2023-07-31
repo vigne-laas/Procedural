@@ -1,8 +1,7 @@
 #include <iostream>
 #include "procedural/reader/YamlReader.h"
-#include "procedural/reader/ActionBuilder.h"
+#include "procedural/builder/ActionBuilder.h"
 #include "procedural/core/ActionRecognition.h"
-
 int main()
 {
     procedural::YamlReader reader = procedural::YamlReader();
