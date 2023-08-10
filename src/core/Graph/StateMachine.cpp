@@ -62,6 +62,42 @@ bool StateMachine::evolve(StateMachine* stateMachine)
     return true;
 }
 
+bool StateMachine::evolve(Action* action)
+{
+    if ((valid_ && closed_) == false)
+        return false;
+    auto evolution = current_state_->evolve(action);
+
+    if (evolution == nullptr)
+        return false;
+//    if (current_state_->getId() == id_initial_state_)
+//        age_ = fact->getTimeStamp();
+//    last_update_ = fact->getTimeStamp();
+//
+//    current_state_ = evolution;
+//    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
+//    new_explanations_ = checkIncompletsStateMachines();
+    return true;
+}
+
+bool StateMachine::evolve(Task* task)
+{
+    if ((valid_ && closed_) == false)
+        return false;
+    auto evolution = current_state_->evolve(task);
+
+    if (evolution == nullptr)
+        return false;
+//    if (current_state_->getId() == id_initial_state_)
+//        age_ = fact->getTimeStamp();
+//    last_update_ = fact->getTimeStamp();
+//
+//    current_state_ = evolution;
+//    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
+//    new_explanations_ = checkIncompletsStateMachines();
+    return true;
+}
+
 
 float StateMachine::getCompletionRatio() const
 {
@@ -95,13 +131,12 @@ bool StateMachine::addTransition(const PatternTransitionFact_t& transitionFact)
         TransitionFact t = TransitionFact(*(transitionFact.fact));
         states_[transitionFact.origin_state]->addTransition(t, states_[transitionFact.next_state]);
         return true;
-    }
-    else
+    } else
         return false;
 
 }
 
-bool StateMachine::addStateMachine(const PatternTransitionStateMachine_t& transitionStateMachine)
+bool StateMachine::addTransition(const PatternTransitionStateMachine_t& transitionStateMachine)
 {
     if (closed_ == false)
     {
@@ -114,9 +149,56 @@ bool StateMachine::addStateMachine(const PatternTransitionStateMachine_t& transi
         TransitionStateMachine transition(type, transitionStateMachine.remap_var_);
         states_[transitionStateMachine.origin_]->addTransition(transition, states_[transitionStateMachine.next_]);
         return true;
-    }
-    else
+    } else
         return false;
+}
+
+bool StateMachine::addTransition(const HTNTransition_t& transition)
+{
+    int origin_id = transition.step * 10;
+    int final_id = (transition.step + 1) * 10;
+    addState(origin_id);
+//    std::cout << "create state : " << std::to_string(origin_id) << std::endl;
+
+    addState(final_id);
+//    std::cout << "create state : " << std::to_string(final_id) << std::endl;
+
+    for (auto& var: transition.arguments_)
+        insertVariable(var.first);
+    linkHTNTransition(origin_id, final_id, transition);
+    int new_state = 1;
+    for (const auto parent: states_[origin_id]->getParents_())
+    {
+        if (parent->valideConstrains(transition.id_contraints_order))
+        {
+//            linkHTNTransition(parent->getId(), origin_id + new_state, transition);
+            addState((transition.step * 10) + new_state);
+            linkHTNTransition(parent->getId(), (transition.step * 10) + new_state, transition);
+            states_[(transition.step * 10) + new_state]->closeTo(states_[(transition.step + 1) * 10], parent,
+                                                                 states_[transition.step*10]);
+            new_state++;
+        }
+    }
+    return true;
+}
+
+void StateMachine::linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition)
+{
+    if (transition.type == TransitionType::Action)
+    {
+        TransitionAction t(transition.id_subtask, final_state, transition.arguments_);
+        states_[initial_state]->addTransition(t, states_[final_state]);
+    }
+    if (transition.type == TransitionType::Task)
+    {
+        TransitionTask t(transition.id_subtask, final_state, transition.arguments_);
+        states_[initial_state]->addTransition(t, states_[final_state]);
+    }
+//    std::cout << "Add parents : " << std::to_string(initial_state) << std::endl;
+    states_[final_state]->addParents(states_[initial_state]);
+    states_[final_state]->addValidateConstraints(transition.id_contraints_order);
+    states_[final_state]->addValidateConstraints(states_[initial_state]->getConstrains_());
+
 }
 
 bool StateMachine::addDescription(const ActionDescription_t& des)
@@ -172,8 +254,19 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
             TransitionStateMachine t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
+        for (auto& pair_transition: states_.at(state.first)->getNextsActions())
+        {
+            TransitionAction t = pair_transition.first;
+            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
+        }
+        for (auto& pair_transition: states_.at(state.first)->getNextsTasks())
+        {
+            TransitionTask t = pair_transition.first;
+            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
+        }
     }
-    N->addTimeoutTransition(last_state_required);
+    if(last_state_required!=-1)
+        N->addTimeoutTransition(last_state_required);
     N->closeStateMachine();
     return N;
 }
@@ -246,6 +339,7 @@ void StateMachine::addState(int id_state)
 
 void StateMachine::linkStateMachine()
 {
+//    std::cout << "link " << this->getName() << std::endl;
     for (auto& state: states_)
     {
         state.second->linkVariables(variables_);
@@ -269,6 +363,10 @@ void StateMachine::processInitialState()
             id_states_nexts.insert(nexts_state.second->getId());
         for (auto& nexts_state: pair_states.second->getNextsStateMachines())
             id_states_nexts.insert(nexts_state.second->getId());
+        for (auto& nexts_state: pair_states.second->getNextsActions())
+            id_states_nexts.insert(nexts_state.second->getId());
+        for (auto& nexts_state: pair_states.second->getNextsTasks())
+            id_states_nexts.insert(nexts_state.second->getId());
     }
 
     std::unordered_set<int> result;
@@ -282,23 +380,22 @@ void StateMachine::processInitialState()
     if (result.size() == 0)
     {
         throw NoInitialStateStateMachineException();
-    }
-    else if (nb_initial_state > 1)
+    } else if (nb_initial_state > 1)
     {
         std::unordered_set<State*> invalid_states;
         for (auto res: result)
             invalid_states.insert(states_.at(res));
-        
+
         throw MultiInitialStateStateMachineException(invalid_states);
-    }
-    else
+    } else
     {
         id_initial_state_ = *result.begin();
         current_state_ = states_.at(id_initial_state_);
     }
 }
 
-bool StateMachine::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
+bool StateMachine::updateVar(const std::map<std::string, std::string>& remap,
+                             const std::map<std::string, Variable_t>& new_var)
 {
     bool res = false;
     for (const auto& pair: remap)
@@ -330,17 +427,17 @@ std::string StateMachine::getStrStructure()
     std::string res;
     for (auto& state: states_)
     {
-        if (res != "")
-            res += "\n";
+        if (!res.empty())
+            res += "\n\n";
         res += "id : " + std::to_string(state.first) + " " + state.second->toString();
     }
     return res;
 }
 
-void StateMachine::expandProperties(onto::ObjectPropertyClient* object_client)
+void StateMachine::expandProperties(onto::OntologyManipulator* onto_manipulator)
 {
     for (auto& state: states_)
-        (state.second)->expandTransitions(object_client);
+        (state.second)->expandTransitions(onto_manipulator);
 }
 
 } // namespace procedural

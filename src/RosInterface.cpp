@@ -55,7 +55,7 @@ void RosInterface::run()
 /// ------------------------------- Private PART ----------------------------------------------- ///
 void RosInterface::build()
 {
-    builder_.build(reader_.getSimpleActions(), reader_.getComposedActions(), &(onto_manipulator_->objectProperties));
+    builder_.build(reader_.getSimpleActions(), reader_.getComposedActions(), onto_manipulator_);
 
     StateMachine::displayTypesTable();
 
