@@ -92,11 +92,11 @@ struct Subtask_t
     }
 };
 
-struct Decomposition_t
+struct Method_t
 {
     std::vector<Expression_t> preconditions;
     Subtask_t subtask;
-    friend std::ostream& operator<<(std::ostream& os, const Decomposition_t& lhs)
+    friend std::ostream& operator<<(std::ostream& os, const Method_t& lhs)
     {
         os << "Decomposition  : \n";
 
@@ -122,14 +122,14 @@ struct effects_t
         return os;
     }
 };
-struct MethodParsed_t
+struct Abstract_task_t
 {
     std::string name;
     std::vector<Expression_t> goals;
     std::vector<Arguments_t> arguments;
-    std::vector<Decomposition_t> decomposition_;
+    std::vector<Method_t> methods_;
     effects_t effects;
-    friend std::ostream& operator<<(std::ostream& os, const MethodParsed_t& lhs)
+    friend std::ostream& operator<<(std::ostream& os, const Abstract_task_t& lhs)
     {
         os << "Method : " << lhs.name << "\n";
 
@@ -138,7 +138,7 @@ struct MethodParsed_t
             os << "\t\t" << goal << "\n";
         for (const auto& arg: lhs.arguments)
             os << "\t" << arg << "\n";
-        for (const auto& decomposition: lhs.decomposition_)
+        for (const auto& decomposition: lhs.methods_)
             os << "\t" << decomposition << "\n";
         os << "\t" << lhs.effects;
         return os;
@@ -166,7 +166,7 @@ struct PrimitiveActionParsed_t
 };
 struct HTNParserd_t
 {
-    std::vector<MethodParsed_t> methods;
+    std::vector<Abstract_task_t> methods;
     std::vector<PrimitiveActionParsed_t> actions;
 
     friend std::ostream& operator<<(std::ostream& os, const HTNParserd_t& lhs)
