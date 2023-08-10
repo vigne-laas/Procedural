@@ -26,6 +26,10 @@ Grasp:
 #
 
 Pick_Over:
+  args:
+    -A: Agent
+    -O: Pickable
+    -S: Support
   parameters:
     ttl: 15
   composed_sequence:
