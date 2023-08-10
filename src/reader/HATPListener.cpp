@@ -32,7 +32,7 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
 //        std::cout << method->getText() << std::endl;
     for (auto method: methods)
     {
-        MethodParsed_t method_;
+        Abstract_task_t method_;
         method_.name = method->IDENTIFIER()->getText();
         for (auto goal: method->goal()->expression())
             method_.goals.emplace_back(goal->subject()->getText(), goal->operator_()->getText(),
@@ -41,7 +41,7 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
             method_.arguments.emplace_back(arg->type()->getText(), arg->varname()->getText());
         for (auto decomposition: method->decomposition())
         {
-            Decomposition_t decomposition_;
+            Method_t decomposition_;
             for (auto expression: decomposition->preconditions()->expression())
                 decomposition_.preconditions.emplace_back(expression->subject()->getText(),
                                                           expression->operator_()->getText(),
@@ -72,7 +72,7 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                     action_.after_id.push_back(std::stoi(order->NUMBER()->getText()));
                 decomposition_.subtask.actions_.push_back(action_);
             }
-            method_.decomposition_.push_back(decomposition_);
+            method_.methods_.push_back(decomposition_);
         }
         htn_.methods.push_back(method_);
 
