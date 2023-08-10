@@ -52,6 +52,8 @@ public:
 
     bool evolve(Fact* fact);
     bool evolve(StateMachine* state_machine);
+    bool evolve(Action* action);
+    bool evolve(Task* task);
 
     const State* getCurrentState() const { return current_state_; }
     std::string getTypeStr() const { return type_str_; }
@@ -72,14 +74,16 @@ public:
 
 
     bool addTransition(const PatternTransitionFact_t& transitionFact);
-    bool addStateMachine(const PatternTransitionStateMachine_t& transitionStateMachine);
+    bool addTransition(const PatternTransitionStateMachine_t& transitionStateMachine);
+    bool addTransition(const HTNTransition_t& transition);
+
     bool addDescription(const ActionDescription_t& description);
 
     bool closeStateMachine();
 
     std::string toString();
 
-    StateMachine* clone(int new_id, int last_state_required);
+    StateMachine* clone(int new_id, int last_state_required=-1);
     void displayVariables();
     std::string describe(bool expl = false);
     std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; }
@@ -96,7 +100,7 @@ public:
 
     void setId(int new_id);
     std::string getStrStructure();
-    void expandProperties(onto::ObjectPropertyClient* object_client);
+    void expandProperties(onto::OntologyManipulator* onto_manipulator);
 private:
 
     bool checkIncompletsStateMachines();
@@ -135,6 +139,7 @@ private:
     std::vector<StateMachine*> updated_sub_state_machines_;
 
 
+    void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);
 };
 
 
