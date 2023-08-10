@@ -10,13 +10,13 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         ontologenius
         mementar
-        )
+)
 
-LIST( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 add_definitions(-DANTLR4CPP_SHARED)
 # compiler must be 17
-SET (CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_STANDARD 17)
 # using /MD flag for antlr4_runtime (for Visual C++ compilers only)
 set(ANTLR4_WITH_STATIC_CRT OFF)
 #add_compile_options(-fPIC)
@@ -24,7 +24,7 @@ set(ANTLR4_WITH_STATIC_CRT OFF)
 # By default the latest version of antlr4 will be used.  You can specify a
 # specific, stable version by setting a repository tag value or a link
 # to a zip file containing the libary source.
- set(ANTLR4_TAG 4.13.0)
+set(ANTLR4_TAG 4.13.0)
 # add external build for antlrcpp
 include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
@@ -125,7 +125,7 @@ add_library(${PROJECT_NAME}_types_lib
         src/core/Types/PatternFact.cpp
         src/core/Types/WordTable.cpp
         src/core/Types/Fact.cpp
-        )
+)
 
 add_library(${PROJECT_NAME}_graph_lib
         src/core/Types/ActionType.cpp # TODO pb de lien si dans types_lib
@@ -140,33 +140,41 @@ add_library(${PROJECT_NAME}_reader_lib
         src/reader/YamlReader.cpp)
 target_link_libraries(${PROJECT_NAME}_reader_lib
         yaml-cpp
-        )
+)
 
 add_library(${PROJECT_NAME}_domain_reader_lib
         src/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
-        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/reader/HATPListener.cpp include/procedural/reader/HATPListener.h)
+        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/reader/HATPListener.cpp)
 target_link_libraries(${PROJECT_NAME}_domain_reader_lib
         antlr4_shared
-        )
+)
 add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
         -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+add_library(${PROJECT_NAME}_htn_type src/core/Types/Task.cpp src/core/Types/Method.cpp)
+add_library(${PROJECT_NAME}_htn_graph src/core/Graph/TransitionAction.cpp
+        src/core/Graph/HtnTransitionTask.cpp
+)
+
 add_library(${PROJECT_NAME}_builder_lib
         src/builder/ActionBuilder.cpp
         src/builder/HTNBuilder.cpp)
+
 target_link_libraries(${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_graph_lib
         ${PROJECT_NAME}_types_lib
         ${PROJECT_NAME}_domain_reader_lib
-        )
+        ${PROJECT_NAME}_htn_type
+        ${PROJECT_NAME}_htn_graph
+)
 
 add_library(${PROJECT_NAME}_utils_lib
         src/utils/BufferFacts.cpp
         src/core/ActionRecognition.cpp
-        )
+)
 target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_graph_lib)
 
 add_library(${PROJECT_NAME}_feed_lib
@@ -196,7 +204,7 @@ target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
 
 catkin_install_python(PROGRAMS scripts/testPublisher.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+)
 
 #add_executable(test_facts src/tests/core/test_facts.cpp)
 #add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
@@ -225,8 +233,7 @@ target_link_libraries(test_reader
         ${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_utils_lib
         ${catkin_LIBRARIES}
-        )
-
+)
 
 
 add_executable(test_domain_reader src/tests/reader/test_domain_builder.cpp)
@@ -235,7 +242,7 @@ target_link_libraries(test_domain_reader
         ${PROJECT_NAME}_reader_lib
         ${PROJECT_NAME}_builder_lib
         ${catkin_LIBRARIES}
-        )
+)
 #add_executable(test_action src/tests/test_action.cpp)
 #add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action
@@ -276,7 +283,7 @@ target_link_libraries(recognition
         ${PROJECT_NAME}_interface_lib
         ${catkin_LIBRARIES}
         ${ontologenius_LIBRARIES}
-        )
+)
 
 add_executable(recognition_multi src/nodes/recognition_multi.cpp)
 add_dependencies(recognition_multi ${catkin_EXPORTED_TARGETS})
@@ -284,7 +291,7 @@ target_link_libraries(recognition_multi
         ${PROJECT_NAME}_interface_lib
         ${catkin_LIBRARIES}
         ${ontologenius_LIBRARIES}
-        )
+)
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(${PROJECT_NAME}_node
