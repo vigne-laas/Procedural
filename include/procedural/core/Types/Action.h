@@ -10,6 +10,7 @@
 
 namespace procedural {
 class ActionType;
+
 class Action
 {
 public:
@@ -18,12 +19,13 @@ public:
            const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
            const std::vector<ActionDescription_t>& descriptions,
            int last_state_required,
-           onto::ObjectPropertyClient* object_client,
+           onto::OntologyManipulator* onto_manipulator,
            double ttl=30);
 
     bool isValid() const { return is_valid_; }
     double getTtl() const {return time_to_live_;}
     std::string getName() const { return name_;}
+    uint32_t getType() const { return type_;}
     int getNextId();
     std::set<uint32_t> checkStateMachine(TimeStamp_t current_timestamp);
 
@@ -44,6 +46,7 @@ public:
 
     std::string toString();
     std::string getStrStructure();
+    static WordTable action_types;
 private:
     int id_;
 
@@ -55,12 +58,14 @@ private:
     std::vector<StateMachine*> updated_states_machines;
 
 
+
     bool is_valid_;
     bool evolve_sub_action_;
     double time_to_live_;
 
     int last_state_required_;
 
+    uint32_t type_;
 };
 
 } // namespace procedural
