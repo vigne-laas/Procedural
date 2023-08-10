@@ -13,9 +13,9 @@ ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_act
 
 void ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_actions,
                           std::vector<ParsedComposedAction_t>& composed_actions,
-                          onto::ObjectPropertyClient* client = nullptr)
+                          onto::OntologyManipulator* client = nullptr)
 {
-    property_client_ = client;
+    onto_client_ = client;
     combineActions(simple_actions, composed_actions);
     buildSimpleAction(simple_actions);
     buildComposedAction(composed_actions);
@@ -53,7 +53,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
         int ttl = (action.parameters.ttl == 0) ? 30 : action.parameters.ttl;
         Action new_spe_action(action.getName(), facts, {}, descriptions,
                               last_required,
-                              property_client_,
+                              onto_client_,
                               ttl);
         auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                           [action](ActionType* act) { return act->getName() == action.type; });
@@ -119,7 +119,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
             int ttl = (action.parameters.ttl == 0) ? 30 : action.parameters.ttl;
             Action new_spe_action(action.getName(), facts, state_machines, descriptions,
                                   last_required,
-                                  property_client_,
+                                  onto_client_,
                                   ttl);
             auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
                                               [action](ActionType* act) { return act->getName() == action.type; });

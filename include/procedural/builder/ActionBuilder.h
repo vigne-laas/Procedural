@@ -2,7 +2,7 @@
 #define PROCEDURAL_ACTIONBUILDER_H
 
 #include <vector>
-#include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
+#include <ontologenius/OntologyManipulator.h>
 #include "procedural/reader/types/ParsedSimpleAction.h"
 #include "procedural/reader/types/ParsedComposedAction.h"
 #include "procedural/core/Types/ActionType.h"
@@ -13,19 +13,19 @@ namespace procedural {
 class ActionBuilder
 {
 public:
-    ActionBuilder() : property_client_(nullptr) {};
+    ActionBuilder() : onto_client_(nullptr) {};
     ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
                   std::vector<ParsedComposedAction_t>& composed_actions);
 
     void build(const std::vector<ParsedSimpleAction_t>& simple_actions,
                std::vector<ParsedComposedAction_t>& composed_actions,
-               onto::ObjectPropertyClient* client);
+               onto::OntologyManipulator* client);
 
     void display();
 
     std::vector<ActionType*> getActions() { return actions_; };
 private:
-    onto::ObjectPropertyClient* property_client_;
+    onto::OntologyManipulator* onto_client_;
     std::vector<ParsedComposedAction_t> incomplete_creation_state_machine_;
     std::vector<ActionType*> actions_;
 
