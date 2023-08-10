@@ -9,13 +9,13 @@ class HTNBuilder
 {
 public:
     HTNBuilder() = default;
-    void buildTask(const std::vector<MethodParsed_t>& methods);
     void buildAction(const std::vector<PrimitiveActionParsed_t>& actions);
-    void buildTask(const std::vector<MethodParsed_t>& methods, const std::vector<PrimitiveActionParsed_t>& actions_htn,
+    void buildTask(const std::vector<Abstract_task_t>& abstract_tasks, const std::vector<PrimitiveActionParsed_t>& actions_htn,
                    const std::vector<ActionType*>& actions_type);
     void displayActions();
 private:
-    std::vector<ActionType*> actionTypes;
+    std::vector<Task*> tasks_;
+    std::vector<std::string> actions_possible;
 
     bool checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn, const std::vector<ActionType*>& action_type);
 };

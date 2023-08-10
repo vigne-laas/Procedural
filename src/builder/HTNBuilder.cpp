@@ -1,55 +1,16 @@
 
 #include <iostream>
+#include <algorithm>
 #include "procedural/builder/HTNBuilder.h"
-
+#include "procedural/core/Types/Task.h"
 
 namespace procedural {
-void procedural::HTNBuilder::buildTask(const std::vector<MethodParsed_t>& methods)
-{
-    ActionType* actionType;
-    for (const auto& method: methods)
-    {
-        std::cout << method << std::endl;
-        actionType = new ActionType(method.name);
-        for (const auto& decomp: method.decomposition_)
-        {
-            bool incomplete = false;
-            std::vector<PatternTransitionFact_t> facts;
-            std::vector<ActionDescription_t> descriptions;
-            std::vector<PatternTransitionStateMachine_t> state_machines;
 
-            int last_required = 0;
-            int current_level = 0;
-            for (const auto& subtask: decomp.subtask.actions_)
-            {
-
-                do
-                {
-                    for (auto index_subnet = last_required; index_subnet <= current_level; index_subnet++)
-                    {
-//                            std::cout << "link subnet on " << action.getName() << " with " << subnet
-//                                      << " between : " << index_subnet << " and " << subnet.level + 1 << std::endl;
-//                        state_machines.emplace_back(index_subnet, current_level + 1, subtask.name, {});
-                    }
-
-//                    if (subnet.required)
-//                        last_required = subnet.level + 1;
-
-                } while ((current_level != decomp.subtask.actions_.size()) && (incomplete == false));
-
-            }
-        }
-
-
-    }
-
-
-}
 void HTNBuilder::buildAction(const std::vector<PrimitiveActionParsed_t>& actions)
 {
 
 }
-void HTNBuilder::buildTask(const std::vector<MethodParsed_t>& methods,
+void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                            const std::vector<PrimitiveActionParsed_t>& actions_htn,
                            const std::vector<ActionType*>& actions_type)
 {
@@ -59,50 +20,64 @@ void HTNBuilder::buildTask(const std::vector<MethodParsed_t>& methods,
         return;
     }
 
-    ActionType* actionType;
-    for (const auto& task: methods)
+    Task* new_task;
+    for (const auto& abstract_task: abstract_tasks)
     {
-        std::cout <<"Create task : " <<task.name << std::endl;
-        actionType = new ActionType(task.name);
-        for (auto decomp = task.decomposition_.begin(); decomp < task.decomposition_.end(); decomp++)
+        std::cout << abstract_task << std::endl;
+        new_task = new Task(abstract_task.name);
+        std::map<std::string, std::string> arguments;
+        for (const auto& arg: abstract_task.arguments)
+            arguments.emplace(arg.varname, arg.type);
+        new_task->addArguments(arguments);
+        int compt = 0;
+        for (const auto& method: abstract_task.methods_)
         {
-
-
-            bool incomplete = false;
-            std::vector<PatternTransitionFact_t> facts;
-            std::vector<ActionDescription_t> descriptions;
-            std::vector<PatternTransitionStateMachine_t> state_machines;
-            std::map<std::string, std::string> remap_var_;
-
-            int last_required = 0;
-            int current_level = 0;
-            int limit_size = (int) decomp->subtask.actions_.size();
-            for (const auto& subtask: decomp->subtask.actions_)
+            Method new_method(abstract_task.name, compt);
+            std::map<std::string, std::string> remap;
+            for (const auto& select: method.subtask.selections)
+                remap.emplace(select.attribut, select.type);
+            int compt_actions = 0;
+            auto ordered_actions(method.subtask.actions_);
+            std::sort(ordered_actions.begin(), ordered_actions.end(),
+                      [](const Ordered_Action_t& a1, const Ordered_Action_t& a2) {
+                          return a1.after_id.size() < a2.after_id.size();
+                      });
+            for (const auto& action: ordered_actions)
             {
-                do
+                HTNTransition_t t;
+                t.id_contraints_order = action.after_id;
+                t.id_subtask_parsed = action.id;
+                t.step = compt_actions;
+
+                auto val = std::find_if(actions_possible.begin(), actions_possible.end(),
+                                        [action](const std::string& action_) {
+                                            return action_ == action.name;
+                                        });
+                if (val != actions_possible.end())
                 {
-                    for (auto index_subnet = last_required; index_subnet <= current_level; index_subnet++)
-                    {
-//                        std::cout << "link subnet on " << task.name << " with " << subtask.name
-//                                  << " between : " << index_subnet << " and " << current_level + 1 << std::endl;
-                        state_machines.emplace_back(index_subnet, current_level + 1, subtask.name, remap_var_);
-                    }
-                    current_level++;
-
-//                    if (subnet.required)
-//                        last_required = subnet.level + 1;
-
-                } while ((current_level < limit_size) && (incomplete == false));
-
+                    t.id_subtask = Action::action_types.get(action.name);
+                    t.type = TransitionType::Action;
+                } else
+                {
+                    t.id_subtask = Task::task_types.get(action.name);
+                    t.type = TransitionType::Task;
+                }
+                for (auto& arg: action.arguments)
+                {
+                    if (auto remap_val = remap.find(arg); remap_val != remap.end())
+                        t.arguments_.emplace(*remap_val);
+                    else if (auto remap_val_task = arguments.find(arg); remap_val_task != arguments.end())
+                        t.arguments_.emplace(*remap_val_task);
+                    else
+                        std::cout << "Error arg non find in remap : " << arg << std::endl;
+                }
+                compt_actions++;
+                new_method.addTransition(t);
             }
-            auto id = std::distance(task.decomposition_.begin(),decomp);
-
-            Action action_(task.name + "_Method_"+std::to_string(id),facts,state_machines,descriptions,limit_size,
-                                    nullptr);
-            std::cout << "create new action : " << action_.toString() << std::endl;
-            actionType->addActions(action_);
+            new_task->addMethods(new_method);
+            compt++;
         }
-        actionTypes.push_back(actionType);
+        tasks_.push_back(new_task);
     }
 
 }
@@ -122,7 +97,11 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
                                             return action_primitive.getName() == action.name;
                                         });
                 if (val != actions_.end())
+                {
                     find = true;
+                    actions_possible.emplace_back(val->getName());
+                }
+
             }
         }
         if (find == false)
@@ -136,11 +115,11 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
 }
 void HTNBuilder::displayActions()
 {
-    for (const auto& actionType: actionTypes)
+    for (const auto& task: tasks_)
     {
-        std::cout << actionType->getName() << ":" << std::endl;
-        for (auto& action: actionType->getActions())
-            std::cout << action.getStrStructure() << std::endl;
+        std::cout << task->getName() << ":" << std::endl;
+        for (auto& method: task->getMethods())
+            std::cout << method.getStrStructure() << "\n" << std::endl;
     }
 
 }

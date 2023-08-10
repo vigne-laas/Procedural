@@ -23,7 +23,7 @@ HTN {
 		};
 		effects {
 			A.hasInRightHand = NULL;
-			O.isOn = T;
+			O.isOn = S;
 			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
 			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
 		};
