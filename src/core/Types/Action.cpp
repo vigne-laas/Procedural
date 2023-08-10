@@ -8,12 +8,14 @@
 
 namespace procedural {
 
+WordTable Action::action_types;
+
 Action::Action(const std::string& name,
                const std::vector<procedural::PatternTransitionFact_t>& patterns,
                const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
                const std::vector<ActionDescription_t>& descriptions,
                int last_state_required,
-               onto::ObjectPropertyClient* object_client,
+               onto::OntologyManipulator* onto_manipulator,
                double ttl) : name_(name),
                              is_valid_(false),
                              time_to_live_(ttl),
@@ -25,14 +27,15 @@ Action::Action(const std::string& name,
     for (auto& pattern: patterns)
         state_machine_factory_->addTransition(pattern);
     for (auto& net_pattern: transition_state_machines)
-        state_machine_factory_->addStateMachine(net_pattern);
+        state_machine_factory_->addTransition(net_pattern);
     for (auto& description: descriptions)
         state_machine_factory_->addDescription(description);
 
     is_valid_ = state_machine_factory_->closeStateMachine();
-    if (object_client != nullptr)
-        state_machine_factory_->expandProperties(object_client);
+    if (onto_manipulator != nullptr)
+        state_machine_factory_->expandProperties(onto_manipulator);
     state_machine_factory_->addTimeoutTransition(last_state_required_);
+    type_ = action_types.get(name_);
 }
 
 int Action::getNextId()
