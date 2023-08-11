@@ -58,7 +58,7 @@ void callback_manager(const std_msgs::String::ConstPtr& msg)
         else
         {
             auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, msg_params[1]);
-            if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("namax_sizeme").getFirst())))
+            if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
             {
                 interfaces_[msg_params[1]] = tmp;
                 std::thread th(&procedural::RosInterface::run, tmp);
@@ -81,11 +81,21 @@ int main(int argc, char** argv)
     params.insert(procedural::Parameter("yaml_path", {"-d", "--description"}));
     params.insert(procedural::Parameter("ttl", {"-t", "--ttl"}, {"25"}));
     params.insert(procedural::Parameter("max_size", {"-s", "--max_size"}, {"500"}));
-
+//    params.insert(procedural::Parameter("name", {"-n", "--name"}, {"pepper"}));
+//
     params.set(argc, argv);
     params.display();
 
-    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/new_human", 10, callback_manager);
+//    auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, params.at("name").getFirst());
+//    if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
+//    {
+//        interfaces_[params.at("name").getFirst()] = tmp;
+//        std::thread th(&procedural::RosInterface::run, tmp);
+//        interfaces_threads_[params.at("name").getFirst()] = std::move(th);
+//        std::cout <<"ActionRecognition : " << params.at("name").getFirst() << " STARTED" << std::endl;
+//    }
+
+    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/overworld/new_assessor", 10, callback_manager);
     ros::spin();
 
     std::vector<std::string> interfaces_names;

@@ -14,7 +14,9 @@
     <arg name="yaml_path" default="$(find procedural)/src/reader/test.yaml"/>
     <arg name="ttl_buffer" default="25"/>
     <arg name="max_size_buffer" default="500"/>
+    <arg name="name" default="pepper"/>
 
-    <node name="recognition" pkg="procedural" type="recognition_multi" output="screen" args="-d $(arg yaml_path) -t $(arg ttl_buffer) -s $(arg max_size_buffer)"/>
+<!--    <remap from="/overworld/new_assessor" to="/new_agent"/>-->
+    <node name="recognition" pkg="procedural" type="recognition_multi" output="screen" args="-n $(arg name) -d $(arg yaml_path) -t $(arg ttl_buffer) -s $(arg max_size_buffer)"/>
 
 </launch>
