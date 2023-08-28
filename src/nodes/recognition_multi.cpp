@@ -2,7 +2,7 @@
 #include "ros/ros.h"
 #include "procedural/RosInterface.h"
 #include "std_msgs/String.h"
-
+#include "overworld/GetAgents.h"
 #include "procedural/utils/Parameters.h"
 
 ros::NodeHandle* node_;
@@ -96,6 +96,27 @@ int main(int argc, char** argv)
 //    }
 
     ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/overworld/new_assessor", 10, callback_manager);
+
+    ros::ServiceClient client = node_->serviceClient<overworld::GetAgents>("/overworld/getAgents");
+    overworld::GetAgents srv;
+    if(client.call(srv))
+        for(auto agent : srv.response.agents)
+        {
+            auto it = interfaces_.find(agent);
+            if(it == interfaces_.end())
+            {
+                auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, agent);
+                if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
+                {
+                    interfaces_[agent] = tmp;
+                    std::thread th(&procedural::RosInterface::run, tmp);
+                    interfaces_threads_[agent] = std::move(th);
+                    std::cout <<"ActionRecognition : " << agent << " STARTED" << std::endl;
+                }
+            }
+        }
+
+
     ros::spin();
 
     std::vector<std::string> interfaces_names;
