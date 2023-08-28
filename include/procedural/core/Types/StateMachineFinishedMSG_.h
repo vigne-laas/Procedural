@@ -14,11 +14,11 @@ struct StateMachineFinishedMSG_
     
     friend std::ostream& operator<<(std::ostream& os, const StateMachineFinishedMSG_& val)
     {
-        if (val.updated)
-            os << "new explanation for : ";
-        else
-            os << "finished : ";
-        os << val.name << " [" << val.start_time << ";" << val.stop_time << "] ";
+//        if (val.updated)
+//            os << "new explanation for : ";
+//        else
+//            os << "finished : ";
+        os << val.name << " [ " << val.start_time << " ; " << val.stop_time << " ] ";
         if (val.descriptions.empty() == false)
         {
             os << " descriptions : ";
