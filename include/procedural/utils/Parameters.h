@@ -34,7 +34,12 @@ public:
   std::string getFirst()
   {
     if(values_.size() == 0)
-      return (default_values_.size() ? default_values_[0] : "");
+    {
+      if(default_values_.size())
+        return default_values_[0];
+      else
+        throw std::invalid_argument("No value for argument " + name_);
+    }
     else
       return (values_.size() ? values_[0] : "");
   }
