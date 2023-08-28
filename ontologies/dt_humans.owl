@@ -110,7 +110,7 @@
     <owl:NamedIndividual rdf:about="dt_humans#human_1">
         <rdf:type rdf:resource="cg_agents#Human"/>
         <cg_agents:hasFieldOfView rdf:resource="dt_humans#mocap_fov"/>
-        <cg_agents:hasHead rdf:resource="dt_humans#Helmet_4"/>
+        <cg_agents:hasHead rdf:resource="dt_humans#herakles"/>
         <cg_agents:hasLeftHand rdf:resource="dt_humans#Glove_1"/>
         <cg_agents:hasRightHand rdf:resource="dt_humans#Glove_mockRight"/>
     </owl:NamedIndividual>

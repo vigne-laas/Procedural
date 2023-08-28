@@ -15,17 +15,21 @@ pepper_joints:
 
 optitrack_1:
   name: human_1
-  # offset_x: 6.4868
-  offset_x: 6.5068
-  offset_y: 2.9506
-  # offset_y: 2.8506
+
+  offset_x: 6.4868
+#  offset_x: 6.5068
+#  offset_y: 2.9506
+  offset_y: 2.8506
+  offset_z: 0.16
+
 
 optitrack_2:
   name: human_2
-  # offset_x: 6.4868
-  offset_x: 6.5068
-  offset_y: 2.9506
-  # offset_y: 2.8506
+  offset_x: 6.4868
+#  offset_x: 6.5068
+#  offset_y: 2.9506
+  offset_y: 2.8506
+  offset_z: 0.16
 
 human:
   name: human_0
