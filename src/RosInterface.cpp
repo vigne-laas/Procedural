@@ -20,7 +20,7 @@ RosInterface::RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto
 
     time_manipulators.waitInit();
     auto res = time_manipulators.add(name_);
-    std::cout << "resultat after all init add mementar : " << res << std::endl;
+//    std::cout << "resultat after all init add mementar : " << res << std::endl;
     timeline_manipulator_ = time_manipulators.get(name_);
 
     ROS_INFO("Action Recognition ready : %s", name_.c_str());
