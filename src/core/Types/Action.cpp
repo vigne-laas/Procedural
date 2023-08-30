@@ -52,11 +52,11 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
     {
 //        std::cout << "value : "<< current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
         if (state_machine->isComplete())
-            complete_state_machines_.insert(state_machine);
+            finished_state_machines_.insert(state_machine);
         else if (current_timestamp - state_machine->getAge() > time_to_live_)
         {
             if(state_machine->getCurrentState()->hasTimeoutTransition())
-                complete_state_machines_.insert(state_machine);
+                finished_state_machines_.insert(state_machine);
             else
             {
                 state_machines_to_del.insert(state_machine);
@@ -66,7 +66,7 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
         }
     }
 
-    for (auto& complete_state_machine: complete_state_machines_)
+    for (auto& complete_state_machine: finished_state_machines_)
     {
 //        std::cout << "state machine finish :" << complete_state_machine->getName() << std::endl;
 //        std::cout << "explanation : " << complete_state_machine->describe(true) << std::endl;
@@ -106,14 +106,14 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
 
 void Action::clean()
 {
-    for (auto complete_state_machine: complete_state_machines_)
+    for (auto complete_state_machine: finished_state_machines_)
         if (complete_state_machine->getCompletionRatio() == 1.0)
             delete complete_state_machine;
 
 //    for (auto network_to_del : networks_to_del_)
 //         delete network_to_del;
 
-    complete_state_machines_.clear();
+    finished_state_machines_.clear();
 //    networks_to_del_.clear();
 }
 

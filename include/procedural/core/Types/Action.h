@@ -32,7 +32,7 @@ public:
     void cleanInvolve(const std::set<uint32_t>& list_valid_facts);
     void clean();
 
-    std::unordered_set<StateMachine*> getCompleteStateMachine() { return complete_state_machines_;};
+    std::unordered_set<StateMachine*> getFinishedStateMachine() { return finished_state_machines_;};
 
     bool feed(Fact* fact);
 
@@ -54,7 +54,7 @@ private:
     StateMachine* state_machine_factory_; //TODO issue when i try without *
 
     std::unordered_set<StateMachine*> state_machines_;
-    std::unordered_set<StateMachine*> complete_state_machines_;
+    std::unordered_set<StateMachine*> finished_state_machines_;
     std::vector<StateMachine*> updated_states_machines;
 
 

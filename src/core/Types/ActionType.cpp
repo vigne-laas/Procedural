@@ -45,7 +45,7 @@ std::set<uint32_t> ActionType::checkCompleteStateMachines(TimeStamp_t currentTim
             set_valid_facts.insert(temp_set.begin(), temp_set.end());
             if (temp_set.empty() == false)
             {
-                std::unordered_set<StateMachine*> temp = pattern.getCompleteStateMachine();
+                std::unordered_set<StateMachine*> temp = pattern.getFinishedStateMachine();
 //                std::cout << "temp set " << std::endl;
 //                for(auto net : temp)
 //                    std::cout << net->getName() << std::endl;

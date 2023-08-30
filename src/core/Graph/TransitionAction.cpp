@@ -30,7 +30,7 @@ bool TransitionAction::match(Action* action)
 {
     if (action->getType() != action_id_)
         return false;
-    for (auto action: action->getCompleteStateMachine())
+    for (auto action: action->getFinishedStateMachine())
         for (auto var_key: action->getLiteralVariables())
 
             return false;
