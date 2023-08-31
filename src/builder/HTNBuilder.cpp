@@ -16,7 +16,7 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
 {
     if (not checkActions(actions_htn, actions_type))
     {
-        std::cout << "impossible to continue eror on check action " << std::endl;
+        std::cout << "impossible to continue error on check action " << std::endl;
         return;
     }
 
