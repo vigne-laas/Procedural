@@ -10,10 +10,10 @@ namespace procedural {
 
 class StateMachine;
 
-class TransitionStateMachine
+class TransitionAction
 {
 public:
-    TransitionStateMachine(uint32_t type, const std::map<std::string,std::string>& remap_var);
+    TransitionAction(uint32_t type, const std::map<std::string,std::string>& remap_var);
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
 

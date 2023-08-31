@@ -2,7 +2,7 @@
 #include <set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 #include "procedural/core/Graph/StateMachine.h"
-#include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
+#include "procedural/core/Graph/Transitions/TransitionAction.h"
 
 namespace procedural {
 
@@ -146,7 +146,7 @@ bool StateMachine::addTransition(const PatternTransitionStateMachine_t& transiti
             insertVariable(var.second);
 
         auto type = StateMachine::types_table.get(transitionStateMachine.type_);
-        TransitionStateMachine transition(type, transitionStateMachine.remap_var_);
+        TransitionAction transition(type, transitionStateMachine.remap_var_);
         states_[transitionStateMachine.origin_]->addTransition(transition, states_[transitionStateMachine.next_]);
         return true;
     } else
@@ -251,7 +251,7 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
         }
         for (auto& pair_transition: states_.at(state.first)->getNextsStateMachines())
         {
-            TransitionStateMachine t = pair_transition.first;
+            TransitionAction t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
         for (auto& pair_transition: states_.at(state.first)->getNextsActions())

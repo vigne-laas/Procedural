@@ -133,7 +133,7 @@ add_library(${PROJECT_NAME}_graph_lib
         src/core/Graph/Transitions/TransitionFact.cpp
         src/core/Graph/State.cpp
         src/core/Graph/StateMachine.cpp
-        src/core/Graph/Transitions/TransitionStateMachine.cpp)
+        src/core/Graph/Transitions/TransitionAction.cpp)
 target_link_libraries(${PROJECT_NAME}_graph_lib ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
 
 add_library(${PROJECT_NAME}_reader_lib

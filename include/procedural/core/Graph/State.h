@@ -5,7 +5,7 @@
 #include <ontologenius/OntologyManipulator.h>
 
 #include "procedural/core/Graph/Transitions/TransitionFact.h"
-#include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
+#include "procedural/core/Graph/Transitions/TransitionAction.h"
 #include "procedural/core/Graph/Transitions/TransitionActionMethod.h"
 #include "procedural/core/Graph/Transitions/TransitionTask.h"
 
@@ -24,12 +24,12 @@ public:
     explicit State(const std::string& name, int id);
 
     State* evolve(Fact* fact);
-    std::pair<State*, TransitionStateMachine*> evolve(StateMachine* state_machine);
+    std::pair<State*, TransitionAction*> evolve(StateMachine* state_machine);
     State* evolve(Action* action);
     State* evolve(Task* task);
 
     void addTransition(const TransitionFact& transition, State* next_state);
-    void addTransition(const TransitionStateMachine& transition, State* next_state);
+    void addTransition(const TransitionAction& transition, State* next_state);
     void addTransition(const TransitionActionMethod& transition, State* next_states);
     void addTransition(const TransitionTask& transition, State* next_states);
 
@@ -41,7 +41,7 @@ public:
     std::string toString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
-    const std::vector<std::pair<TransitionStateMachine, State*>> getNextsStateMachines() const { return nexts_state_machines_; };
+    const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_state_machines_; };
     const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
 
@@ -65,7 +65,7 @@ private:
     bool initial_node_;
 
     std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
-    std::vector<std::pair<TransitionStateMachine, State*>> nexts_state_machines_;
+    std::vector<std::pair<TransitionAction, State*>> nexts_state_machines_;
     std::vector<std::pair<TransitionActionMethod, State*>> nexts_actions_;
     std::vector<std::pair<TransitionTask, State*>> nexts_tasks_;
 

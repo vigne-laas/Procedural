@@ -20,7 +20,7 @@ State* State::evolve(Fact* fact)
     return nullptr;
 }
 
-std::pair<State*, TransitionStateMachine*> State::evolve(StateMachine* state_machine)
+std::pair<State*, TransitionAction*> State::evolve(StateMachine* state_machine)
 {
     for (auto& pair: nexts_state_machines_)
         if (pair.first.match(state_machine))
@@ -52,7 +52,7 @@ void State::addTransition(const TransitionFact& transition, State* next_state)
     nexts_facts_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionStateMachine& transition, State* next_state)
+void State::addTransition(const TransitionAction& transition, State* next_state)
 {
     nexts_state_machines_.emplace_back(transition, next_state);
 }
