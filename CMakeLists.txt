@@ -156,7 +156,7 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
 
 add_library(${PROJECT_NAME}_htn_type src/core/Types/Task.cpp src/core/Types/Method.cpp)
 add_library(${PROJECT_NAME}_htn_graph src/core/Graph/Transitions/TransitionActionMethod.cpp
-        src/core/Graph/Transitions/HtnTransitionTask.cpp
+        src/core/Graph/Transitions/TransitionTask.cpp
 )
 
 add_library(${PROJECT_NAME}_builder_lib
