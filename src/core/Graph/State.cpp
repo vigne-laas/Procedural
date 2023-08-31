@@ -57,7 +57,7 @@ void State::addTransition(const TransitionStateMachine& transition, State* next_
     nexts_state_machines_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionAction& transition, State* next_states)
+void State::addTransition(const TransitionActionMethod& transition, State* next_states)
 {
     nexts_actions_.emplace_back(transition, next_states);
 }
@@ -158,7 +158,7 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 //        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
         if (pair.second == origin)
         {
-            TransitionAction t(pair.first,final_state->getId());
+            TransitionActionMethod t(pair.first, final_state->getId());
             this->addTransition(t, final_state);
 
         }
@@ -183,7 +183,7 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 
 
 //    auto val_action = std::find_if(parent->getNextsActions().begin(), parent->getNextsActions().end(),
-//                                   [origin](const std::pair<TransitionAction, State*>& pair) {
+//                                   [origin](const std::pair<TransitionActionMethod, State*>& pair) {
 //                                       return pair.second == origin;
 //                                   });
 //    if (val_action != parent->getNextsActions().end())

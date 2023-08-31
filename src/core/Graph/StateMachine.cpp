@@ -186,7 +186,7 @@ void StateMachine::linkHTNTransition(int initial_state, int final_state, const H
 {
     if (transition.type == TransitionType::Action)
     {
-        TransitionAction t(transition.id_subtask, final_state, transition.arguments_);
+        TransitionActionMethod t(transition.id_subtask, final_state, transition.arguments_);
         states_[initial_state]->addTransition(t, states_[final_state]);
     }
     if (transition.type == TransitionType::Task)
@@ -256,7 +256,7 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
         }
         for (auto& pair_transition: states_.at(state.first)->getNextsActions())
         {
-            TransitionAction t = pair_transition.first;
+            TransitionActionMethod t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
         for (auto& pair_transition: states_.at(state.first)->getNextsTasks())

@@ -8,12 +8,12 @@
 
 namespace procedural {
 class Action;
-class TransitionAction
+class TransitionActionMethod
 {
 public:
-    explicit TransitionAction(uint32_t id_action, int next_state, const std::map<std::string, std::string>& map);
+    explicit TransitionActionMethod(uint32_t id_action, int next_state, const std::map<std::string, std::string>& map);
 
-    TransitionAction(const TransitionAction& transition, int id_next_state);
+    TransitionActionMethod(const TransitionActionMethod& transition, int id_next_state);
     void linkVariables(std::map<std::string,Variable_t>& variables);
     bool match(Action* action);
     std::string toString() const;

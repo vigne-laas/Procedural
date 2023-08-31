@@ -155,7 +155,7 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME}_htn_type src/core/Types/Task.cpp src/core/Types/Method.cpp)
-add_library(${PROJECT_NAME}_htn_graph src/core/Graph/Transitions/TransitionAction.cpp
+add_library(${PROJECT_NAME}_htn_graph src/core/Graph/Transitions/TransitionActionMethod.cpp
         src/core/Graph/Transitions/HtnTransitionTask.cpp
 )
 

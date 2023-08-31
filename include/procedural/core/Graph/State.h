@@ -6,7 +6,7 @@
 
 #include "procedural/core/Graph/Transitions/TransitionFact.h"
 #include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
-#include "procedural/core/Graph/Transitions/TransitionAction.h"
+#include "procedural/core/Graph/Transitions/TransitionActionMethod.h"
 #include "procedural/core/Graph/Transitions/TransitionTask.h"
 
 #include "procedural/core/Types/Fact.h"
@@ -30,7 +30,7 @@ public:
 
     void addTransition(const TransitionFact& transition, State* next_state);
     void addTransition(const TransitionStateMachine& transition, State* next_state);
-    void addTransition(const TransitionAction& transition, State* next_states);
+    void addTransition(const TransitionActionMethod& transition, State* next_states);
     void addTransition(const TransitionTask& transition, State* next_states);
 
     void linkVariables(std::map<std::string, Variable_t>& variables_);
@@ -42,7 +42,7 @@ public:
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
     const std::vector<std::pair<TransitionStateMachine, State*>> getNextsStateMachines() const { return nexts_state_machines_; };
-    const std::vector<std::pair<TransitionAction, State*>> getNextsActions() const { return nexts_actions_; };
+    const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
 
     bool hasTimeoutTransition() const { return has_timeout_transition;}
@@ -66,7 +66,7 @@ private:
 
     std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
     std::vector<std::pair<TransitionStateMachine, State*>> nexts_state_machines_;
-    std::vector<std::pair<TransitionAction, State*>> nexts_actions_;
+    std::vector<std::pair<TransitionActionMethod, State*>> nexts_actions_;
     std::vector<std::pair<TransitionTask, State*>> nexts_tasks_;
 
     std::vector<State*> parents_;
