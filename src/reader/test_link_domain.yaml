@@ -25,6 +25,24 @@ Grasp:
 #
 #
 
+Pick_In:
+  args:
+    - A: Agent
+    - O: Pickable
+    - C: Container
+  parameters:
+    ttl: 15
+  composed_sequence:
+    - NOT ?O inIn ?C REQUIRED
+    - G: Grasp
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
 Pick_Over:
   args:
     -A: Agent
