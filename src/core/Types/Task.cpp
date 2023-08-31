@@ -31,4 +31,8 @@ bool Task::feed(Task* task)
     return false;
 }
 
+    std::map<std::string, Variable_t> Task::getVars() {
+        return std::map<std::string, Variable_t>();
+    }
+
 } // procedural
