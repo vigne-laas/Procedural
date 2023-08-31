@@ -10,14 +10,14 @@
 
 namespace procedural {
 
-class ActionType;
+class ActionMethod;
 
 class ActionRecognition
 {
 public:
 
     ActionRecognition():buffer_(nullptr){};
-    void init(const std::vector<ActionType*>& actions, double tll = 25, int max_size = 500);
+    void init(const std::vector<ActionMethod*>& actions, double tll = 25, int max_size = 500);
 
 
     void addToQueue(Fact* fact) const;
@@ -30,7 +30,7 @@ public:
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_{};
-    std::vector<ActionType*> actions_;
+    std::vector<ActionMethod*> actions_;
 
     std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
 };

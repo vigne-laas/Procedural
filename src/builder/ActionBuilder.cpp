@@ -56,7 +56,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
                               onto_client_,
                               ttl);
         auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
-                                          [action](ActionType* act) { return act->getName() == action.type; });
+                                          [action](ActionMethod* act) { return act->getName() == action.type; });
         (*action_to_add)->addActions(new_spe_action);
     }
 
@@ -124,7 +124,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                                   onto_client_,
                                   ttl);
             auto action_to_add = std::find_if(actions_.begin(), actions_.end(),
-                                              [action](ActionType* act) { return act->getName() == action.type; });
+                                              [action](ActionMethod* act) { return act->getName() == action.type; });
             (*action_to_add)->addActions(new_spe_action);
         }
     }
@@ -133,7 +133,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
 bool ActionBuilder::completeRemap(SubStateMachine_t& sub_state_machine)
 {
     std::vector<std::string> sub_net_variables;
-    auto test = [sub_state_machine](const ActionType* action) { return action->getName() == sub_state_machine.type; };
+    auto test = [sub_state_machine](const ActionMethod* action) { return action->getName() == sub_state_machine.type; };
     auto result = std::find_if(actions_.begin(), actions_.end(), test);
     if (result != actions_.end())
     {
@@ -167,17 +167,17 @@ void ActionBuilder::combineActions(const std::vector<ParsedSimpleAction_t>& simp
     for (auto& action : simple_actions)
     {
         auto result = std::find_if(actions_.begin(), actions_.end(),
-                                   [action](ActionType* act) { return act->getName() == action.type; });
+                                   [action](ActionMethod* act) { return act->getName() == action.type; });
         if (result == actions_.end())
-            actions_.push_back(new ActionType(action.type));
+            actions_.push_back(new ActionMethod(action.type));
     }
 
     for (auto& action : composed_actions)
     {
         auto result = std::find_if(actions_.begin(), actions_.end(),
-                                   [action](ActionType* act) { return act->getName() == action.type; });
+                                   [action](ActionMethod* act) { return act->getName() == action.type; });
         if (result == actions_.end())
-            actions_.push_back(new ActionType(action.type));
+            actions_.push_back(new ActionMethod(action.type));
     }
 }
 
@@ -188,7 +188,7 @@ void ActionBuilder::buildIncomplete()
     {
         for (auto& subnet : net.pattern.sub_state_machines)
         {
-            auto test = [subnet](const ActionType* action) { return action->getName() == subnet.type; };
+            auto test = [subnet](const ActionMethod* action) { return action->getName() == subnet.type; };
             auto result = std::find_if(actions_.begin(), actions_.end(), test);
             if (result != actions_.end())
             {

@@ -128,7 +128,7 @@ add_library(${PROJECT_NAME}_types_lib
 )
 
 add_library(${PROJECT_NAME}_graph_lib
-        src/core/Types/ActionType.cpp # TODO pb de lien si dans types_lib
+        src/core/Types/ActionMethod.cpp # TODO pb de lien si dans types_lib
         src/core/Types/Action.cpp # TODO pb de lien si dans types_lib
         src/core/Graph/Transitions/TransitionFact.cpp
         src/core/Graph/State.cpp

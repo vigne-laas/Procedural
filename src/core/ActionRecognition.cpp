@@ -1,10 +1,10 @@
 #include <set>
-#include "procedural/core/Types/ActionType.h"
+#include "procedural/core/Types/ActionMethod.h"
 #include "procedural/core/ActionRecognition.h"
 #include <iostream>
 
 namespace procedural {
-void ActionRecognition::init(const std::vector<ActionType*>& actions, double ttl, int max_size)
+void ActionRecognition::init(const std::vector<ActionMethod*>& actions, double ttl, int max_size)
 {
     actions_ = actions;
     callback_output_ = ActionRecognition::defaultCallback;
@@ -37,7 +37,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
                   << std::endl;
         std::set<uint32_t> set_id_facts;
-        std::vector<procedural::ActionType*> complete_actions;
+        std::vector<procedural::ActionMethod*> complete_actions;
         for (auto& action: actions_)
             if (action->feed(fact, current_time))
                 facts_used.insert(fact->getId());

@@ -1,5 +1,5 @@
 #include "procedural/core/Types/Action.h"
-#include "procedural/core/Types/ActionType.h"
+#include "procedural/core/Types/ActionMethod.h"
 
 #include <cmath>
 #include <iostream>
@@ -172,7 +172,7 @@ bool Action::feed(Fact* fact)
     return evolve;
 }
 
-bool Action::checksubAction(ActionType* action)
+bool Action::checksubAction(ActionMethod* action)
 {
     updated_states_machines.clear();
     std::unordered_set<StateMachine*> complete_state_machines = action->getCompletesStateMachines();

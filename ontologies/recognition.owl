@@ -91,9 +91,9 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <!-- recognition#ActionType -->
+    <!-- recognition#ActionMethod -->
 
-    <owl:Class rdf:about="recognition#ActionType">
+    <owl:Class rdf:about="recognition#ActionMethod">
         <rdfs:subClassOf rdf:resource="cg_entities#ConceptualEntity"/>
     </owl:Class>
 

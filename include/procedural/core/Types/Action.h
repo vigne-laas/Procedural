@@ -9,7 +9,7 @@
 
 
 namespace procedural {
-class ActionType;
+class ActionMethod;
 
 class Action
 {
@@ -36,7 +36,7 @@ public:
 
     bool feed(Fact* fact);
 
-    bool checksubAction(ActionType* action);
+    bool checksubAction(ActionMethod* action);
     bool checkNewUpdatedSubStateMachine(){return updated_states_machines.empty() == false;};
     std::vector<StateMachine*> getUpdatedStateMachines() {return updated_states_machines;};
 

@@ -80,7 +80,7 @@ void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
     ros::Time stamp_time((double) output.start_time.toFloat());
     if (onto_manipulator_->individuals.exist(output.name) == false &&
         onto_manipulator_->classes.exist(output.type) == false)
-        onto_manipulator_->feeder.addInheritage(output.type + "Action", "ActionType");
+        onto_manipulator_->feeder.addInheritage(output.type + "Action", "ActionMethod");
 
     for (auto& description : output.descriptions)
     {

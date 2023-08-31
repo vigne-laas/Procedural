@@ -1,12 +1,12 @@
 #include <iostream>
-#include "procedural/core/Types/ActionType.h"
+#include "procedural/core/Types/ActionMethod.h"
 
 namespace procedural {
 
-ActionType::ActionType(const std::string& name) : name_(name), flag_(false)
+ActionMethod::ActionMethod(const std::string& name) : name_(name), flag_(false)
 {}
 
-bool ActionType::addActions(const Action& action)
+bool ActionMethod::addActions(const Action& action)
 {
     if (action.isValid())
     {
@@ -16,7 +16,7 @@ bool ActionType::addActions(const Action& action)
         return false;
 }
 
-bool ActionType::feed(Fact* fact, TimeStamp_t currentTimestamp)
+bool ActionMethod::feed(Fact* fact, TimeStamp_t currentTimestamp)
 {
     bool evolve = false;
     for (auto& pattern: actions_)
@@ -31,7 +31,7 @@ bool ActionType::feed(Fact* fact, TimeStamp_t currentTimestamp)
     return evolve;
 }
 
-std::set<uint32_t> ActionType::checkCompleteStateMachines(TimeStamp_t currentTimestamp)
+std::set<uint32_t> ActionMethod::checkCompleteStateMachines(TimeStamp_t currentTimestamp)
 {
 //    std::cout << "complete_state_machine_ set beginning " << std::endl;
 //    for(auto net : complete_networks_)
@@ -66,14 +66,14 @@ std::set<uint32_t> ActionType::checkCompleteStateMachines(TimeStamp_t currentTim
     return set_valid_facts;
 }
 
-void ActionType::displayCurrentState()
+void ActionMethod::displayCurrentState()
 {
 //    for(auto& pattern : patterns_)
 //        for(auto& net : pattern.networks_) // TODO networks_ should not be public
 //            std::cout << net->getCurrentState()->toString() << std::endl;
 }
 
-void ActionType::clean()
+void ActionMethod::clean()
 {
     flag_ = false;
     for (auto& pattern: actions_)
@@ -83,7 +83,7 @@ void ActionType::clean()
     complete_state_machines_.clear();
 }
 
-void ActionType::cleanActions(std::set<uint32_t> set_id)
+void ActionMethod::cleanActions(std::set<uint32_t> set_id)
 {
     for (auto& pattern: actions_)
     {
@@ -92,7 +92,7 @@ void ActionType::cleanActions(std::set<uint32_t> set_id)
     }
 }
 
-std::string ActionType::toString()
+std::string ActionMethod::toString()
 {
     std::string res;
     for (auto& pattern: actions_)
@@ -100,14 +100,14 @@ std::string ActionType::toString()
     return res;
 }
 
-std::string ActionType::currentState(bool shortVersion)
+std::string ActionMethod::currentState(bool shortVersion)
 {
     std::string res;
     for (auto& pattern: actions_)
         res += pattern.currentState(shortVersion) + "\n";
     return res;
 }
-bool ActionType::checkSubAction(ActionType* action)
+bool ActionMethod::checkSubAction(ActionMethod* action)
 {
     bool evolve = false;
     for (auto& pattern: actions_)
@@ -116,7 +116,7 @@ bool ActionType::checkSubAction(ActionType* action)
         flag_ = false;
     return evolve;
 }
-bool ActionType::checkNewExplanation()
+bool ActionMethod::checkNewExplanation()
 {
     bool res = false;
     if (flag_ == false)
@@ -127,7 +127,7 @@ bool ActionType::checkNewExplanation()
 
     return res;
 }
-std::vector<StateMachine*> ActionType::getNewExplanation()
+std::vector<StateMachine*> ActionMethod::getNewExplanation()
 {
     std::vector<StateMachine*> res;
     for (auto& specializedAction: actions_)
@@ -137,7 +137,7 @@ std::vector<StateMachine*> ActionType::getNewExplanation()
     }
     return res;
 }
-double ActionType::maxTtl()
+double ActionMethod::maxTtl()
 {
     double res;
     for (auto& action: actions_)

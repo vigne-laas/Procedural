@@ -10,10 +10,10 @@
 
 namespace procedural {
 
-class ActionType
+class ActionMethod
 {
 public:
-    explicit ActionType(const std::string& name);
+    explicit ActionMethod(const std::string& name);
 
     bool addActions(const Action& action);
 
@@ -30,7 +30,7 @@ public:
 
     std::string currentState(bool shortVersion = true);
 
-    bool checkSubAction(ActionType* action);
+    bool checkSubAction(ActionMethod* action);
 
     std::unordered_set<StateMachine*> getCompletesStateMachines() { return complete_state_machines_;};
     std::string getName() const { return name_;};

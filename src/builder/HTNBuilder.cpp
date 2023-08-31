@@ -12,7 +12,7 @@ void HTNBuilder::buildAction(const std::vector<PrimitiveActionParsed_t>& actions
 }
 void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                            const std::vector<PrimitiveActionParsed_t>& actions_htn,
-                           const std::vector<ActionType*>& actions_type)
+                           const std::vector<ActionMethod*>& actions_type)
 {
     if (not checkActions(actions_htn, actions_type))
     {
@@ -82,7 +82,7 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
 
 }
 bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn,
-                              const std::vector<ActionType*>& action_type)
+                              const std::vector<ActionMethod*>& action_type)
 {
     for (const auto& action: actions_htn)
     {
