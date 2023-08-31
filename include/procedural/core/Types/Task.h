@@ -35,7 +35,9 @@ private:
 //    std::vector<>
 
     std::unordered_set<Task*> complete_task_;
-};
+
+        std::map<std::string, Variable_t> getVars();
+    };
 
 } // procedural
 

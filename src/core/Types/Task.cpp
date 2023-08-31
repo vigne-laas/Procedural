@@ -14,7 +14,7 @@ void Task::addArguments(const std::map<std::string, std::string>& arguments)
 }
 bool Task::feed(Action* action)
 {
-    auto sms = action->getCompleteStateMachine();
+    auto sms = action->getFinishedStateMachine();
     for(auto sm : sms)
         for(auto var : sm->getLiteralVariables())
 
