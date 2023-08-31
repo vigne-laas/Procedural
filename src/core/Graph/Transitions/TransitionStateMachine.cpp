@@ -1,4 +1,4 @@
-#include "procedural/core/Graph/TransitionStateMachine.h"
+#include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
 #include "procedural/core/Graph/StateMachine.h"
 
 namespace procedural {
@@ -40,7 +40,7 @@ bool TransitionStateMachine::match(StateMachine* stateMachine)
 std::string TransitionStateMachine::toString() const
 {
     std::string res =
-            "State Machine Transition type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) + ")\n";
+            "State Machine Transitions type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) + ")\n";
     for (auto& pair: remap_var_)
         res += "\t" + pair.first + " ==> " + pair.second + "\n";
     res += "Variables : \n";

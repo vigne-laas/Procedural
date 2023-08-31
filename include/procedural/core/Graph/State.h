@@ -4,10 +4,10 @@
 #include <unordered_set>
 #include <ontologenius/OntologyManipulator.h>
 
-#include "procedural/core/Graph/TransitionFact.h"
-#include "procedural/core/Graph/TransitionStateMachine.h"
-#include "procedural/core/Graph/TransitionAction.h"
-#include "procedural/core/Graph/TransitionTask.h"
+#include "procedural/core/Graph/Transitions/TransitionFact.h"
+#include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
+#include "procedural/core/Graph/Transitions/TransitionAction.h"
+#include "procedural/core/Graph/Transitions/TransitionTask.h"
 
 #include "procedural/core/Types/Fact.h"
 #include "procedural/core/Types/Variable.h"

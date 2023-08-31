@@ -2,7 +2,7 @@
 #define PROCEDURAL_TRANSITIONACTION_H
 
 #include <ontologenius/clients/ontologyClients/IndividualClient.h>
-#include "HTNTransition.h"
+#include "procedural/core/Types/HTNTransition.h"
 #include "procedural/core/Types/Variable.h"
 
 

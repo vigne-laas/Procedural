@@ -2,7 +2,7 @@
 #include <set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 #include "procedural/core/Graph/StateMachine.h"
-#include "procedural/core/Graph/TransitionStateMachine.h"
+#include "procedural/core/Graph/Transitions/TransitionStateMachine.h"
 
 namespace procedural {
 

@@ -1,4 +1,4 @@
-#include "procedural/core/Graph/TransitionTask.h"
+#include "procedural/core/Graph/Transitions/TransitionTask.h"
 #include "procedural/core/Types/Task.h"
 
 namespace procedural {
@@ -28,7 +28,7 @@ bool TransitionTask::match(Task* task)
 std::string TransitionTask::toString() const
 {
     std::string res =
-            "Task Transition type : " + std::to_string(task_id_) + "(" + Task::task_types.get(task_id_) + ") to " +
+            "Task Transitions type : " + std::to_string(task_id_) + "(" + Task::task_types.get(task_id_) + ") to " +
             std::to_string(id_next_state_) + " \n";
     if (!variables_.empty())
     {

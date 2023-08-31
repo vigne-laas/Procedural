@@ -2,7 +2,7 @@
 #define PROCEDURAL_METHOD_H
 
 #include "procedural/core/Graph/StateMachine.h"
-#include "procedural/core/Graph/HTNTransition.h"
+#include "procedural/core/Types/HTNTransition.h"
 namespace procedural {
 
 class Method

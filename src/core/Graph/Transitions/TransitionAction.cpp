@@ -1,4 +1,4 @@
-#include "procedural/core/Graph/TransitionAction.h"
+#include "procedural/core/Graph/Transitions/TransitionAction.h"
 #include "procedural/core/Types/Action.h"
 
 namespace procedural {
@@ -39,7 +39,7 @@ bool TransitionAction::match(Action* action)
 std::string TransitionAction::toString() const
 {
     std::string res =
-            "Action Transition type : " + std::to_string(action_id_) + "(" + Action::action_types.get(action_id_) +
+            "Action Transitions type : " + std::to_string(action_id_) + "(" + Action::action_types.get(action_id_) +
             ") to " + std::to_string(id_next_state_) + " \n";
     if(!variables_.empty())
     {

@@ -1,4 +1,4 @@
-#include "procedural/core/Graph/TransitionFact.h"
+#include "procedural/core/Graph/Transitions/TransitionFact.h"
 #include <iostream>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 
