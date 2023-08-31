@@ -17,7 +17,7 @@ HTN {
 		duration{duration1()};
 	}
 
-	action Place_Over(Agent A, Pickable O, Support S) {
+	action Place(Agent A, Pickable O, Object S) {
 		preconditions {
 			A.hasInRightHand == O;
 		};
@@ -31,18 +31,6 @@ HTN {
 		duration{duration1()};
 	}
 
-	action Place_Into(Agent A, Pickable O, Container O) {
-		preconditions {
-				A.hasInRightHand == O;
-				A >> O.isReachable;
-		};
-		effects {
-			A.hasInRightHand = NULL;
-			O.isIn = O;
-		};
-		cost{cost1()};
-		duration{duration1()};
-	}
 
 	action Give(Agent A1, Pickable O, Agent A2) {
 		preconditions {
