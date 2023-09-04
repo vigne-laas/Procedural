@@ -40,6 +40,9 @@ public:
     double maxTtl();
 
     std::vector<Action> getActions() {return actions_;};
+
+    uint32_t getId() { return id_; };
+    static WordTable action_method_types;
 private:
     std::string name_;
     std::unordered_set<StateMachine*> complete_state_machines_;
@@ -48,6 +51,7 @@ private:
 
     std::vector<Action> actions_;
 
+    uint32_t id_;
 };
 
 } // namespace procedural

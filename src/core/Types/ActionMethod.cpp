@@ -3,7 +3,9 @@
 
 namespace procedural {
 
-ActionMethod::ActionMethod(const std::string& name) : name_(name), flag_(false)
+WordTable ActionMethod::action_method_types;
+
+ActionMethod::ActionMethod(const std::string& name) : name_(name), flag_(false),id_(action_method_types.get(name_))
 {}
 
 bool ActionMethod::addActions(const Action& action)
