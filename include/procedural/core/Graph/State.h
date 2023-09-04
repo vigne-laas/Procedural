@@ -36,13 +36,13 @@ public:
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions(onto::OntologyManipulator* onto_manipulator);
-    bool isFinalNode() const { return nexts_facts_.empty() && nexts_state_machines_.empty() && nexts_actions_.empty() && nexts_tasks_.empty(); }
+    bool isFinalNode() const { return nexts_facts_.empty() && nexts_actions_.empty() && nexts_actions_methods_.empty() && nexts_tasks_.empty(); }
     int getId() const { return id_; };
     std::string toString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
-    const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_state_machines_; };
-    const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_; };
+    const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_actions_; };
+    const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_methods_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
 
     bool hasTimeoutTransition() const { return has_timeout_transition;}
@@ -65,8 +65,8 @@ private:
     bool initial_node_;
 
     std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
-    std::vector<std::pair<TransitionAction, State*>> nexts_state_machines_;
-    std::vector<std::pair<TransitionActionMethod, State*>> nexts_actions_;
+    std::vector<std::pair<TransitionAction, State*>> nexts_actions_;
+    std::vector<std::pair<TransitionActionMethod, State*>> nexts_actions_methods_;
     std::vector<std::pair<TransitionTask, State*>> nexts_tasks_;
 
     std::vector<State*> parents_;
