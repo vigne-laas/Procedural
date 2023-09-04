@@ -146,7 +146,7 @@ bool StateMachine::addTransition(const PatternTransitionStateMachine_t& transiti
             insertVariable(var.second);
 
         auto type = StateMachine::types_table.get(transitionStateMachine.type_);
-        TransitionAction transition(type, transitionStateMachine.remap_var_);
+        TransitionAction transition(type, transitionStateMachine.next_, transitionStateMachine.remap_var_);
         states_[transitionStateMachine.origin_]->addTransition(transition, states_[transitionStateMachine.next_]);
         return true;
     } else
@@ -165,17 +165,20 @@ bool StateMachine::addTransition(const HTNTransition_t& transition)
 
     for (auto& var: transition.arguments_)
         insertVariable(var.first);
+
+
     linkHTNTransition(origin_id, final_id, transition);
     int new_state = 1;
     for (const auto parent: states_[origin_id]->getParents_())
     {
         if (parent->valideConstrains(transition.id_contraints_order))
         {
+//            std::cout << "parent : " << parent->toString()<< std::endl;
 //            linkHTNTransition(parent->getId(), origin_id + new_state, transition);
             addState((transition.step * 10) + new_state);
             linkHTNTransition(parent->getId(), (transition.step * 10) + new_state, transition);
             states_[(transition.step * 10) + new_state]->closeTo(states_[(transition.step + 1) * 10], parent,
-                                                                 states_[transition.step*10]);
+                                                                 states_[transition.step * 10]);
             new_state++;
         }
     }
@@ -185,6 +188,11 @@ bool StateMachine::addTransition(const HTNTransition_t& transition)
 void StateMachine::linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition)
 {
     if (transition.type == TransitionType::Action)
+    {
+        TransitionAction t(transition.id_subtask, final_state, {}, transition.arguments_);
+        states_[initial_state]->addTransition(t, states_[final_state]);
+    }
+    if (transition.type == TransitionType::ActionMethod)
     {
         TransitionActionMethod t(transition.id_subtask, final_state, transition.arguments_);
         states_[initial_state]->addTransition(t, states_[final_state]);
@@ -265,7 +273,7 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
     }
-    if(last_state_required!=-1)
+    if (last_state_required != -1)
         N->addTimeoutTransition(last_state_required);
     N->closeStateMachine();
     return N;
