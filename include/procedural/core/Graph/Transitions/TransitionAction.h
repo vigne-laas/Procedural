@@ -13,8 +13,8 @@ class StateMachine;
 class TransitionAction
 {
 public:
-    TransitionAction(uint32_t type, const std::map<std::string,std::string>& remap_var);
-
+    TransitionAction(uint32_t type, int next_state,const std::map<std::string,std::string>& remap_var,const std::map<std::string,std::string>& arg_var={});
+    TransitionAction(const TransitionAction& transition, int id_next_state);
     void linkVariables(std::map<std::string, Variable_t>& variables);
 
     bool match(StateMachine * stateMachine) ;
@@ -26,8 +26,10 @@ public:
     
 private:
     uint32_t type_;
+    int id_next_state_;
     bool flag_;
     std::map<std::string,std::string> remap_var_;
+    std::map<std::string,std::string> arg_var_;
     std::map<std::string,Variable_t*> variables_;
 };
 

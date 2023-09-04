@@ -62,14 +62,14 @@ Pick_Over:
     - ?? isPerformedFrom ?S
 
 
-Place_Into:
+Place_In:
   parameters:
     ttl: 15
   composed_sequence:
     - R: Release
     - ?O isInContainer ?S REQUIRED
   description:
-    - ?? isA Place_IntoAction
+    - ?? isA Place_InAction
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S

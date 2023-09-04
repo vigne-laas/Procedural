@@ -17,13 +17,27 @@ HTN {
 		duration{duration1()};
 	}
 
-	action Place(Agent A, Pickable O, Object S) {
+	action Place_Over(Agent A, Pickable O, Object S) {
 		preconditions {
 			A.hasInRightHand == O;
 		};
 		effects {
 			A.hasInRightHand = NULL;
 			O.isOn = S;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action Place_In(Agent A, Pickable O, Object S) {
+		preconditions {
+			A.hasInRightHand == O;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			O.isIn = S;
 			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
 			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
 		};
@@ -105,6 +119,13 @@ HTN {
 			subtasks {
 				1:Get(A, O);
 				2:Place_Over(A, O, T)>1;
+			};
+		}
+		{
+			preconditions {};
+			subtasks {
+				1:Get(A, O);
+				2:Place_In(A, O, T)>1;
 			};
 		}
 	}

@@ -28,6 +28,8 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
         std::map<std::string, std::string> arguments;
         for (const auto& arg: abstract_task.arguments)
             arguments.emplace(arg.varname, arg.type);
+
+
         new_task->addArguments(arguments);
         int compt = 0;
         for (const auto& method: abstract_task.methods_)
@@ -50,13 +52,22 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                 t.step = compt_actions;
 
                 auto val = std::find_if(actions_possible.begin(), actions_possible.end(),
-                                        [action](const std::string& action_) {
-                                            return action_ == action.name;
+                                        [action](const std::pair<std::string, TransitionType>& action_pair) {
+                                            return action_pair.first == action.name;
                                         });
+//                std::cout << "action find : " << val->first << std::endl;
                 if (val != actions_possible.end())
                 {
-                    t.id_subtask = Action::action_types.get(action.name);
-                    t.type = TransitionType::Action;
+                    if (val->second == TransitionType::Action)
+                    {
+                        t.id_subtask = Action::action_types.get(action.name);
+                        t.type = val->second;
+                    } else
+                    {
+                        t.id_subtask = ActionMethod::action_method_types.get(action.name);
+                        t.type = val->second;
+                    }
+
                 } else
                 {
                     t.id_subtask = Task::task_types.get(action.name);
@@ -72,6 +83,7 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                         std::cout << "Error arg non find in remap : " << arg << std::endl;
                 }
                 compt_actions++;
+//                std::cout << "transition " << t.toString() << std::endl;
                 new_method.addTransition(t);
             }
             new_task->addMethods(new_method);
@@ -87,8 +99,13 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
     for (const auto& action: actions_htn)
     {
         bool find = false;
-        for (const auto& actionType: action_type)
+        for (const auto& actionType: action_type) //TODO Optimiser avec while et find condition
         {
+            if (action.name == actionType->getName())
+            {
+                find = true;
+                actions_possible.insert(std::make_pair(action.name, TransitionType::ActionMethod));
+            }
             if (find == false)
             {
                 auto actions_ = actionType->getActions();
@@ -99,7 +116,7 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
                 if (val != actions_.end())
                 {
                     find = true;
-                    actions_possible.emplace_back(val->getName());
+                    actions_possible.insert(std::make_pair(val->getName(), TransitionType::Action));
                 }
 
             }
@@ -111,6 +128,10 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
         }
 
     }
+//    std::cout << "list of possible action : " << std::endl;
+//    for (const auto& action: actions_possible)
+//        std::cout << action.first << (action.second == TransitionType::Action ? " => Action" : " => ActionMethod")
+//                  << std::endl;
     return true;
 }
 void HTNBuilder::displayActions()

@@ -15,7 +15,7 @@ public:
     void displayActions();
 private:
     std::vector<Task*> tasks_;
-    std::vector<std::string> actions_possible;
+    std::map<std::string,TransitionType> actions_possible;
 
     bool checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn, const std::vector<ActionMethod*>& action_type);
 };
