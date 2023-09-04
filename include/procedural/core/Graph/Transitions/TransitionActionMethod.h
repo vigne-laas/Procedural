@@ -17,7 +17,6 @@ public:
     void linkVariables(std::map<std::string,Variable_t>& variables);
     bool match(Action* action);
     std::string toString() const;
-
     void setOntologyClient(onto::IndividualClient* indiv_client);
 private:
     uint32_t action_id_;

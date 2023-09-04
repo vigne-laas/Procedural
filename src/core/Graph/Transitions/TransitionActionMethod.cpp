@@ -1,5 +1,5 @@
 #include "procedural/core/Graph/Transitions/TransitionActionMethod.h"
-#include "procedural/core/Types/Action.h"
+#include "procedural/core/Types/ActionMethod.h"
 
 namespace procedural {
 TransitionActionMethod::TransitionActionMethod(uint32_t id_action, int next_state,
@@ -22,9 +22,16 @@ TransitionActionMethod::TransitionActionMethod(const TransitionActionMethod& tra
 
 void TransitionActionMethod::linkVariables(std::map<std::string, Variable_t>& variables)
 {
-    std::cout <<"link variables action : " << std::endl;
+//    std::cout << "link variables action method : " << std::endl;
     for (auto& pair: variables_)
-        pair.second = &(variables.at(pair.first));
+    {
+//        std::cout << "var : " << pair.first << " count : " << std::to_string(variables.count(pair.first)) << std::endl;
+//        if (variables.count(pair.first) > 0)
+            pair.second = &(variables.at(pair.first));
+//        else
+//            std::cout << "variables not found : " << pair.first << std::endl;
+    }
+
 }
 bool TransitionActionMethod::match(Action* action)
 {
@@ -39,9 +46,9 @@ bool TransitionActionMethod::match(Action* action)
 std::string TransitionActionMethod::toString() const
 {
     std::string res =
-            "Action Transitions type : " + std::to_string(action_id_) + "(" + Action::action_types.get(action_id_) +
+            "Action Method Transitions type : " + std::to_string(action_id_) + "(" + ActionMethod::action_method_types.get(action_id_) +
             ") to " + std::to_string(id_next_state_) + " \n";
-    if(!variables_.empty())
+    if (!variables_.empty())
     {
         res += "Variables : \n";
         for (auto& var: variables_)
