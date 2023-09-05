@@ -14,19 +14,21 @@ namespace procedural {
 class Task
 {
 public:
-    explicit Task(std::string name) : name_(name), id_(task_types.get(name)){};
+    explicit Task(std::string name) : name_(name), id_(task_types.get(name)) {};
 
     void addMethods(const Method& method);
     void addArguments(const std::map<std::string, std::string>& arguments);
 
     bool feed(Action* action);
     bool feed(Task* task);
+    bool feed(ActionMethod* action_method);
 
     std::string getName() { return name_; }
     std::vector<Method> getMethods() { return methods_; };
     uint32_t getId() { return id_; };
 
     static WordTable task_types;
+    std::unordered_set<Method*> getFinishedMethods() { return finished_methods; };
 private:
     uint32_t id_;
     std::map<std::string, std::string> arguments_;
@@ -34,10 +36,10 @@ private:
     std::vector<Method> methods_;
 //    std::vector<>
 
-    std::unordered_set<Task*> complete_task_;
+    std::unordered_set<Method*> finished_methods;
 
-        std::map<std::string, Variable_t> getVars();
-    };
+    std::map<std::string, Variable_t> getVars();
+};
 
 } // procedural
 

@@ -14,6 +14,7 @@ public:
     std::string getStrStructure();
     bool feed(Action* action);
     bool feed(Task* task);
+    bool feed(ActionMethod* action_method);
     int getNextSMId() {return compt_SM_++;}
 
 private:
@@ -23,6 +24,7 @@ private:
     int compt_SM_;
     StateMachine* factory_machine_;
     std::unordered_set<StateMachine*> current_state_machines_;
+
 
 };
 

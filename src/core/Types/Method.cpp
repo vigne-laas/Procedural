@@ -80,4 +80,8 @@ bool Method::feed(Task* task)
 
     return evolve;
 }
+bool Method::feed(ActionMethod* action_method)
+{
+    return false;
+}
 } // procedural

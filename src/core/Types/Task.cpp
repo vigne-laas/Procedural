@@ -15,19 +15,21 @@ void Task::addArguments(const std::map<std::string, std::string>& arguments)
 bool Task::feed(Action* action)
 {
     auto sms = action->getFinishedStateMachine();
-    for(auto sm : sms)
-        for(auto var : sm->getLiteralVariables())
+    for (auto sm: sms)
+        for (auto var: sm->getLiteralVariables())
 
 
-    return false;
+            return false;
 }
 
 bool Task::feed(Task* task)
 {
-//    for(const auto complete_task : task->complete_task_)
-//        checkVars(complete_task.getVars())
-
-
+    for (auto& method: methods_)
+        method.feed(task);
+    return false;
+}
+bool Task::feed(ActionMethod* action_method)
+{
     return false;
 }
 
@@ -35,5 +37,6 @@ std::map<std::string, Variable_t> Task::getVars()
 {
     return std::map<std::string, Variable_t>();
 }
+
 
 } // procedural

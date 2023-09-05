@@ -29,19 +29,19 @@ std::pair<State*, TransitionAction*> State::evolve(StateMachine* state_machine)
     return std::make_pair(nullptr, nullptr);
 }
 
-State* State::evolve(Action* fact)
+State* State::evolve(Action* action)
 {
     for (auto& pair: nexts_actions_methods_)
-        if (pair.first.match(fact))
+        if (pair.first.match(action))
             return pair.second;
 
     return nullptr;
 }
 
-State* State::evolve(Task* fact)
+State* State::evolve(Task* task)
 {
     for (auto& pair: nexts_tasks_)
-        if (pair.first.match(fact))
+        if (pair.first.match(task))
             return pair.second;
 
     return nullptr;
