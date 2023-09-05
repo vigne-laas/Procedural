@@ -134,7 +134,7 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
 //                  << std::endl;
     return true;
 }
-void HTNBuilder::displayActions()
+void HTNBuilder::displayTask()
 {
     for (const auto& task: tasks_)
     {

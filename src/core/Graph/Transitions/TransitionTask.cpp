@@ -21,7 +21,7 @@ void TransitionTask::linkVariables(std::map<std::string, Variable_t>& variables)
 bool TransitionTask::match(Task* task)
 {
     if(task->getId() == task_id_)
-        if(checkVars(task))
+        if(checkArgs(task))
             return true;
     return false;
 }
@@ -43,9 +43,10 @@ void TransitionTask::setOntologyClient(onto::IndividualClient* indiv_client)
 {
 
 }
-bool TransitionTask::checkVars(Task* task)
+bool TransitionTask::checkArgs(Task* task)
 {
-
+//    for(const auto& method  : task->getFinishedMethods())
+//        method->getVars()
     return false;
 }
 

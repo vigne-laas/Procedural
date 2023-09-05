@@ -10,14 +10,17 @@ class HTNBuilder
 public:
     HTNBuilder() = default;
     void buildAction(const std::vector<PrimitiveActionParsed_t>& actions);
-    void buildTask(const std::vector<Abstract_task_t>& abstract_tasks, const std::vector<PrimitiveActionParsed_t>& actions_htn,
+    void buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
+                   const std::vector<PrimitiveActionParsed_t>& actions_htn,
                    const std::vector<ActionMethod*>& actions_type);
-    void displayActions();
+    void displayTask();
+    std::vector<Task*> getTask() { return tasks_; }
 private:
     std::vector<Task*> tasks_;
-    std::map<std::string,TransitionType> actions_possible;
+    std::map<std::string, TransitionType> actions_possible;
 
-    bool checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn, const std::vector<ActionMethod*>& action_type);
+    bool checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn,
+                      const std::vector<ActionMethod*>& action_type);
 };
 
 } // procedural

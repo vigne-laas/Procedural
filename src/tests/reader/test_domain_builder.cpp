@@ -19,7 +19,8 @@ int main(int, const char**)
     std::cout << "Task : \n" << procedural::Task::task_types.toString() << std::endl;
     std::cout << "Action : \n" << procedural::Action::action_types.toString() << std::endl;
     builder.buildTask(domainReader.getMethods(), domainReader.getActions(), action_builder.getActions());
-    builder.displayActions();
+    builder.displayTask();
+
     return 0;
 }
 

@@ -29,7 +29,7 @@ private:
     std::map<std::string,Variable_t*> variables_;
     int id_next_state_;
     std::map<std::string, std::string> arguments_;
-    bool checkVars(Task* task);
+    bool checkArgs(Task* task);
 };
 
 } // procedural
