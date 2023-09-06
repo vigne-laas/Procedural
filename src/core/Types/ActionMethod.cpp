@@ -8,9 +8,9 @@ WordTable ActionMethod::action_method_types;
 ActionMethod::ActionMethod(const std::string& name) : name_(name), flag_(false),id_(action_method_types.get(name_))
 {}
 
-bool ActionMethod::addActions(const Action& action)
+bool ActionMethod::addActions(Action* action)
 {
-    if (action.isValid())
+    if (action->isValid())
     {
         actions_.push_back(action);
         return true;
@@ -23,7 +23,7 @@ bool ActionMethod::feed(Fact* fact, TimeStamp_t currentTimestamp)
     bool evolve = false;
     for (auto& pattern: actions_)
         if ((currentTimestamp - fact->getTimeStamp()) <= pattern.getTtl())
-            evolve |= pattern.feed(fact);
+            evolve |= pattern->feed(fact);
 //        else
 //        {
             // std::cout << "rejected fact : " << fact->toString() << " for  :" << pattern.getName() << std::endl;
@@ -40,7 +40,7 @@ std::set<uint32_t> ActionMethod::checkCompleteStateMachines(TimeStamp_t currentT
     {
         for (auto& pattern: actions_)
         {
-            std::set<uint32_t> temp_set = pattern.checkStateMachine(currentTimestamp);
+            std::set<uint32_t> temp_set = pattern->checkStateMachine(currentTimestamp);
             set_valid_facts.insert(temp_set.begin(), temp_set.end());
             if (temp_set.empty() == false)
             {
@@ -50,7 +50,7 @@ std::set<uint32_t> ActionMethod::checkCompleteStateMachines(TimeStamp_t currentT
 
         }
         for (auto& pattern: actions_)
-            pattern.cleanInvolve(set_valid_facts);
+            pattern->cleanInvolve(set_valid_facts);
         flag_ = true;
     }
     return set_valid_facts;
@@ -77,7 +77,7 @@ void ActionMethod::cleanActions(std::set<uint32_t> set_id)
 {
     for (auto& pattern: actions_)
     {
-        pattern.cleanInvolve(set_id);
+        pattern->cleanInvolve(set_id);
 //        pattern.clean();
     }
 }
@@ -86,7 +86,7 @@ std::string ActionMethod::toString()
 {
     std::string res;
     for (auto& pattern: actions_)
-        res += pattern.toString() + "\n";
+        res += pattern->toString() + "\n";
     return res;
 }
 
@@ -94,14 +94,14 @@ std::string ActionMethod::currentState(bool shortVersion)
 {
     std::string res;
     for (auto& pattern: actions_)
-        res += pattern.currentState(shortVersion) + "\n";
+        res += pattern->currentState(shortVersion) + "\n";
     return res;
 }
 bool ActionMethod::checkSubAction(ActionMethod* action)
 {
     bool evolve = false;
     for (auto& pattern: actions_)
-        evolve |= pattern.checksubAction(action);
+        evolve |= pattern->checksubAction(action);
     if (evolve)
         flag_ = false;
     return evolve;
@@ -112,7 +112,7 @@ bool ActionMethod::checkNewExplanation()
     if (flag_ == false)
     {
         for (auto& specializedAction: actions_)
-            res |= specializedAction.checkNewUpdatedSubStateMachine();
+            res |= specializedAction->checkNewUpdatedSubStateMachine();
     }
 
     return res;
@@ -131,8 +131,8 @@ double ActionMethod::maxTtl()
 {
     double res;
     for (auto& action: actions_)
-        if (action.getTtl() > res)
-            res = action.getTtl();
+        if (action->getTtl() > res)
+            res = action->getTtl();
     return res;
 }
 

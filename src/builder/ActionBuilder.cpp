@@ -51,7 +51,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
             descriptions.emplace_back(description.subject, description.property, description.object);
 
         int ttl = (action.parameters.ttl == 0) ? 30 : action.parameters.ttl;
-        Action new_spe_action(action.getName(), facts, {}, descriptions,
+        Action* new_spe_action = new Action(action.getName(), facts, {}, descriptions,
                               last_required,
                               onto_client_,
                               ttl);

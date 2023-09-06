@@ -15,7 +15,7 @@ class ActionMethod
 public:
     explicit ActionMethod(const std::string& name);
 
-    bool addActions(const Action& action);
+    bool addActions(Action* action);
 
     bool feed(Fact* fact, TimeStamp_t currentTimestamp);
 
@@ -39,7 +39,7 @@ public:
 
     double maxTtl();
 
-    std::vector<Action> getActions() {return actions_;};
+    std::vector<Action*> getActions() {return actions_;};
 
     uint32_t getId() { return id_; };
     static WordTable action_method_types;
@@ -49,7 +49,7 @@ private:
     std::unordered_set<StateMachine*> updated_sub_state_machines_;
     bool flag_;
 
-    std::vector<Action> actions_;
+    std::vector<Action*> actions_;
 
     uint32_t id_;
 };
