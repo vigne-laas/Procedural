@@ -378,10 +378,13 @@ void StateMachine::processInitialState()
     }
 
     std::unordered_set<int> result;
+    std::unordered_set<int> list_final_state;
     for (auto& state: states_)
     {
         if (id_states_nexts.find(state.first) == id_states_nexts.end())
             result.insert(state.first);
+        if (state.second->isFinalNode())
+            list_final_state.insert(state.first);
     }
 
     int nb_initial_state = result.size();
@@ -395,11 +398,25 @@ void StateMachine::processInitialState()
             invalid_states.insert(states_.at(res));
 
         throw MultiInitialStateStateMachineException(invalid_states);
-    } else
-    {
-        id_initial_state_ = *result.begin();
-        current_state_ = states_.at(id_initial_state_);
     }
+    if (list_final_state.size() == 0)
+    {
+        throw NoFinalStateStateMachineException();
+    } else if (list_final_state.size() > 1)
+    {
+        std::unordered_set<State*> invalid_states;
+        for (auto res: list_final_state)
+            invalid_states.insert(states_.at(res));
+
+        throw MultiFinalStateStateMachineException(invalid_states);
+    }
+
+
+    id_initial_state_ = *result.begin();
+    id_final_state_ = *list_final_state.begin();
+    current_state_ = states_.at(id_initial_state_);
+
+
 }
 
 bool StateMachine::updateVar(const std::map<std::string, std::string>& remap,

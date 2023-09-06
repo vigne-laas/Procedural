@@ -22,7 +22,7 @@ namespace procedural {
 struct StateMachineException : public std::exception
 {
     std::string msg_;
-    explicit StateMachineException(const std::string& msg) : msg_(msg){}
+    explicit StateMachineException(const std::string& msg) : msg_(msg) {}
     const char* what() const throw()
     {
         return msg_.c_str();
@@ -31,13 +31,32 @@ struct StateMachineException : public std::exception
 
 struct NoInitialStateStateMachineException : public StateMachineException
 {
-    NoInitialStateStateMachineException() : StateMachineException("Invalid State Machine due to no initial State detected"){};
+    NoInitialStateStateMachineException() : StateMachineException(
+            "Invalid State Machine due to no initial State detected") {};
+};
+
+struct NoFinalStateStateMachineException : public StateMachineException
+{
+    NoFinalStateStateMachineException() : StateMachineException(
+            "Invalid State Machine due to no final State detected") {};
 };
 
 struct MultiInitialStateStateMachineException : public StateMachineException
 {
     explicit MultiInitialStateStateMachineException(const std::unordered_set<State*>& invalid_states) :
-            StateMachineException("Invalid State Machine due to no initial State detected\nState detected as initial are : ")
+            StateMachineException(
+                    "Invalid State Machine due to no initial State detected\nState detected as initial are : ")
+    {
+        for (auto& state: invalid_states)
+            msg_ += state->toString() + "\n";
+    }
+};
+
+struct MultiFinalStateStateMachineException : public StateMachineException
+{
+    explicit MultiFinalStateStateMachineException(const std::unordered_set<State*>& invalid_states) :
+            StateMachineException(
+                    "Invalid State Machine due to no final State detected\nState detected as final are : ")
     {
         for (auto& state: invalid_states)
             msg_ += state->toString() + "\n";
@@ -65,10 +84,10 @@ public:
     Variable_t getVar(const std::string& key) const { return variables_.at(key); }
     bool newExplanationAvailable() const { return new_explanations_; }
     float getCompletionRatio() const;
-    std::vector<Description_t> getDescription() {return descriptions_;};
+    std::vector<Description_t> getDescription() { return descriptions_; };
     std::vector<std::string> getLiteralVariables();
 
-    bool isComplete() const { return current_state_->isFinalNode(); }
+    bool isFinished() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
 
@@ -83,7 +102,7 @@ public:
 
     std::string toString();
 
-    StateMachine* clone(int new_id, int last_state_required=-1);
+    StateMachine* clone(int new_id, int last_state_required = -1);
     void displayVariables();
     std::string describe(bool expl = false);
     std::vector<uint32_t> getIdsFacts() const { return id_facts_involve; }
@@ -94,7 +113,7 @@ public:
 
     static void displayTypesTable();
 
-    std::vector<StateMachine*> getUpdatedStateMachines() { return updated_sub_state_machines_;};
+    std::vector<StateMachine*> getUpdatedStateMachines() { return updated_sub_state_machines_; };
 
     void addTimeoutTransition(int last_state_required);
 
@@ -110,7 +129,8 @@ private:
 
     void processInitialState();
 
-    bool updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& variables_);
+    bool
+    updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& variables_);
 
 
     std::string type_str_;
@@ -127,6 +147,7 @@ private:
     State* current_state_;
     std::map<int, State*> states_;
     int id_initial_state_;
+    int id_final_state_;
 
     std::vector<uint32_t> id_facts_involve;
 
