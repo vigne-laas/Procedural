@@ -23,6 +23,7 @@ StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : ty
 
 bool StateMachine::evolve(Fact* fact)
 {
+
     if ((valid_ && closed_) == false)
         return false;
     auto evolution = current_state_->evolve(fact);
@@ -36,6 +37,7 @@ bool StateMachine::evolve(Fact* fact)
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
     new_explanations_ = checkIncompletsStateMachines();
+    notify();
     return true;
 }
 
@@ -59,6 +61,7 @@ bool StateMachine::evolve(StateMachine* stateMachine)
 
     current_state_ = evolution.first;
     new_explanations_ = checkIncompletsStateMachines();
+    notify();
     return true;
 }
 
@@ -171,7 +174,7 @@ bool StateMachine::addTransition(const HTNTransition_t& transition)
     int new_state = 1;
     for (const auto parent: states_[origin_id]->getParents_())
     {
-        if (parent->valideConstrains(transition.id_contraints_order))
+        if (parent->validateConstraints(transition.id_contraints_order))
         {
 //            std::cout << "parent : " << parent->toString()<< std::endl;
 //            linkHTNTransition(parent->getId(), origin_id + new_state, transition);
@@ -242,32 +245,36 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
     if ((valid_ && closed_) == false)
         return nullptr;
 
-    StateMachine* N = new StateMachine(type_str_, new_id);
+    auto N = new StateMachine(type_str_, new_id);
     N->variables_ = variables_;
     N->variables_.at("self").literal = N->getName();
     N->descriptions_ = descriptions_;
+    N->id_initial_state_ = id_initial_state_;
+    N->id_final_state_ = id_final_state_;
+    for (const auto& obs: list_observer_)
+        N->attach(obs);
 
     for (auto& state: states_)
         N->addState(state.first);
 
     for (auto& state: N->states_)
     {
-        for (auto& pair_transition: states_.at(state.first)->getNextsFacts())
+        for (auto& pair_transition: states_.at(state.first)->getNextFacts())
         {
             TransitionFact t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
-        for (auto& pair_transition: states_.at(state.first)->getNextsStateMachines())
+        for (auto& pair_transition: states_.at(state.first)->getNextStateMachines())
         {
             TransitionAction t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
-        for (auto& pair_transition: states_.at(state.first)->getNextsActions())
+        for (auto& pair_transition: states_.at(state.first)->getNextActions())
         {
             TransitionActionMethod t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
-        for (auto& pair_transition: states_.at(state.first)->getNextsTasks())
+        for (auto& pair_transition: states_.at(state.first)->getNextTasks())
         {
             TransitionTask t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
@@ -367,13 +374,13 @@ void StateMachine::processInitialState()
     std::unordered_set<uint32_t> id_states_nexts;
     for (auto& pair_states: states_)
     {
-        for (auto& nexts_state: pair_states.second->getNextsFacts())
+        for (auto& nexts_state: pair_states.second->getNextFacts())
             id_states_nexts.insert(nexts_state.second->getId());
-        for (auto& nexts_state: pair_states.second->getNextsStateMachines())
+        for (auto& nexts_state: pair_states.second->getNextStateMachines())
             id_states_nexts.insert(nexts_state.second->getId());
-        for (auto& nexts_state: pair_states.second->getNextsActions())
+        for (auto& nexts_state: pair_states.second->getNextActions())
             id_states_nexts.insert(nexts_state.second->getId());
-        for (auto& nexts_state: pair_states.second->getNextsTasks())
+        for (auto& nexts_state: pair_states.second->getNextTasks())
             id_states_nexts.insert(nexts_state.second->getId());
     }
 
@@ -465,6 +472,26 @@ void StateMachine::expandProperties(onto::OntologyManipulator* onto_manipulator)
 {
     for (auto& state: states_)
         (state.second)->expandTransitions(onto_manipulator);
+}
+void StateMachine::notify()
+{
+    MessageType t;
+    if (isFinished())
+    {
+        t = MessageType::Finished;
+        if (getCompletionRatio() == 1)
+            t = MessageType::Complete;
+    }
+    if (!updated_sub_state_machines_.empty())
+        t = MessageType::Update;
+    if (t != MessageType::None)
+    {
+//        std::cout << "notify state machine from " << full_name_<< " " << std::to_string(static_cast<int>(t)) << std::endl;
+        for (const auto& obs: list_observer_)
+            obs->updateStateMachine(t, this);
+    }
+
+
 }
 bool StateMachine::timeEvolution(TimeStamp_t stamp, double time_to_live) //TODO check again
 {

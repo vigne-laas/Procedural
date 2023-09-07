@@ -12,7 +12,7 @@ namespace procedural {
 
 class ActionMethod;
 
-class ActionRecognition
+class ActionRecognition:public IObserver
 {
 public:
 
@@ -27,12 +27,18 @@ public:
     void setCallback(const std::function<void(const std::vector<StateMachineFinishedMSG_>&)>& callback)
     { callback_output_ = callback; }
 
+    void updateActionMethod(procedural::MessageType type, procedural::ActionMethod* action_method)  override;
+    void updateAction(MessageType type, Action* machine) override;
+
+
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_{};
     std::vector<ActionMethod*> actions_;
 
     std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
+    std::vector<ActionMethod*> finished_actions_;
+    std::vector<ActionMethod*> updated_actions_;
 };
 
 } // namespace procedural

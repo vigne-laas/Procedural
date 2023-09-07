@@ -50,19 +50,11 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
     std::set<uint32_t> set_valid_facts;
     for (auto state_machine: state_machines_)
     {
-//        std::cout << "value : "<< current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
-        if (state_machine->isComplete())
-            finished_state_machines_.insert(state_machine);
-        else if (current_timestamp - state_machine->getAge() > time_to_live_)
+        if (not state_machine->timeEvolution(current_timestamp, time_to_live_))
         {
-            if(state_machine->getCurrentState()->hasTimeoutTransition())
-                finished_state_machines_.insert(state_machine);
-            else
-            {
-                state_machines_to_del.insert(state_machine);
-                std::cout << "Del state machine due to age " << state_machine->getName() << "value : "
-                          << current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
-            }
+            state_machines_to_del.insert(state_machine);
+//            std::cout << "Del state machine due to age " << state_machine->getName() << "value : "
+//                      << current_timestamp - state_machine->getAge() << "ttl : " << time_to_live_ << std::endl;
         }
     }
 
@@ -73,30 +65,22 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
 //        std::cout << "facts involved : ";
 
         for (auto& id: complete_state_machine->getIdsFacts())
-        {
-//            std::cout << std::to_string(id) << "|";
             set_valid_facts.insert(id);
-        }
-//        NetworkOutput output(complete_network,false);
-//        std::cout << output << std::endl;
-//        std::cout << std::endl;
         state_machines_.erase(complete_state_machine);
-        // delete complete_network; // Check if Guillaume is right
     }
-    // std::cout << "Pattern : "<< this->name_<< std::endl;
-    // std::cout << "size net : "<< networks_.size()<< std::endl;
+
     for (auto& state_machine: state_machines_)
     {
         if (state_machine->involveFacts(set_valid_facts))
         {
-//            std::cout << "may delete this network involved :" << network->getName() << std::endl;
+//            std::cout << "may delete this network involved :" << state_machine->getName() << std::endl;
             state_machines_to_del.insert(state_machine);
         }
     }
 
     for (auto state_machine_to_del: state_machines_to_del)
     {
-//        std::cout << "deleted network  : " << network_to_del->getName() << std::endl;
+//        std::cout << "deleted network  : " << state_machine_to_del->getName() << std::endl;
         state_machines_.erase(state_machine_to_del);
         delete state_machine_to_del;
     }
@@ -143,6 +127,7 @@ bool Action::feed(Fact* fact)
 {
     updated_states_machines.clear();
     bool evolve = false;
+
     for (auto& state_machine: state_machines_)
     {
         if (state_machine->evolve(fact))
@@ -160,15 +145,13 @@ bool Action::feed(Fact* fact)
         if (new_net->evolve(fact))
         {
             new_net->setId(getNextId());
+            new_net->attach(this);
             state_machines_.insert(new_net);
-            std::cout << "create new state machine " << new_net->getName() << std::endl;
-
+//            std::cout << "create new state machine " << new_net->getName() << std::endl;
             evolve = true;
-        }
-        else
+        } else
             delete new_net;
     }
-
     return evolve;
 }
 
@@ -195,7 +178,6 @@ bool Action::checksubAction(ActionMethod* action)
             }
 
     }
-
     if (evolve == false)
     {
         for (auto complete_state_machine: complete_state_machines)
@@ -204,11 +186,11 @@ bool Action::checksubAction(ActionMethod* action)
             if (new_net->evolve(complete_state_machine))
             {
                 new_net->setId(getNextId());
+                new_net->attach(this);
                 state_machines_.insert(new_net);
                 evolve_sub_action_ = true;
                 evolve = true;
-            }
-            else
+            } else
                 delete new_net;
         }
     }
@@ -249,6 +231,24 @@ std::string Action::getStrStructure()
     res += "Structure of : " + name_ + "\n";
     res += state_machine_factory_->getStrStructure();
     return res;
+}
+void Action::updateStateMachine(MessageType type, StateMachine* machine)
+{
+    std::cout << "receive info from SM : " << machine->getName() << " : " << std::to_string((int) type) << std::endl;
+    if (type == MessageType::Update)
+        updated_states_machines.push_back(machine);
+    if (type == MessageType::Complete or type == MessageType::Finished)
+        finished_state_machines_.insert(machine);
+
+    notify_type_ = type;
+    notify();
+
+
+}
+void Action::notify()
+{
+    for (const auto& obs: list_observer_)
+        obs->updateAction(notify_type_, this);
 }
 
 

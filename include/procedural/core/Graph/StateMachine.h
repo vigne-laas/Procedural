@@ -16,6 +16,7 @@
 #include "procedural/core/Types/PatternTransitionStateMachine.h"
 #include "procedural/core/Types/WordTable.h"
 #include "procedural/core/Types/IncompleteStateMachine.h"
+#include "procedural/core/Types/Interface.h"
 
 namespace procedural {
 
@@ -63,7 +64,7 @@ struct MultiFinalStateStateMachineException : public StateMachineException
     }
 };
 
-class StateMachine
+class StateMachine:public ISubject
 {
 public:
     StateMachine(const std::string& name, int id, uint32_t level = 0);
@@ -90,6 +91,16 @@ public:
     bool isFinished() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
+
+    void attach(IObserver* observer) override
+    {
+        list_observer_.push_back(observer);
+    }
+    void detach(IObserver* observer) override
+    {
+        list_observer_.remove(observer);
+    }
+    void notify() override;
 
 
     bool addTransition(const PatternTransitionFact_t& transitionFact);
@@ -159,6 +170,7 @@ private:
     std::vector<IncompleteStateMachine_t> incompletes_state_machines_;
 
     std::vector<StateMachine*> updated_sub_state_machines_;
+    std::list<IObserver*> list_observer_;
 
 
     void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);

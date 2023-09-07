@@ -10,7 +10,7 @@
 
 namespace procedural {
 
-class ActionMethod
+class ActionMethod: public IObserver, ISubject
 {
 public:
     explicit ActionMethod(const std::string& name);
@@ -32,17 +32,32 @@ public:
 
     bool checkSubAction(ActionMethod* action);
 
-    std::unordered_set<StateMachine*> getCompletesStateMachines() { return complete_state_machines_;};
-    std::string getName() const { return name_;};
+    std::unordered_set<StateMachine*> getCompletesStateMachines() { return complete_state_machines_; };
+    std::string getName() const { return name_; };
     bool checkNewExplanation();
     std::vector<StateMachine*> getNewExplanation();
 
     double maxTtl();
 
-    std::vector<Action*> getActions() {return actions_;};
+    std::vector<Action*> getActions() { return actions_; };
 
     uint32_t getId() { return id_; };
     static WordTable action_method_types;
+
+    void attach(IObserver* observer) override
+    {
+        list_observer_.push_back(observer);
+    }
+    void detach(IObserver* observer) override
+    {
+        list_observer_.remove(observer);
+    }
+
+    void updateAction(MessageType type,Action* action) override;
+
+    void notify() override;
+
+    void attachRecognitionProcess(IObserver* observer);
 private:
     std::string name_;
     std::unordered_set<StateMachine*> complete_state_machines_;
@@ -51,7 +66,14 @@ private:
 
     std::vector<Action*> actions_;
 
+    std::list<IObserver*> list_observer_;
+
+
     uint32_t id_;
+    MessageType message_type_;
+    std::vector<Action*> finished_actions_;
+    std::vector<Action*> updated_actions_;
+    std::list<IObserver*> recognition_process_observer_;
 };
 
 } // namespace procedural

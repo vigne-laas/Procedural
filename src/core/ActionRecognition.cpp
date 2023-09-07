@@ -10,8 +10,12 @@ void ActionRecognition::init(const std::vector<ActionMethod*>& actions, double t
     callback_output_ = ActionRecognition::defaultCallback;
     double max_ttl = 0;
     for (auto& action: actions_)
+    {
+        action->attachRecognitionProcess(this);
         if (action->maxTtl() > max_ttl)
             max_ttl = action->maxTtl();
+    }
+
     if (ttl > max_ttl)
         max_ttl = ttl;
     buffer_ = new BufferFacts(max_ttl, max_size);
@@ -19,13 +23,13 @@ void ActionRecognition::init(const std::vector<ActionMethod*>& actions, double t
 
 void ActionRecognition::addToQueue(Fact* fact) const
 {
-    if(buffer_ != nullptr)
+    if (buffer_ != nullptr)
         buffer_->addFact(fact);
 }
 
 void ActionRecognition::processQueue(TimeStamp_t current_time)
 {
-    if(buffer_ == nullptr)
+    if (buffer_ == nullptr)
         return;
 
     std::vector<Fact*> list_facts = buffer_->getFacts(current_time);
@@ -37,7 +41,6 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
                   << std::endl;
         std::set<uint32_t> set_id_facts;
-        std::vector<procedural::ActionMethod*> complete_actions;
         for (auto& action: actions_)
             if (action->feed(fact, current_time))
                 facts_used.insert(fact->getId());
@@ -46,47 +49,73 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         do
         {
             nb_update = 0;
-            std::vector<StateMachineFinishedMSG_> msg_finished_SM_; // TODO rename
-            for (auto& action: actions_)
+            std::vector<StateMachineFinishedMSG_> msg_finished_SM_;
+            std::vector<ActionMethod*> finished_actions = finished_actions_;
+            std::vector<ActionMethod*> updated_actions = updated_actions_;
+            finished_actions_.clear();
+            updated_actions_.clear();
+            for (auto& finished_action: finished_actions)
             {
-                std::set<uint32_t> temp_set = action->checkCompleteStateMachines(current_time);
-                if (temp_set.empty() == false)
-                {
-                    set_id_facts.insert(temp_set.begin(), temp_set.end());
-                    complete_actions.push_back(action);
-                    nb_update++;
-                } else
-                {
-                    if (action->checkNewExplanation())
-                    {
-                        auto nets = action->getNewExplanation();
-                        for (auto& net: nets)
-                            msg_finished_SM_.emplace_back(net, true);
-                    }
-                }
-            }
-
-            for (auto& action_complete: complete_actions)
-            {
+                std::set<uint32_t> temp_set = finished_action->checkCompleteStateMachines(current_time);
+                set_id_facts.insert(temp_set.begin(), temp_set.end());
+                nb_update++;
                 for (auto& action: actions_)
-                    if (action != action_complete)
-                    {
-                        if (action->checkSubAction(action_complete))
-                        {
-                            if (action->checkNewExplanation())
-                            {
-                                auto nets = action->getNewExplanation();
-                                for (auto& net: nets)
-                                    msg_finished_SM_.emplace_back(net, true);
-                            }
+                    if (action != finished_action)
+                        if (action->checkSubAction(finished_action))
                             nb_update++;
-                        }
-                    }
 
-                auto complete_state_machines = action_complete->getCompletesStateMachines();
+                auto complete_state_machines = finished_action->getCompletesStateMachines();
                 for (auto& complete_state_machine: complete_state_machines)
                     msg_finished_SM_.emplace_back(complete_state_machine);
             }
+            for (auto& updated_action: updated_actions)
+            {
+                auto nets = updated_action->getNewExplanation();
+                for (auto& net: nets)
+                    msg_finished_SM_.emplace_back(net, true);
+            }
+
+
+//            for (auto& action: actions_)
+//            {
+//                std::set<uint32_t> temp_set = action->checkCompleteStateMachines(current_time);
+//                if (temp_set.empty() == false)
+//                {
+//                    set_id_facts.insert(temp_set.begin(), temp_set.end());
+//                    complete_actions.push_back(action);
+//                    nb_update++;
+//                } else
+//                {
+//                    if (action->checkNewExplanation())
+//                    {
+//                        auto nets = action->getNewExplanation();
+//                        for (auto& net: nets)
+//                            msg_finished_SM_.emplace_back(net, true);
+//                    }
+//                }
+//            }
+
+//            for (auto& action_complete: complete_actions)
+//            {
+//                for (auto& action: actions_)
+//                    if (action != action_complete)
+//                    {
+//                        if (action->checkSubAction(action_complete))
+//                        {
+//                            if (action->checkNewExplanation())
+//                            {
+//                                auto nets = action->getNewExplanation();
+//                                for (auto& net: nets)
+//                                    msg_finished_SM_.emplace_back(net, true);
+//                            }
+//                            nb_update++;
+//                        }
+//                    }
+//
+//                auto complete_state_machines = action_complete->getCompletesStateMachines();
+//                for (auto& complete_state_machine: complete_state_machines)
+//                    msg_finished_SM_.emplace_back(complete_state_machine);
+//            }
 
             callback_output_(msg_finished_SM_);
 
@@ -94,7 +123,6 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                 for (auto& action: actions_)
                     action->cleanActions(set_id_facts);
 
-            complete_actions.clear();
         } while (nb_update != 0);
 
         for (auto& action: actions_)
@@ -110,6 +138,26 @@ void ActionRecognition::defaultCallback(const std::vector<StateMachineFinishedMS
 {
     for (const auto& output: outputs)
         std::cout << ">> " << output << std::endl;
+}
+void ActionRecognition::updateActionMethod(procedural::MessageType type, procedural::ActionMethod* action_method)
+{
+    std::cout << "new ActionMethod data in Action_Recognition" << std::to_string(static_cast<int>(type)) << std::endl;
+    if (type == MessageType::Complete or type == MessageType::Finished)
+    {
+        finished_actions_.push_back(action_method);
+    }
+    if(type==MessageType::Update)
+        updated_actions_.push_back(action_method);
+}
+void ActionRecognition::updateAction(MessageType type, Action* machine)
+{
+    std::cout << "new Action data in Action_Recognition" << std::to_string(static_cast<int>(type)) << std::endl;
+
+//    if (type == MessageType::Complete or type == MessageType::Finished)
+//    {
+//        finished_actions_.
+//
+//    }
 }
 
 } // namespace procedural
