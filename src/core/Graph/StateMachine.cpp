@@ -322,7 +322,7 @@ bool StateMachine::involveFacts(const std::set<uint32_t>& facts)
 
 void StateMachine::addTimeoutTransition(int last_state_required)
 {
-    states_.at(last_state_required)->addTimeoutTransition();
+    states_.at(last_state_required)->addTimeoutTransition(states_.at(id_final_state_));
 }
 
 /* ------------------------------ private part ------------------------------ */
@@ -465,6 +465,20 @@ void StateMachine::expandProperties(onto::OntologyManipulator* onto_manipulator)
 {
     for (auto& state: states_)
         (state.second)->expandTransitions(onto_manipulator);
+}
+bool StateMachine::timeEvolution(TimeStamp_t stamp, double time_to_live) //TODO check again
+{
+    if (stamp - getAge() > time_to_live)
+    {
+        if (current_state_->hasTimeoutTransition())
+        {
+            current_state_ = current_state_->doTimeoutTransition();
+            notify();
+            return true;
+        } else
+            return false;
+    }
+    return true;
 }
 
 } // namespace procedural

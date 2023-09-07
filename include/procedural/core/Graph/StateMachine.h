@@ -120,6 +120,7 @@ public:
     void setId(int new_id);
     std::string getStrStructure();
     void expandProperties(onto::OntologyManipulator* onto_manipulator);
+    bool timeEvolution(TimeStamp_t stamp, double time_to_live);
 private:
 
     bool checkIncompletsStateMachines();
@@ -162,7 +163,6 @@ private:
 
     void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);
 };
-
 
 
 } // procedural

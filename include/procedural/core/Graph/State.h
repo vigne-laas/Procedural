@@ -35,31 +35,36 @@ public:
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions(onto::OntologyManipulator* onto_manipulator);
-    bool isFinalNode() const { return nexts_facts_.empty() && nexts_actions_.empty() && nexts_actions_methods_.empty() && nexts_tasks_.empty(); }
+    bool isFinalNode() const
+    {
+        return nexts_facts_.empty() && nexts_actions_.empty() && nexts_actions_methods_.empty() && nexts_tasks_.empty();
+    }
     int getId() const { return id_; };
     std::string toString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
     const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_actions_; };
-    const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_methods_; };
+    const std::vector<std::pair<TransitionActionMethod, State*>>
+    getNextsActions() const { return nexts_actions_methods_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
 
     void set_new_id(int new_id) { id_ = new_id; };
 
-    bool hasTimeoutTransition() const { return has_timeout_transition;}
-    std::vector<State*> getParents_() {return parents_;};
-    std::unordered_set<int> getConstrains_() {return valide_constrains_;};
+    bool hasTimeoutTransition() const { return has_timeout_transition; }
+    std::vector<State*> getParents_() { return parents_; };
+    std::unordered_set<int> getConstrains_() { return valide_constrains_; };
 
 
-    void addTimeoutTransition();
+    void addTimeoutTransition(State* final_state);
 
     void addParents(State* parent_state);
 
     void addValidateConstraints(const std::vector<int>& constrains);
     void addValidateConstraints(const std::unordered_set<int>& constrains);
     bool valideConstrains(const std::vector<int>& constrains);
-    void closeTo(State* final_state, State* parent,State* origin);
+    void closeTo(State* final_state, State* parent, State* origin);
 
+    State* doTimeoutTransition();
 private:
     int id_;
     std::string name_;
@@ -73,6 +78,7 @@ private:
     std::vector<State*> parents_;
     std::unordered_set<int> valide_constrains_;
     bool has_timeout_transition;
+    State* final_state_;
 };
 
 } // namespace procedural

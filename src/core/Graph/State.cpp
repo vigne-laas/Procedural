@@ -6,7 +6,7 @@
 namespace procedural {
 
 State::State(const std::string& name, int id) : id_(id),
-                                                name_(name + "_" + std::to_string(id)),
+                                                name_(name),
                                                 initial_node_(false),
                                                 has_timeout_transition(false)
 {}
@@ -92,7 +92,7 @@ void State::expandTransitions(onto::OntologyManipulator* onto_manipulator)
 
 std::string State::toString() const
 {
-    std::string msg = "State : " + name_ + "\n";
+    std::string msg = "State : " + name_+'_'+std::to_string(id_) + "\n";
     msg += isFinalNode() ? "\tFinal Node \n" : "";
     msg += initial_node_ ? "\tInitial Node \n" : "";
     msg += "\tTransitions (" + std::to_string(
@@ -114,9 +114,10 @@ std::string State::toString() const
     return msg;
 }
 
-void State::addTimeoutTransition()
+void State::addTimeoutTransition(State* final_state)
 {
     has_timeout_transition = true;
+    final_state_ = final_state;
 }
 void State::addParents(State* parent_state)
 {
@@ -211,6 +212,10 @@ void State::addValidateConstraints(const std::unordered_set<int>& constrains)
     for (const auto constrain: constrains)
         valide_constrains_.insert(constrain);
 
+}
+State* State::doTimeoutTransition()
+{
+    return final_state_;
 }
 
 
