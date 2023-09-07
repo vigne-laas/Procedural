@@ -445,6 +445,8 @@ void StateMachine::setId(int new_id)
     id_ = new_id;
     full_name_ = type_str_ + "_" + std::to_string(new_id);
     variables_.at("self").literal = full_name_;
+    for (const auto& state: states_)
+        state.second->set_new_id(new_id);
 }
 
 std::string StateMachine::getStrStructure()

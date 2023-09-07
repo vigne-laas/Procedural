@@ -13,7 +13,6 @@
 #include "procedural/core/Types/Variable.h"
 
 
-
 namespace procedural {
 class Action;
 class Task;
@@ -44,6 +43,8 @@ public:
     const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_actions_; };
     const std::vector<std::pair<TransitionActionMethod, State*>> getNextsActions() const { return nexts_actions_methods_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
+
+    void set_new_id(int new_id) { id_ = new_id; };
 
     bool hasTimeoutTransition() const { return has_timeout_transition;}
     std::vector<State*> getParents_() {return parents_;};
