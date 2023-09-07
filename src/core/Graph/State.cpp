@@ -13,7 +13,7 @@ State::State(const std::string& name, int id) : id_(id),
 
 State* State::evolve(Fact* fact)
 {
-    for (auto& pair: nexts_facts_)
+    for (auto& pair: next_facts_)
         if (pair.first.match(fact))
             return pair.second;
 
@@ -22,7 +22,7 @@ State* State::evolve(Fact* fact)
 
 std::pair<State*, TransitionAction*> State::evolve(StateMachine* state_machine)
 {
-    for (auto& pair: nexts_actions_)
+    for (auto& pair: next_actions_)
         if (pair.first.match(state_machine))
             return std::make_pair(pair.second, &pair.first);
 
@@ -31,7 +31,7 @@ std::pair<State*, TransitionAction*> State::evolve(StateMachine* state_machine)
 
 State* State::evolve(Action* action)
 {
-    for (auto& pair: nexts_actions_methods_)
+    for (auto& pair: next_actions_methods_)
         if (pair.first.match(action))
             return pair.second;
 
@@ -40,7 +40,7 @@ State* State::evolve(Action* action)
 
 State* State::evolve(Task* task)
 {
-    for (auto& pair: nexts_tasks_)
+    for (auto& pair: next_tasks_)
         if (pair.first.match(task))
             return pair.second;
 
@@ -49,44 +49,44 @@ State* State::evolve(Task* task)
 
 void State::addTransition(const TransitionFact& transition, State* next_state)
 {
-    nexts_facts_.emplace_back(transition, next_state);
+    next_facts_.emplace_back(transition, next_state);
 }
 
 void State::addTransition(const TransitionAction& transition, State* next_state)
 {
-    nexts_actions_.emplace_back(transition, next_state);
+    next_actions_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionActionMethod& transition, State* next_states)
+void State::addTransition(const TransitionActionMethod& transition, State* next_state)
 {
-    nexts_actions_methods_.emplace_back(transition, next_states);
+    next_actions_methods_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionTask& transition, State* next_states)
+void State::addTransition(const TransitionTask& transition, State* next_state)
 {
-    nexts_tasks_.emplace_back(transition, next_states);
+    next_tasks_.emplace_back(transition, next_state);
 }
 
 void State::linkVariables(std::map<std::string, Variable_t>& variables_)
 {
 //    std::cout << "link : " << name_ << std::endl;
-    for (auto& pair: nexts_facts_)
+    for (auto& pair: next_facts_)
         pair.first.linkVariables(variables_);
-    for (auto& pair: nexts_actions_)
+    for (auto& pair: next_actions_)
         pair.first.linkVariables(variables_);
-    for (auto& pair: nexts_tasks_)
+    for (auto& pair: next_tasks_)
         pair.first.linkVariables(variables_);
-    for (auto& pair: nexts_actions_methods_)
+    for (auto& pair: next_actions_methods_)
         pair.first.linkVariables(variables_);
 }
 
 void State::expandTransitions(onto::OntologyManipulator* onto_manipulator)
 {
-    for (auto& next: nexts_facts_)
+    for (auto& next: next_facts_)
         next.first.expandProperty(&(onto_manipulator->objectProperties));
-    for (auto& transition: nexts_actions_methods_)
+    for (auto& transition: next_actions_methods_)
         transition.first.setOntologyClient(&(onto_manipulator->individuals));
-    for (auto& transition: nexts_tasks_)
+    for (auto& transition: next_tasks_)
         transition.first.setOntologyClient(&(onto_manipulator->individuals));
 }
 
@@ -96,19 +96,19 @@ std::string State::toString() const
     msg += isFinalNode() ? "\tFinal Node \n" : "";
     msg += initial_node_ ? "\tInitial Node \n" : "";
     msg += "\tTransitions (" + std::to_string(
-            nexts_facts_.size() + nexts_actions_.size() + nexts_tasks_.size() + nexts_actions_methods_.size()) + "):";
+            next_facts_.size() + next_actions_.size() + next_tasks_.size() + next_actions_methods_.size()) + "):";
     msg += " [ ";
-    if (!nexts_facts_.empty())
-        for (auto& pair_transition_state: nexts_facts_)
+    if (!next_facts_.empty())
+        for (auto& pair_transition_state: next_facts_)
             msg += "\t" + pair_transition_state.first.toString() + "\n";
-    if (!nexts_actions_.empty())
-        for (auto& pair_transition_state: nexts_actions_)
+    if (!next_actions_.empty())
+        for (auto& pair_transition_state: next_actions_)
             msg += "\t" + pair_transition_state.first.toString() + "\n";
-    if (!nexts_tasks_.empty())
-        for (auto& pair_transition_state: nexts_tasks_)
+    if (!next_tasks_.empty())
+        for (auto& pair_transition_state: next_tasks_)
             msg += "\t" + pair_transition_state.first.toString() + "\n";
-    if (!nexts_actions_methods_.empty())
-        for (auto& pair_transition_state: nexts_actions_methods_)
+    if (!next_actions_methods_.empty())
+        for (auto& pair_transition_state: next_actions_methods_)
             msg += "\t" + pair_transition_state.first.toString() + "\n";
     msg += "]";
     return msg;
@@ -129,7 +129,7 @@ void State::addValidateConstraints(const std::vector<int>& constrains)
     for (const auto& constrain: constrains)
         valide_constrains_.insert(constrain);
 }
-bool State::valideConstrains(const std::vector<int>& constrains)
+bool State::validateConstraints(const std::vector<int>& constrains)
 {
     if (std::all_of(constrains.cbegin(), constrains.cend(), [this](int val) {
         auto res = valide_constrains_.find(val);
@@ -144,7 +144,7 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 //              << std::to_string(parent->getId()) << " origin : " << std::to_string(origin->getId()) << "  this : "
 //              << this->getId() << std::endl;
 
-    for (const auto& pair: parent->nexts_tasks_)
+    for (const auto& pair: parent->next_tasks_)
     {
 //        std::cout << "task pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
         if (pair.second == origin)
@@ -155,7 +155,7 @@ void State::closeTo(State* final_state, State* parent, State* origin)
     }
 
 
-    for (const auto& pair: parent->nexts_actions_methods_)
+    for (const auto& pair: parent->next_actions_methods_)
     {
 //        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
         if (pair.second == origin)
@@ -166,7 +166,7 @@ void State::closeTo(State* final_state, State* parent, State* origin)
         }
     }
 
-    for (const auto& pair: parent->nexts_actions_)
+    for (const auto& pair: parent->next_actions_)
     {
 //        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
         if (pair.second == origin)
@@ -180,14 +180,14 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 //        std::cout << "into close to " << pair.first.toString() << "state :" << pair.second << std::endl;
 //
 //
-//    auto val = std::find_if(parent->getNextsTasks().cbegin(), parent->getNextsTasks().cend(),
+//    auto val = std::find_if(parent->getNextsTasks().cbegin(), parent->getNextTasks().cend(),
 //                            [origin](const std::pair<TransitionTask, State*>& pair) {
 //                                if (pair.second != nullptr)
 //                                    return pair.second == origin;
 //                                else
 //                                    return false;
 //                            });
-//    if (val != parent->getNextsTasks().end())
+//    if (val != parent->getNextTasks().end())
 //    {
 //        this->addTransition(val->first, final_state);
 //        return;
@@ -195,11 +195,11 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 //    }
 
 
-//    auto val_action = std::find_if(parent->getNextsActions().begin(), parent->getNextsActions().end(),
+//    auto val_action = std::find_if(parent->getNextsActions().begin(), parent->getNextActions().end(),
 //                                   [origin](const std::pair<TransitionActionMethod, State*>& pair) {
 //                                       return pair.second == origin;
 //                                   });
-//    if (val_action != parent->getNextsActions().end())
+//    if (val_action != parent->getNextActions().end())
 //    {
 //        this->addTransition(val_action->first, final_state);
 //        return;

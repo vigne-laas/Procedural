@@ -29,24 +29,24 @@ public:
 
     void addTransition(const TransitionFact& transition, State* next_state);
     void addTransition(const TransitionAction& transition, State* next_state);
-    void addTransition(const TransitionActionMethod& transition, State* next_states);
-    void addTransition(const TransitionTask& transition, State* next_states);
+    void addTransition(const TransitionActionMethod& transition, State* next_state);
+    void addTransition(const TransitionTask& transition, State* next_state);
 
     void linkVariables(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions(onto::OntologyManipulator* onto_manipulator);
     bool isFinalNode() const
     {
-        return nexts_facts_.empty() && nexts_actions_.empty() && nexts_actions_methods_.empty() && nexts_tasks_.empty();
+        return next_facts_.empty() && next_actions_.empty() && next_actions_methods_.empty() && next_tasks_.empty();
     }
     int getId() const { return id_; };
     std::string toString() const;
 
-    const std::vector<std::pair<TransitionFact, State*>> getNextsFacts() const { return nexts_facts_; };
-    const std::vector<std::pair<TransitionAction, State*>> getNextsStateMachines() const { return nexts_actions_; };
+    const std::vector<std::pair<TransitionFact, State*>> getNextFacts() const { return next_facts_; };
+    const std::vector<std::pair<TransitionAction, State*>> getNextStateMachines() const { return next_actions_; };
     const std::vector<std::pair<TransitionActionMethod, State*>>
-    getNextsActions() const { return nexts_actions_methods_; };
-    const std::vector<std::pair<TransitionTask, State*>> getNextsTasks() const { return nexts_tasks_; };
+    getNextActions() const { return next_actions_methods_; };
+    const std::vector<std::pair<TransitionTask, State*>> getNextTasks() const { return next_tasks_; };
 
     void set_new_id(int new_id) { id_ = new_id; };
 
@@ -61,7 +61,7 @@ public:
 
     void addValidateConstraints(const std::vector<int>& constrains);
     void addValidateConstraints(const std::unordered_set<int>& constrains);
-    bool valideConstrains(const std::vector<int>& constrains);
+    bool validateConstraints(const std::vector<int>& constrains);
     void closeTo(State* final_state, State* parent, State* origin);
 
     State* doTimeoutTransition();
@@ -70,10 +70,10 @@ private:
     std::string name_;
     bool initial_node_;
 
-    std::vector<std::pair<TransitionFact, State*>> nexts_facts_;
-    std::vector<std::pair<TransitionAction, State*>> nexts_actions_;
-    std::vector<std::pair<TransitionActionMethod, State*>> nexts_actions_methods_;
-    std::vector<std::pair<TransitionTask, State*>> nexts_tasks_;
+    std::vector<std::pair<TransitionFact, State*>> next_facts_;
+    std::vector<std::pair<TransitionAction, State*>> next_actions_;
+    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
+    std::vector<std::pair<TransitionTask, State*>> next_tasks_;
 
     std::vector<State*> parents_;
     std::unordered_set<int> valide_constrains_;
