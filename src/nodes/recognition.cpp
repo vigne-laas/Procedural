@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     params.display();
 
     procedural::RosInterface ros_interface(&n, onto_manipulators, time_manipulators, params.at("name").getFirst());
-    if(ros_interface.init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("namax_sizeme").getFirst())))
+    if(ros_interface.init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
         ros_interface.run();
     return 0;
 }
