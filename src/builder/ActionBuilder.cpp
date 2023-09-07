@@ -119,7 +119,7 @@ void ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
                 descriptions.emplace_back(description.subject, description.property, description.object);
 
             int ttl = (action.parameters.ttl == 0) ? 30 : action.parameters.ttl;
-            Action new_spe_action(action.getName(), facts, state_machines, descriptions,
+            Action* new_spe_action = new Action(action.getName(), facts, state_machines, descriptions,
                                   last_required,
                                   onto_client_,
                                   ttl);
@@ -138,12 +138,12 @@ bool ActionBuilder::completeRemap(SubStateMachine_t& sub_state_machine)
     if (result != actions_.end())
     {
         auto specialized_action = (*result)->getActions();
-        auto test_specialized = [sub_state_machine](const Action& action) {
-            return action.getName() == sub_state_machine.getName();
+        auto test_specialized = [sub_state_machine](Action* action) {
+            return action->getName() == sub_state_machine.getName();
         };
         auto result_specialized = std::find_if(specialized_action.begin(), specialized_action.end(), test_specialized);
         if (result_specialized != specialized_action.end())
-            sub_net_variables = result_specialized->getLiteralVariables();
+            sub_net_variables = (*result_specialized)->getLiteralVariables();
     }
     else
         return false;
@@ -193,8 +193,8 @@ void ActionBuilder::buildIncomplete()
             if (result != actions_.end())
             {
                 auto specialized_action = (*result)->getActions();
-                auto test_specialized = [subnet](const Action& action) {
-                    return action.getName() == subnet.getName();
+                auto test_specialized = [subnet](Action* action) {
+                    return action->getName() == subnet.getName();
                 };
                 auto result_specialized = std::find_if(specialized_action.begin(), specialized_action.end(),
                                                        test_specialized);

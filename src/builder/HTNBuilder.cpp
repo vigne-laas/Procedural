@@ -110,13 +110,13 @@ bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& action
             {
                 auto actions_ = actionType->getActions();
                 auto val = std::find_if(actions_.begin(), actions_.end(),
-                                        [action](const Action& action_primitive) {
-                                            return action_primitive.getName() == action.name;
+                                        [action](Action* action_primitive) {
+                                            return action_primitive->getName() == action.name;
                                         });
                 if (val != actions_.end())
                 {
                     find = true;
-                    actions_possible.insert(std::make_pair(val->getName(), TransitionType::Action));
+                    actions_possible.insert(std::make_pair((*val)->getName(), TransitionType::Action));
                 }
 
             }
