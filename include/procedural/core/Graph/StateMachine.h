@@ -17,6 +17,7 @@
 #include "procedural/core/Types/WordTable.h"
 #include "procedural/core/Types/IncompleteStateMachine.h"
 #include "procedural/core/Types/Interface.h"
+#include "procedural/core/Types/ResultFeedProcess.h"
 
 namespace procedural {
 
@@ -70,8 +71,8 @@ public:
     StateMachine(const std::string& name, int id, uint32_t level = 0);
     StateMachine(const StateMachine& other) = delete;
 
-    bool evolve(Fact* fact);
-    bool evolve(StateMachine* state_machine);
+    EvolveResult_t evolve(Fact* fact);
+    EvolveResult_t evolve(StateMachine* state_machine);
     bool evolve(Action* action);
     bool evolve(Task* task);
 

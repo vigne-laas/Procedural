@@ -11,28 +11,59 @@ bool ActionMethod::addActions(Action* action)
 {
     if (action->isValid())
     {
-        action->attach(this);
-        for(const auto ob:recognition_process_observer_)
-            action->attach(ob);
+//        action->attach(this);
+//        for (const auto ob: recognition_process_observer_)
+//            action->attach(ob);
         actions_.push_back(action);
         return true;
     } else
         return false;
 }
 
-bool ActionMethod::feed(Fact* fact, TimeStamp_t currentTimestamp)
+ResultFeedProcess_t ActionMethod::feed(Fact* fact, TimeStamp_t currentTimestamp)
 {
-    bool evolve = false;
-    for (auto& pattern: actions_)
-        if ((currentTimestamp - fact->getTimeStamp()) <= pattern->getTtl())
-            evolve |= pattern->feed(fact);
+    ResultFeedProcess_t result_feed_process;
+    for (auto& action: actions_)
+    {
+        if ((currentTimestamp - fact->getTimeStamp()) <= action->getTtl())
+        {
+            auto result_feed = action->feed(fact);
+            switch (result_feed.state)
+            {
+                case FeedResult::NO_EVOLUTION:
+                    break;
+                case FeedResult::EVOLVE:
+                    std::cout << "Action : " << action->getName() << " has evolved" << std::endl;
+//                        result_feed_process.finished_actions.push_back(this);
+                    if (!result_feed_process.evolve)
+                        result_feed_process.evolve = true;
+                    break;
+                case FeedResult::COMPLETE:
+                    result_feed_process.finished_actions.push_back(this);
+                    if (!result_feed_process.evolve)
+                        result_feed_process.evolve = true;
+                    break;
+            }
+            if (result_feed.update_available)
+                result_feed_process.updated_actions.push_back(this);
+        }
+    }
+//    std::cout << "End feed Action Method " << name_ << std::endl;
+
+
+
+
+
+//            evolve |= pattern->feed(fact);
 //        else
 //        {
     // std::cout << "rejected fact : " << fact->toString() << " for  :" << pattern.getName() << std::endl;
 //            std::cout << "delta _t =" << currentTimestamp - fact->getTimeStamp() << " / ttl : " << pattern.getTtl()
 //                      << std::endl;
 //        }
-    return evolve;
+
+
+    return result_feed_process;
 }
 
 std::set<uint32_t> ActionMethod::checkCompleteStateMachines(TimeStamp_t currentTimestamp)
@@ -99,14 +130,34 @@ std::string ActionMethod::currentState(bool shortVersion)
         res += pattern->currentState(shortVersion) + "\n";
     return res;
 }
-bool ActionMethod::checkSubAction(ActionMethod* action)
+ResultFeedProcess_t ActionMethod::checkSubAction(ActionMethod* action)
 {
-    bool evolve = false;
+    ResultFeedProcess_t result_feed_process;
     for (auto& pattern: actions_)
-        evolve |= pattern->checksubAction(action);
-    if (evolve)
+    {
+        auto result_feed = pattern->checksubAction(action);
+        switch (result_feed.state)
+        {
+            case FeedResult::NO_EVOLUTION:
+                break;
+            case FeedResult::EVOLVE:
+//                result_feed_process.finished_actions.push_back(this);
+//                if (!result_feed_process.evolve)
+//                    result_feed_process.evolve = true;
+                break;
+            case FeedResult::COMPLETE:
+                result_feed_process.finished_actions.push_back(this);
+                if (!result_feed_process.evolve)
+                    result_feed_process.evolve = true;
+                break;
+        }
+        if (result_feed.update_available)
+            result_feed_process.updated_actions.push_back(this);
+    }
+
+    if (result_feed_process.evolve)
         flag_ = false;
-    return evolve;
+    return result_feed_process;
 }
 bool ActionMethod::checkNewExplanation()
 {
@@ -139,7 +190,7 @@ double ActionMethod::maxTtl()
 }
 void ActionMethod::updateAction(MessageType type, Action* action)
 {
-    std::cout << "receive info from " << action->getName() << " : " << std::to_string((int)type) << std::endl;
+    std::cout << "receive info from " << action->getName() << " : " << std::to_string((int) type) << std::endl;
     if (type == MessageType::Finished or type == MessageType::Complete)
     {
         finished_actions_.push_back(action);
@@ -156,7 +207,7 @@ void ActionMethod::updateAction(MessageType type, Action* action)
 }
 void ActionMethod::notify()
 {
-    std::cout << "send data from ActionMethod " << std::to_string((int)message_type_) << std::endl;
+    std::cout << "send data from ActionMethod " << std::to_string((int) message_type_) << std::endl;
     for (const auto& obs: list_observer_)
         obs->updateActionMethod(message_type_, this);
     message_type_ = MessageType::None;

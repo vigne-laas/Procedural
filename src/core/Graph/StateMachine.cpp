@@ -21,35 +21,39 @@ StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : ty
     type_ = StateMachine::types_table.get(type_str_);
 }
 
-bool StateMachine::evolve(Fact* fact)
+EvolveResult_t StateMachine::evolve(Fact* fact)
 {
-
+    EvolveResult_t res;
     if ((valid_ && closed_) == false)
-        return false;
+        return res;
     auto evolution = current_state_->evolve(fact);
 
     if (evolution == nullptr)
-        return false;
+        return res;
     if (current_state_->getId() == id_initial_state_)
         age_ = fact->getTimeStamp();
     last_update_ = fact->getTimeStamp();
 
     current_state_ = evolution;
-    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
+    id_facts_involve.push_back(fact->getId());
     new_explanations_ = checkIncompletsStateMachines();
-    notify();
-    return true;
+    res.update_available = new_explanations_;
+    res.state = FeedResult::EVOLVE;
+    if (current_state_->isFinalNode())
+        res.state = FeedResult::COMPLETE;
+    return res;
 }
 
-bool StateMachine::evolve(StateMachine* stateMachine)
+EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 {
+    EvolveResult_t res;
     if (level_ < stateMachine->getLevel())
-        return false;
+        return res;
     if ((valid_ && closed_) == false)
-        return false;
+        return res;
     auto evolution = current_state_->evolve(stateMachine);
     if (evolution.first == nullptr)
-        return false;
+        return res;
     if (current_state_->getId() == id_initial_state_ || age_ > stateMachine->getAge())
         age_ = stateMachine->getAge();
     last_update_ = stateMachine->getLastupdate();
@@ -61,8 +65,12 @@ bool StateMachine::evolve(StateMachine* stateMachine)
 
     current_state_ = evolution.first;
     new_explanations_ = checkIncompletsStateMachines();
-    notify();
-    return true;
+    res.update_available = new_explanations_;
+    res.state = FeedResult::EVOLVE;
+    if (current_state_->isFinalNode())
+        res.state = FeedResult::COMPLETE;
+//    notify();
+    return res;
 }
 
 bool StateMachine::evolve(Action* action)

@@ -6,12 +6,13 @@
 #include "procedural/core/Graph/StateMachine.h"
 #include "procedural/core/Types/ActionDescription.h"
 #include "procedural/core/Types/Fact.h"
+#include "procedural/core/Types/ResultFeedProcess.h"
 
 
 namespace procedural {
 class ActionMethod;
 
-class Action : public IObserver, ISubject
+class Action : public ISubject
 {
 public:
     Action(const std::string& name,
@@ -34,17 +35,15 @@ public:
 
     std::unordered_set<StateMachine*> getFinishedStateMachine() { return finished_state_machines_; };
 
-    bool feed(Fact* fact);
+    EvolveResult_t feed(Fact* fact);
 
-    bool checksubAction(ActionMethod* action);
+    EvolveResult_t checksubAction(ActionMethod* action);
     bool checkNewUpdatedSubStateMachine() { return updated_states_machines.empty() == false; };
     std::vector<StateMachine*> getUpdatedStateMachines() { return updated_states_machines; };
 
     std::vector<std::string> getLiteralVariables() { return state_machine_factory_->getLiteralVariables(); };
 
     std::string currentState(bool short_version = true);
-
-    void updateStateMachine(MessageType type, StateMachine* machine);
 
     std::string toString();
     std::string getStrStructure();
@@ -58,7 +57,7 @@ public:
         list_observer_.remove(observer);
     }
 
-    void notify() override;
+    void notify(MessageType type) override;
 
     static WordTable action_types;
 private:
@@ -81,7 +80,6 @@ private:
     int last_state_required_;
 
     uint32_t type_;
-    MessageType notify_type_;
 };
 
 } // namespace procedural

@@ -51,8 +51,8 @@ public:
     void set_new_id(int new_id) { id_ = new_id; };
 
     bool hasTimeoutTransition() const { return has_timeout_transition; }
-    std::vector<State*> getParents_() { return parents_; };
-    std::unordered_set<int> getConstrains_() { return valide_constrains_; };
+    std::vector<State*> getParents_() { return parents_; }
+    std::unordered_set<int> getConstrains_() { return valide_constrains_; }
 
 
     void addTimeoutTransition(State* final_state);

@@ -123,59 +123,116 @@ void Action::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
     }
 }
 
-bool Action::feed(Fact* fact)
+EvolveResult_t Action::feed(Fact* fact)
 {
+    EvolveResult_t res;
     updated_states_machines.clear();
     bool evolve = false;
 
     for (auto& state_machine: state_machines_)
     {
-        if (state_machine->evolve(fact))
+        auto result = state_machine->evolve(fact);
+        switch (result.state)
         {
-            std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
-            evolve = true;
-            if (state_machine->newExplanationAvailable())
-                updated_states_machines.push_back(state_machine);
+
+            case FeedResult::NO_EVOLUTION:
+                break;
+            case FeedResult::EVOLVE:
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
+                evolve = true;
+                if (res.state != FeedResult::COMPLETE)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::COMPLETE:
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << "reach final state"
+                          << std::endl;
+                evolve = true;
+                finished_state_machines_.insert(state_machine);
+                res.state = FeedResult::COMPLETE;
+                break;
         }
+        if (result.update_available)
+        {
+            updated_states_machines.push_back(state_machine);
+            res.update_available = true;
+        }
+
+
     }
 
     if (evolve == false)
     {
         StateMachine* new_net = state_machine_factory_->clone(-1, last_state_required_);
-        if (new_net->evolve(fact))
+        auto result = new_net->evolve(fact);
+        switch (result.state)
         {
-            new_net->setId(getNextId());
-            new_net->attach(this);
-            state_machines_.insert(new_net);
-//            std::cout << "create new state machine " << new_net->getName() << std::endl;
-            evolve = true;
-        } else
-            delete new_net;
+            case FeedResult::NO_EVOLUTION:
+                delete new_net;
+                break;
+            case FeedResult::EVOLVE:
+                new_net->setId(getNextId());
+                new_net->attach(this);
+                state_machines_.insert(new_net);
+                std::cout << "create new state machine " << new_net->getName() << std::endl;
+                if (res.state != FeedResult::COMPLETE)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::COMPLETE:
+                new_net->setId(getNextId());
+                finished_state_machines_.insert(new_net);
+                break;
+        }
+//        if (result.state == FeedResult::EVOLVE)
+//        {
+//            new_net->setId(getNextId());
+//            new_net->attach(this);
+//            state_machines_.insert(new_net);
+////            std::cout << "create new state machine " << new_net->getName() << std::endl;
+//            evolve = true;
+//            res.insert(FeedResult::EVOLVE);
+//        } else
+//            delete new_net;
     }
-    return evolve;
+    return res;
 }
 
-bool Action::checksubAction(ActionMethod* action)
+EvolveResult_t Action::checksubAction(ActionMethod* action)
 {
+    EvolveResult_t res;
     updated_states_machines.clear();
     std::unordered_set<StateMachine*> complete_state_machines = action->getCompletesStateMachines();
 
     if (complete_state_machines.empty())
-        return false;
+        return res;
 
     bool evolve = false;
     for (auto& state_machine: state_machines_)
     {
         for (auto complete_state_machine: complete_state_machines)
-            if (state_machine->evolve(complete_state_machine))
+        {
+            auto result = state_machine->evolve(complete_state_machine);
+            switch (result.state)
             {
-                std::cout << "\t succes of evolution sub action : " << state_machine->getName() << std::endl;
-                evolve = true;
-                evolve_sub_action_ = true;
-                if (state_machine->newExplanationAvailable())
-                    for (auto& net: state_machine->getUpdatedStateMachines())
-                        updated_states_machines.push_back(net);
+
+                case FeedResult::NO_EVOLUTION:
+                    break;
+                case FeedResult::EVOLVE:
+                    std::cout << "\t succes of evolution sub action : " << state_machine->getName() << std::endl;
+                    evolve = true;
+                    evolve_sub_action_ = true;
+                    if (res.state != FeedResult::COMPLETE)
+                        FeedResult::
+                        break;
+                case FeedResult::COMPLETE:
+                    notify(MessageType::Finished)
+                    break;
             }
+            if (result.update_available)
+            {
+                for (auto& net: state_machine->getUpdatedStateMachines())
+                    updated_states_machines.push_back(net);
+            }
+        }
 
     }
     if (evolve == false)
@@ -183,18 +240,39 @@ bool Action::checksubAction(ActionMethod* action)
         for (auto complete_state_machine: complete_state_machines)
         {
             StateMachine* new_net = state_machine_factory_->clone(-1, last_state_required_);
-            if (new_net->evolve(complete_state_machine))
+            auto result = new_net->evolve(complete_state_machine);
+            switch (result.state)
             {
-                new_net->setId(getNextId());
-                new_net->attach(this);
-                state_machines_.insert(new_net);
-                evolve_sub_action_ = true;
-                evolve = true;
-            } else
-                delete new_net;
+                case FeedResult::NO_EVOLUTION:
+                    delete new_net;
+                    break;
+                case FeedResult::EVOLVE:
+                    new_net->setId(getNextId());
+                    new_net->attach(this);
+                    state_machines_.insert(new_net);
+                    std::cout << "create new state machine " << new_net->getName() << std::endl;
+                    if (res.state != FeedResult::COMPLETE)
+                        res.state = FeedResult::EVOLVE;
+                    break;
+                case FeedResult::COMPLETE:
+                    new_net->setId(getNextId());
+                    finished_state_machines_.insert(new_net);
+                    notify(MessageType::Finished)
+                    break;
+            }
+//            {
+//                new_net->setId(getNextId());
+//                new_net->attach(this);
+//                state_machines_.insert(new_net);
+//                evolve_sub_action_ = true;
+//                evolve = true;
+//                res.insert(FeedResult::EVOLVE);
+//            } else
+//            delete new_net;
         }
     }
-    return evolve;
+
+    return res;
 }
 
 std::string Action::currentState(bool short_version)
@@ -232,23 +310,11 @@ std::string Action::getStrStructure()
     res += state_machine_factory_->getStrStructure();
     return res;
 }
-void Action::updateStateMachine(MessageType type, StateMachine* machine)
-{
-    std::cout << "receive info from SM : " << machine->getName() << " : " << std::to_string((int) type) << std::endl;
-    if (type == MessageType::Update)
-        updated_states_machines.push_back(machine);
-    if (type == MessageType::Complete or type == MessageType::Finished)
-        finished_state_machines_.insert(machine);
 
-    notify_type_ = type;
-    notify();
-
-
-}
-void Action::notify()
+void Action::notify(MessageType type)
 {
     for (const auto& obs: list_observer_)
-        obs->updateAction(notify_type_, this);
+        obs->updateAction(type, this);
 }
 
 

@@ -7,6 +7,7 @@
 
 #include "procedural/core/Types/Fact.h"
 #include "procedural/core/Types/Action.h"
+#include "ResultFeedProcess.h"
 
 namespace procedural {
 
@@ -17,7 +18,7 @@ public:
 
     bool addActions(Action* action);
 
-    bool feed(Fact* fact, TimeStamp_t currentTimestamp);
+    ResultFeedProcess_t feed(Fact* fact, TimeStamp_t currentTimestamp);
 
     std::set<uint32_t> checkCompleteStateMachines(TimeStamp_t currentTimestamp);
 
@@ -30,7 +31,7 @@ public:
 
     std::string currentState(bool shortVersion = true);
 
-    bool checkSubAction(ActionMethod* action);
+    ResultFeedProcess_t checkSubAction(ActionMethod* action);
 
     std::unordered_set<StateMachine*> getCompletesStateMachines() { return complete_state_machines_; };
     std::string getName() const { return name_; };
