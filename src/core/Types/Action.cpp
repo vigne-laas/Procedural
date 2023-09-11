@@ -50,7 +50,9 @@ std::set<uint32_t> Action::checkStateMachine(TimeStamp_t current_timestamp)
     std::set<uint32_t> set_valid_facts;
     for (auto state_machine: state_machines_)
     {
-        if (not state_machine->timeEvolution(current_timestamp, time_to_live_))
+        if (state_machine->timeEvolution(current_timestamp, time_to_live_))
+            finished_state_machines_.insert(state_machine);
+        else
         {
             state_machines_to_del.insert(state_machine);
 //            std::cout << "Del state machine due to age " << state_machine->getName() << "value : "
@@ -140,15 +142,15 @@ EvolveResult_t Action::feed(Fact* fact)
             case FeedResult::EVOLVE:
                 std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
                 evolve = true;
-                if (res.state != FeedResult::COMPLETE)
+                if (res.state != FeedResult::FINISH)
                     res.state = FeedResult::EVOLVE;
                 break;
-            case FeedResult::COMPLETE:
+            case FeedResult::FINISH:
                 std::cout << "\t succes of evolution  : " << state_machine->getName() << "reach final state"
                           << std::endl;
                 evolve = true;
                 finished_state_machines_.insert(state_machine);
-                res.state = FeedResult::COMPLETE;
+                res.state = FeedResult::FINISH;
                 break;
         }
         if (result.update_available)
@@ -171,13 +173,13 @@ EvolveResult_t Action::feed(Fact* fact)
                 break;
             case FeedResult::EVOLVE:
                 new_net->setId(getNextId());
-                new_net->attach(this);
+//                new_net->attach(this);
                 state_machines_.insert(new_net);
                 std::cout << "create new state machine " << new_net->getName() << std::endl;
-                if (res.state != FeedResult::COMPLETE)
+                if (res.state != FeedResult::FINISH)
                     res.state = FeedResult::EVOLVE;
                 break;
-            case FeedResult::COMPLETE:
+            case FeedResult::FINISH:
                 new_net->setId(getNextId());
                 finished_state_machines_.insert(new_net);
                 break;
@@ -220,11 +222,12 @@ EvolveResult_t Action::checksubAction(ActionMethod* action)
                     std::cout << "\t succes of evolution sub action : " << state_machine->getName() << std::endl;
                     evolve = true;
                     evolve_sub_action_ = true;
-                    if (res.state != FeedResult::COMPLETE)
-                        FeedResult::
+                    if (res.state != FeedResult::FINISH)
+                        res.state = FeedResult::EVOLVE;
                         break;
-                case FeedResult::COMPLETE:
-                    notify(MessageType::Finished)
+                case FeedResult::FINISH:
+                    res.state = FeedResult::FINISH;
+                    notify(MessageType::Complete);
                     break;
             }
             if (result.update_available)
@@ -248,16 +251,16 @@ EvolveResult_t Action::checksubAction(ActionMethod* action)
                     break;
                 case FeedResult::EVOLVE:
                     new_net->setId(getNextId());
-                    new_net->attach(this);
+//                    new_net->attach(this);
                     state_machines_.insert(new_net);
                     std::cout << "create new state machine " << new_net->getName() << std::endl;
-                    if (res.state != FeedResult::COMPLETE)
+                    if (res.state != FeedResult::FINISH)
                         res.state = FeedResult::EVOLVE;
                     break;
-                case FeedResult::COMPLETE:
+                case FeedResult::FINISH:
                     new_net->setId(getNextId());
                     finished_state_machines_.insert(new_net);
-                    notify(MessageType::Finished)
+                    notify(MessageType::Finished);
                     break;
             }
 //            {
@@ -315,6 +318,10 @@ void Action::notify(MessageType type)
 {
     for (const auto& obs: list_observer_)
         obs->updateAction(type, this);
+}
+std::vector<StateMachine*> Action::getNewExplanation()
+{
+    return updated_states_machines;
 }
 
 

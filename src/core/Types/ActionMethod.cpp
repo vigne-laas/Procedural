@@ -145,7 +145,7 @@ ResultFeedProcess_t ActionMethod::checkSubAction(ActionMethod* action)
 //                if (!result_feed_process.evolve)
 //                    result_feed_process.evolve = true;
                 break;
-            case FeedResult::COMPLETE:
+            case FeedResult::FINISH:
                 result_feed_process.finished_actions.push_back(this);
                 if (!result_feed_process.evolve)
                     result_feed_process.evolve = true;

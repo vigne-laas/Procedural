@@ -60,6 +60,7 @@ public:
     void notify(MessageType type) override;
 
     static WordTable action_types;
+    std::vector<StateMachine*> getNewExplanation();
 private:
     int id_;
 

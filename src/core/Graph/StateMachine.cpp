@@ -40,7 +40,7 @@ EvolveResult_t StateMachine::evolve(Fact* fact)
     res.update_available = new_explanations_;
     res.state = FeedResult::EVOLVE;
     if (current_state_->isFinalNode())
-        res.state = FeedResult::COMPLETE;
+        res.state = FeedResult::FINISH;
     return res;
 }
 
@@ -68,7 +68,7 @@ EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
     res.update_available = new_explanations_;
     res.state = FeedResult::EVOLVE;
     if (current_state_->isFinalNode())
-        res.state = FeedResult::COMPLETE;
+        res.state = FeedResult::FINISH;
 //    notify();
     return res;
 }
@@ -259,8 +259,8 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
     N->descriptions_ = descriptions_;
     N->id_initial_state_ = id_initial_state_;
     N->id_final_state_ = id_final_state_;
-    for (const auto& obs: list_observer_)
-        N->attach(obs);
+//    for (const auto& obs: list_observer_)
+//        N->attach(obs);
 
     for (auto& state: states_)
         N->addState(state.first);
@@ -481,34 +481,15 @@ void StateMachine::expandProperties(onto::OntologyManipulator* onto_manipulator)
     for (auto& state: states_)
         (state.second)->expandTransitions(onto_manipulator);
 }
-void StateMachine::notify()
-{
-    MessageType t;
-    if (isFinished())
-    {
-        t = MessageType::Finished;
-        if (getCompletionRatio() == 1)
-            t = MessageType::Complete;
-    }
-    if (!updated_sub_state_machines_.empty())
-        t = MessageType::Update;
-    if (t != MessageType::None)
-    {
-//        std::cout << "notify state machine from " << full_name_<< " " << std::to_string(static_cast<int>(t)) << std::endl;
-        for (const auto& obs: list_observer_)
-            obs->updateStateMachine(t, this);
-    }
 
-
-}
 bool StateMachine::timeEvolution(TimeStamp_t stamp, double time_to_live) //TODO check again
 {
     if (stamp - getAge() > time_to_live)
     {
         if (current_state_->hasTimeoutTransition())
         {
-            current_state_ = current_state_->doTimeoutTransition();
-            notify();
+            current_state_ = current_state_->doTimeoutTransition(); //TODO Check if it transmit
+//            notify();
             return true;
         } else
             return false;

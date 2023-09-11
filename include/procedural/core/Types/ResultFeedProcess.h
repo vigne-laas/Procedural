@@ -8,7 +8,8 @@ enum class FeedResult
 {
     NO_EVOLUTION = 0,
     EVOLVE=2,
-    COMPLETE=3
+    FINISH=3
+
 };
 
 struct EvolveResult_t
