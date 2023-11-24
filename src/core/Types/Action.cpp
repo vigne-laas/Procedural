@@ -151,6 +151,7 @@ EvolveResult_t Action::feed(Fact* fact)
                 evolve = true;
                 finished_state_machines_.insert(state_machine);
                 res.state = FeedResult::FINISH;
+                notify(MessageType::Finished);
                 break;
         }
         if (result.update_available)
@@ -182,6 +183,7 @@ EvolveResult_t Action::feed(Fact* fact)
             case FeedResult::FINISH:
                 new_net->setId(getNextId());
                 finished_state_machines_.insert(new_net);
+                notify(MessageType::Finished);
                 break;
         }
 //        if (result.state == FeedResult::EVOLVE)
@@ -227,7 +229,7 @@ EvolveResult_t Action::checksubAction(ActionMethod* action)
                         break;
                 case FeedResult::FINISH:
                     res.state = FeedResult::FINISH;
-                    notify(MessageType::Complete);
+                    notify(MessageType::Finished);
                     break;
             }
             if (result.update_available)
@@ -323,6 +325,7 @@ std::vector<StateMachine*> Action::getNewExplanation()
 {
     return updated_states_machines;
 }
+
 
 
 } // namespace procedural
