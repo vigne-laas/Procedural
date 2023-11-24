@@ -189,6 +189,11 @@ target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
         ${PROJECT_NAME}_utils_lib
         ${catkin_LIBRARIES})
 
+add_library(${PROJECT_NAME}_task_recognition_lib
+        src/core/TaskRecognition.cpp)
+target_link_libraries(${PROJECT_NAME}_task_recognition_lib ${PROJECT_NAME}_utils_lib)
+
+
 #add_library(${PROJECT_NAME}_domaine_parser_lib
 #        include/procedural/reader/)
 #target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
@@ -241,6 +246,15 @@ add_dependencies(test_domain_reader ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_domain_reader
         ${PROJECT_NAME}_reader_lib
         ${PROJECT_NAME}_builder_lib
+        ${catkin_LIBRARIES}
+)
+
+add_executable(test_task_recognition src/tests/test_task_recognition.cpp)
+add_dependencies(test_task_recognition ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_task_recognition
+        ${PROJECT_NAME}_reader_lib
+        ${PROJECT_NAME}_builder_lib
+        ${PROJECT_NAME}_task_recognition_lib
         ${catkin_LIBRARIES}
 )
 #add_executable(test_action src/tests/test_action.cpp)
