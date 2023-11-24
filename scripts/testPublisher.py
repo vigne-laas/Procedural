@@ -17,8 +17,8 @@ def talker():
               ["[ADD]Bob|hasInRightHand|cube_0", "[ADD]Bob|hasInLeftHand|cube_1"],
               ["[DEL]cube_0|isOnTopOf|table_0", "[DEL]cube_1|isOnTopOf|table_0"]],
     }
-    pub = rospy.Publisher('/ontologenius/insert', String, queue_size=1)
-    pubStamped = rospy.Publisher('/ontologenius/insert_stamped', StampedString, queue_size=2)
+    pub = rospy.Publisher('/ontologenius/insert/pr2', String, queue_size=1)
+    pubStamped = rospy.Publisher('/ontologenius/insert_stamped/pr2', StampedString, queue_size=2)
     rospy.init_node('test_recognition_publisher')
     pub.publish("[ADD]cube_0|isA|Cube")
     keys = list(map_action.keys())
