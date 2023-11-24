@@ -2,7 +2,8 @@
 #define PROCEDURAL_TIMESTAMP_H
 
 #include <tuple>
-#include <math.h>
+#include <cmath>
+#include <iostream>
 
 namespace procedural {
 struct TimeStamp_t
@@ -61,7 +62,7 @@ struct TimeStamp_t
     friend std::ostream& operator<<(std::ostream& os, const TimeStamp_t& lhs)
     {
 //        os << lhs.sec_ << "s," << lhs.nsec_ << "ns";
-        os << lhs.sec_ << "s," << std::to_string(int(lhs.nsec_/pow(10,9)));
+        os << std::to_string(lhs.sec_) << "s," << std::to_string(int(lhs.nsec_/pow(10,9)));
         return os;
     }
 
