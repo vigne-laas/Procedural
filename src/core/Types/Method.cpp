@@ -2,9 +2,9 @@
 #include "procedural/core/Types/Method.h"
 
 namespace procedural {
-Method::Method(const std::string& name, int id) : name_(name), id_(id),compt_SM_(0)
+Method::Method(const std::string& name, int id) : name_(name), id_(id), compt_SM_(0)
 {
-    factory_machine_ = new StateMachine(name,id);
+    factory_machine_ = new StateMachine(name, id);
 }
 
 void Method::addTransition(const HTNTransition_t& transition)
@@ -19,7 +19,7 @@ std::string Method::getStrStructure()
 {
     std::string res;
     res += "Structure of : " + factory_machine_->getName() + "\n\n";
-    res += factory_machine_->getStrStructure()+"\n";
+    res += factory_machine_->getStrStructure() + "\n";
     return res;
 }
 bool Method::feed(Action* action)
@@ -44,8 +44,7 @@ bool Method::feed(Action* action)
             std::cout << "create new state machine " << new_net->getName() << std::endl;
 
             evolve = true;
-        }
-        else
+        } else
             delete new_net;
     }
 
@@ -73,8 +72,7 @@ bool Method::feed(Task* task)
             std::cout << "create new state machine " << new_net->getName() << std::endl;
 
             evolve = true;
-        }
-        else
+        } else
             delete new_net;
     }
 
@@ -83,5 +81,21 @@ bool Method::feed(Task* task)
 bool Method::feed(ActionMethod* action_method)
 {
     return false;
+}
+void Method::updateStateMachine(MessageType type, StateMachine* machine)
+{
+    std::cout << "receive info from SM : " << machine->getName() << " : " << std::to_string((int) type)
+              << "in method : " << name_ << std::endl;
+    if (type == MessageType::Update)
+        updated_states_machines.push_back(machine);
+    if (type == MessageType::Complete or type == MessageType::Finished)
+        finished_state_machines_.insert(machine);
+
+    notify(type);
+}
+void Method::notify(MessageType type)
+{
+    for (const auto& obs: list_observer_)
+        obs->updateMethod(type, this);
 }
 } // procedural

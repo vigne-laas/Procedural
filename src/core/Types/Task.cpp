@@ -14,12 +14,12 @@ void Task::addArguments(const std::map<std::string, std::string>& arguments)
 }
 bool Task::feed(Action* action)
 {
-    auto sms = action->getFinishedStateMachine();
-    for (auto sm: sms)
-        for (auto var: sm->getLiteralVariables())
-
-
-            return false;
+//    auto sms = action->getFinishedStateMachine();
+//    for (auto sm: sms)
+//        for (auto var: sm->getLiteralVariables())
+//
+//
+//            return false;
 }
 
 bool Task::feed(Task* task)
@@ -37,6 +37,33 @@ std::map<std::string, Variable_t> Task::getVars()
 {
     return std::map<std::string, Variable_t>();
 }
+void Task::clean()
+{
+    std::cout << "clean task " << name_ << std::endl;
+}
+void Task::updateMethod(MessageType type, Method* method)
+{
+    switch (type)
+    {
+        case MessageType::None:
+            break;
+        case MessageType::Update:
+            updated_methods_.insert(method);
+            break;
+        case MessageType::Finished:
+            finished_methods_.insert(method);
+            break;
+        case MessageType::Complete:
+            finished_methods_.insert(method);
+            break;
+    }
+}
+void Task::notify(MessageType type)
+{
+     for (const auto& obs: list_observer_)
+        obs->updateTask(type, this);
+}
+
 
 
 } // procedural
