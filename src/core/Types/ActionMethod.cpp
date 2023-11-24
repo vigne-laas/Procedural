@@ -38,10 +38,11 @@ ResultFeedProcess_t ActionMethod::feed(Fact* fact, TimeStamp_t currentTimestamp)
                     if (!result_feed_process.evolve)
                         result_feed_process.evolve = true;
                     break;
-                case FeedResult::COMPLETE:
+                case FeedResult::FINISH:
                     result_feed_process.finished_actions.push_back(this);
                     if (!result_feed_process.evolve)
                         result_feed_process.evolve = true;
+                    notify(MessageType::Finished);
                     break;
             }
             if (result_feed.update_available)
@@ -149,6 +150,7 @@ ResultFeedProcess_t ActionMethod::checkSubAction(ActionMethod* action)
                 result_feed_process.finished_actions.push_back(this);
                 if (!result_feed_process.evolve)
                     result_feed_process.evolve = true;
+                notify(MessageType::Finished);
                 break;
         }
         if (result_feed.update_available)
@@ -188,34 +190,18 @@ double ActionMethod::maxTtl()
             res = action->getTtl();
     return res;
 }
-void ActionMethod::updateAction(MessageType type, Action* action)
-{
-    std::cout << "receive info from " << action->getName() << " : " << std::to_string((int) type) << std::endl;
-    if (type == MessageType::Finished or type == MessageType::Complete)
-    {
-        finished_actions_.push_back(action);
 
-    }
-    if (type == MessageType::Update)
-        updated_actions_.push_back(action);
-    if (type != MessageType::None)
-    {
-        message_type_ = type;
-        notify();
-    }
-
-}
-void ActionMethod::notify()
+void ActionMethod::notify(MessageType type)
 {
     std::cout << "send data from ActionMethod " << std::to_string((int) message_type_) << std::endl;
     for (const auto& obs: list_observer_)
-        obs->updateActionMethod(message_type_, this);
-    message_type_ = MessageType::None;
+        obs->updateActionMethod(type, this);
 }
 void ActionMethod::attachRecognitionProcess(IObserver* observer)
 {
-    list_observer_.push_back(observer);
-    recognition_process_observer_.push_back(observer);
+    attach(observer);
+    for (const auto& action: actions_)
+        action->attach(observer);
 }
 
 

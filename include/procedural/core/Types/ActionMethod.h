@@ -11,7 +11,7 @@
 
 namespace procedural {
 
-class ActionMethod: public IObserver, ISubject
+class ActionMethod : public ISubject
 {
 public:
     explicit ActionMethod(const std::string& name);
@@ -54,9 +54,7 @@ public:
         list_observer_.remove(observer);
     }
 
-    void updateAction(MessageType type,Action* action) override;
-
-    void notify() override;
+    void notify(MessageType type) override;
 
     void attachRecognitionProcess(IObserver* observer);
 private:
