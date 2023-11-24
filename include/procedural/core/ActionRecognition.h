@@ -12,11 +12,11 @@ namespace procedural {
 
 class ActionMethod;
 
-class ActionRecognition:public IObserver
+class ActionRecognition :
 {
 public:
 
-    ActionRecognition():buffer_(nullptr){};
+    ActionRecognition() : buffer_(nullptr) {};
     void init(const std::vector<ActionMethod*>& actions, double tll = 25, int max_size = 500);
 
 
@@ -24,13 +24,10 @@ public:
 
     void processQueue(TimeStamp_t current_time);
 
-    void setCallback(const std::function<void(const std::vector<StateMachineFinishedMSG_>&)>& callback)
-    { callback_output_ = callback; }
+    void setCallback(const std::function<void(
+            const std::vector<StateMachineFinishedMSG_>&)>& callback) { callback_output_ = callback; }
 
-    void updateActionMethod(procedural::MessageType type, procedural::ActionMethod* action_method)  override;
-    void updateAction(MessageType type, Action* machine) override;
-
-
+    void linkToTaskRecognition(IObserver* task_recognition);
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_{};
@@ -39,6 +36,7 @@ private:
     std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
     std::vector<ActionMethod*> finished_actions_;
     std::vector<ActionMethod*> updated_actions_;
+
 };
 
 } // namespace procedural

@@ -107,19 +107,12 @@ void ActionRecognition::defaultCallback(const std::vector<StateMachineFinishedMS
     for (const auto& output: outputs)
         std::cout << ">> " << output << std::endl;
 }
-void ActionRecognition::updateActionMethod(procedural::MessageType type, procedural::ActionMethod* action_method)
+
+void ActionRecognition::linkToTaskRecognition(IObserver* task_recognition)
 {
-    std::cout << "new ActionMethod data in Action_Recognition" << std::to_string(static_cast<int>(type)) << std::endl;
-    if (type == MessageType::Complete or type == MessageType::Finished)
-    {
-        finished_actions_.push_back(action_method);
-    }
-    if (type == MessageType::Update)
-        updated_actions_.push_back(action_method);
+    for (const auto& action: actions_)
+        action->attachRecognitionProcess(task_recognition);
 }
-void ActionRecognition::updateAction(MessageType type, Action* machine)
-{
-    std::cout << "new Action data in Action_Recognition" << std::to_string(static_cast<int>(type)) << std::endl;
-}
+
 
 } // namespace procedural
