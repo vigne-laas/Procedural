@@ -91,10 +91,10 @@ Give:
     ttl: 20
   composed_sequence:
     - G: Grasp
-    - NOT ?A2 isHolding ?G.O REQUIRED
+    - NOT ?A2 isHolding ?G.C REQUIRED #TODO Check to add constrainst A2!=A
   description:
     - ?? isA GiveAction
-    - ?? isPerformedBy ?G.A
-    - ?? isPerformedOn ?G.O
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?G.C
     - ?? isPerformedBy ?A2
 
