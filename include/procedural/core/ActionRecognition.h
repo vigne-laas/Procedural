@@ -12,7 +12,7 @@ namespace procedural {
 
 class ActionMethod;
 
-class ActionRecognition :
+class ActionRecognition
 {
 public:
 
