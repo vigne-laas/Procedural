@@ -60,7 +60,8 @@ struct TimeStamp_t
     }
     friend std::ostream& operator<<(std::ostream& os, const TimeStamp_t& lhs)
     {
-        os << lhs.sec_ << "s," << lhs.nsec_ << "ns";
+//        os << lhs.sec_ << "s," << lhs.nsec_ << "ns";
+        os << lhs.sec_ << "s," << std::to_string(int(lhs.nsec_/pow(10,9)));
         return os;
     }
 

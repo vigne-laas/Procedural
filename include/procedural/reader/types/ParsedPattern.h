@@ -4,24 +4,22 @@
 #include "procedural/reader/types/ParsedFacts.h"
 
 namespace procedural {
+    
 struct SubStateMachine_t
 {
-    SubStateMachine_t() : level(0), regex_type(R"(\s*([^\s]*)\s*(REQUIRED)?)")
-    {};
-    SubStateMachine_t(const std::string& new_literal, const std::string& new_type, int new_level) : literal(
-            new_literal),
+    SubStateMachine_t() : regex_type(R"(\s*([^\s]*)\s*(REQUIRED)?)"), level(0), required(false) {}
+    SubStateMachine_t(const std::string& new_literal, const std::string& new_type, int new_level) : literal(new_literal),
                                                                                                     level(new_level),
                                                                                                     regex_type(
                                                                                                        R"(\s*([^_\s]*)_?([^\s]*)?\s*(REQUIRED)?)")
     {
         std::smatch results;
         std::regex_search(new_type, results, regex_type);
-//        for (auto res: results)
-//            std::cout << "res :" << res << std::endl;
+
         type = results[1];
         sub_type = results[2];
         (results[3] == "") ? required = false : required = true;
-    };
+    }
 
     std::string getName() const
     {
@@ -39,6 +37,7 @@ struct SubStateMachine_t
             os << map_elmt.first << " => " << map_elmt.second << "\n";
         return os;
     }
+
     std::regex regex_type;
     std::string literal;
     std::string type;
@@ -65,13 +64,13 @@ struct ParsedPattern_t
         return os;
     }
 
-    bool empty() const
-    { return sub_state_machines.empty(); }
+    bool empty() const { return sub_state_machines.empty(); }
 
     std::vector<SubStateMachine_t> sub_state_machines;
     std::vector<ParsedFact_t> facts;
     int max_level;
 };
-}
+
+} // namespace procedural
 
 #endif //PROCEDURAL_PARSEDPATTERN_H

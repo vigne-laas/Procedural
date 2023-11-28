@@ -7,41 +7,38 @@
 
 namespace procedural {
 
-    class BufferFacts {
+class BufferFacts
+{
+public:
+    BufferFacts(double ttl, int max_size);
 
-    private:
+    void addFact(Fact *fact);
 
-        struct {
-            bool operator()(Fact *left, Fact *right) const {
-                return left->getTimeStamp() < right->getTimeStamp();
-            }
-        } customSort;
+    std::vector<Fact *> getFacts(TimeStamp_t current_time);
+    TimeStamp_t getMoreRecent() const { return more_recent_timestamp_; }
+    void cleanUsedFacts(const std::set<uint32_t>& ids);
 
-        void cleanOldFacts(TimeStamp_t current_time);
+private:
 
-        std::mutex mutex_lock;
-        std::vector<Fact *> primary_queue;
-        std::vector<Fact *> secondary_queue;
-        std::vector<Fact *> history_queue;
-        std::vector<Fact *> *read_queue{};
-        std::vector<Fact *> *write_queue{};
-        TimeStamp_t more_recent_timestamp_;
-        double ttl_;
-        int  max_size_;
+    struct {
+        bool operator()(Fact *left, Fact *right) const {
+            return left->getTimeStamp() < right->getTimeStamp();
+        }
+    } customSort;
 
+    void cleanOldFacts(TimeStamp_t current_time);
 
-    public:
-        BufferFacts(double ttl,int max_size);
+    std::mutex mutex_lock;
+    std::vector<Fact*> primary_queue;
+    std::vector<Fact*> secondary_queue;
+    std::vector<Fact*> history_queue;
+    std::vector<Fact*>* read_queue;
+    std::vector<Fact*>* write_queue;
+    TimeStamp_t more_recent_timestamp_;
+    double ttl_;
+    int  max_size_;
+};
 
-        void addFact(Fact *fact);
-
-        std::vector<Fact *> getFacts(TimeStamp_t current_time);
-        TimeStamp_t getMoreRecent(){return more_recent_timestamp_;};
-        void cleanUsedFacts(const std::set<uint32_t>& ids);
-
-
-    };
-
-} // procedural
+} // namespace procedural
 
 #endif //PROCEDURAL_BUFFERFACTS_H

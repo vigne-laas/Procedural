@@ -7,15 +7,15 @@ namespace procedural {
 
 struct ParsedDescription_t
 {
-    ParsedDescription_t() : regex_description(R"(\s*([^\s]*)\s+([^\s]*)\s+([^\s]*)\s*)"), subject(), property(),
-                            object()
+    ParsedDescription_t() : regex_description(R"(\s*([^\s]*)\s+([^\s]*)\s+([^\s]*)\s*)"),
+                            subject(), property(), object()
     {}
 
     explicit ParsedDescription_t(const std::string& str_value) : regex_description(
             R"(\s*([^\s]*)\s+([^\s]*)\s+([^\s]*)\s*)"), subject(), property(), object()
     {
         parse(str_value);
-    };
+    }
 
     void parse(const std::string& str_value)
     {
@@ -38,12 +38,12 @@ struct ParsedDescription_t
     std::string object;
 };
 
-
 struct ParsedDescriptions_t
 {
-    ParsedDescriptions_t() : descriptions()
-    {};
-    bool empty() const {return descriptions.empty();}
+    ParsedDescriptions_t() : descriptions() {}
+
+    bool empty() const { return descriptions.empty(); }
+
     friend std::ostream& operator<<(std::ostream& os, const ParsedDescriptions_t& lhs)
     {
         if(lhs.empty())
@@ -56,5 +56,6 @@ struct ParsedDescriptions_t
     std::vector<ParsedDescription_t> descriptions;
 };
 
-}
+} // namespace procedural
+
 #endif //PROCEDURAL_PARSEDDESCRIPTION_H

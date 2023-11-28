@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
         )
 
 find_package(yaml-cpp REQUIRED)
+find_package(ontologenius 0.3.0 REQUIRED)
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -103,7 +104,7 @@ target_link_libraries(${PROJECT_NAME}_builder_lib
 
 add_library(${PROJECT_NAME}_utils_lib
         src/utils/BufferFacts.cpp
-        src/utils/ActionRecognition.cpp
+        src/core/ActionRecognition.cpp
         )
 target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_graph_lib)
 

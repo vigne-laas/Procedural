@@ -26,7 +26,8 @@ struct ActionDescription_t
             {
                 subject_ = "self";
                 // subject_is_var_ = true;
-            } else
+            }
+            else
             {
                 subject_is_var_ = true;
                 subject_ = subject_.substr(1);

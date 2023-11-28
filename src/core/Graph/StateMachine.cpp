@@ -59,7 +59,6 @@ bool StateMachine::evolve(StateMachine* stateMachine)
 
     current_state_ = evolution.first;
     new_explanations_ = checkIncompletsStateMachines();
-//    std::cout << "new_explanations_  : " << new_explanations_ <<std::endl;
     return true;
 }
 
@@ -96,7 +95,8 @@ bool StateMachine::addTransition(const PatternTransitionFact_t& transitionFact)
         TransitionFact t = TransitionFact(*(transitionFact.fact));
         states_[transitionFact.origin_state]->addTransition(t, states_[transitionFact.next_state]);
         return true;
-    } else
+    }
+    else
         return false;
 
 }
@@ -114,7 +114,8 @@ bool StateMachine::addStateMachine(const PatternTransitionStateMachine_t& transi
         TransitionStateMachine transition(type, transitionStateMachine.remap_var_);
         states_[transitionStateMachine.origin_]->addTransition(transition, states_[transitionStateMachine.next_]);
         return true;
-    } else
+    }
+    else
         return false;
 }
 
@@ -205,9 +206,7 @@ std::string StateMachine::describe(bool expl)
     {
         msg += incomplete_net.state_machine_->getName();
         msg += "\n\t new level : " + std::to_string(incomplete_net.state_machine_->getCompletionRatio()) + "\n";
-//         net.first->displayVariables();
     }
-
 
     return msg;
 }
@@ -225,7 +224,6 @@ void StateMachine::addTimeoutTransition(int last_state_required)
     states_.at(last_state_required)->addTimeoutTransition();
 }
 
-
 /* ------------------------------ private part ------------------------------ */
 
 bool StateMachine::checkIncompletsStateMachines()
@@ -239,7 +237,6 @@ bool StateMachine::checkIncompletsStateMachines()
 
     return updated_sub_state_machines_.empty() == false;
 }
-
 
 void StateMachine::addState(int id_state)
 {
@@ -263,7 +260,6 @@ void StateMachine::insertVariable(const std::string& variable)
     variables_.emplace(variable, variable);
 }
 
-
 void StateMachine::processInitialState()
 {
     std::unordered_set<uint32_t> id_states_nexts;
@@ -286,23 +282,23 @@ void StateMachine::processInitialState()
     if (result.size() == 0)
     {
         throw NoInitialStateStateMachineException();
-    } else if (nb_initial_state > 1)
+    }
+    else if (nb_initial_state > 1)
     {
-        // Maybe raise an error rather than printing text
         std::unordered_set<State*> invalid_states;
         for (auto res: result)
-        {
             invalid_states.insert(states_.at(res));
-        }
+        
         throw MultiInitialStateStateMachineException(invalid_states);
-    } else
+    }
+    else
     {
         id_initial_state_ = *result.begin();
         current_state_ = states_.at(id_initial_state_);
     }
 }
-bool
-StateMachine::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
+
+bool StateMachine::updateVar(const std::map<std::string, std::string>& remap, const std::map<std::string, Variable_t>& new_var)
 {
     bool res = false;
     for (const auto& pair: remap)
@@ -315,21 +311,20 @@ StateMachine::updateVar(const std::map<std::string, std::string>& remap, const s
     }
     return res;
 }
+
 void StateMachine::displayTypesTable()
 {
     for (int index = 0; index < StateMachine::types_table.size(); index++)
         std::cout << " types_table[" << index << "] : " << types_table[index] << std::endl;
 }
+
 void StateMachine::setId(int new_id)
 {
     id_ = new_id;
     full_name_ = type_str_ + "_" + std::to_string(new_id);
     variables_.at("self").literal = full_name_;
-//    std::cout << "full_name :" << full_name_ << std::endl;
-//    std::cout << "description : " << descriptions_.at(0).var_subject_str_ << " isA "
-//              << descriptions_.at(0).var_object_str_ << std::endl;
-
 }
+
 std::string StateMachine::getStrStructure()
 {
     std::string res;
@@ -341,12 +336,11 @@ std::string StateMachine::getStrStructure()
     }
     return res;
 }
-void StateMachine::expandProperties(ObjectPropertyClient* object_client)
+
+void StateMachine::expandProperties(onto::ObjectPropertyClient* object_client)
 {
     for (auto& state: states_)
         (state.second)->expandTransitions(object_client);
-
 }
-
 
 } // namespace procedural

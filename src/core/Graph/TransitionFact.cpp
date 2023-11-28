@@ -14,7 +14,7 @@ TransitionFact::TransitionFact(const PatternFact& pattern) : var_subject_(nullpt
     insertion_ = (*properties_.begin())>0 ? true : false;
 }
 
-void TransitionFact::expandProperty(ObjectPropertyClient* object_client)
+void TransitionFact::expandProperty(onto::ObjectPropertyClient* object_client)
 {
 
     auto res = object_client->getDown(str_initial_property);
@@ -27,7 +27,6 @@ void TransitionFact::expandProperty(ObjectPropertyClient* object_client)
         auto property_id = Fact::properties_table.get(result);
         properties_.insert(insertion_? int(1*property_id) : int(-1*property_id));
     }
-
 }
 
 void TransitionFact::linkVariables(std::map<std::string, Variable_t>& variables)
@@ -59,7 +58,8 @@ bool TransitionFact::match(Fact* fact)
                 else
                     setObject(fact->getObject());
             }
-        } else
+        }
+        else
         {
             if (var_object_->getValue())
                 match = match && (fact->getObject() == var_object_->getValue());

@@ -1,7 +1,7 @@
 <launch>
     <arg name="configuration_file" default="$(find procedural)/configs/overworld_pepper_mocap_2_agent.yaml"/>
     <arg name="robot_name" default="pepper"/>
-    <arg name="simulate" default="true"/>
+    <arg name="simulate" default="false"/>
     <arg name="assessment_frequency" default="7"/>
     <arg name="simulation_frequency" default="100"/>
     <node name="overworld" pkg="overworld" type="overworld_node" output="screen" args="-c $(arg configuration_file) -n $(arg robot_name) -s $(arg simulate) -af $(arg assessment_frequency) -sf $(arg simulation_frequency)"/>

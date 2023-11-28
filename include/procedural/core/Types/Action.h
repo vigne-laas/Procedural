@@ -18,7 +18,7 @@ public:
            const std::vector<PatternTransitionStateMachine_t>& transition_state_machines,
            const std::vector<ActionDescription_t>& descriptions,
            int last_state_required,
-           ObjectPropertyClient* object_client,
+           onto::ObjectPropertyClient* object_client,
            double ttl=30);
 
     bool isValid() const { return is_valid_; }
@@ -34,17 +34,15 @@ public:
 
     bool feed(Fact* fact);
 
-    std::string toString();
-
-    std::string currentState(bool shortVersion = true);
-
     bool checksubAction(ActionType* action);
     bool checkNewUpdatedSubStateMachine(){return updated_states_machines.empty() == false;};
     std::vector<StateMachine*> getUpdatedStateMachines() {return updated_states_machines;};
 
     std::vector<std::string> getLiteralVariables() {return state_machine_factory_->getLiteralVariables();};
 
+    std::string currentState(bool short_version = true);
 
+    std::string toString();
     std::string getStrStructure();
 private:
     int id_;
@@ -58,7 +56,7 @@ private:
 
 
     bool is_valid_;
-    bool evolve_sub_action;
+    bool evolve_sub_action_;
     double time_to_live_;
 
     int last_state_required_;

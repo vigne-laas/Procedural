@@ -6,8 +6,8 @@
 #include "procedural/reader/YamlReader.h"
 #include "procedural/reader/ActionBuilder.h"
 #include "procedural/feeder/Feeder.h"
-#include "procedural/utils/ActionRecognition.h"
-#include "procedural/core/Types/StateMachineOutput.h"
+#include "procedural/core/ActionRecognition.h"
+#include "procedural/core/Types/StateMachineFinishedMSG_.h"
 
 #include "ontologenius/OntologiesManipulator.h"
 
@@ -20,41 +20,39 @@ namespace procedural {
 class RosInterface
 {
 public:
-    explicit RosInterface(ros::NodeHandle* n, OntologiesManipulator& onto_manipulators,
-                          mementar::TimelinesManipulator& time_manipulators, const std::string& name = "");
+    RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto_manipulators,
+                 mementar::TimelinesManipulator& time_manipulators, const std::string& name = "");
 
+    bool init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size);
     void run();
     void stop() { run_ = false; }
     inline bool isRunning() const { return run_; }
 
 private:
+    ros::NodeHandle* node_;
+    onto::OntologyManipulator* onto_manipulator_;
+    mementar::TimelineManipulator* timeline_manipulator_;
+
     bool run_;
 
-    bool parse();
-    bool build();
-    bool link();
-
-    std_msgs::String outputConverter(const StateMachineOutput& output);
-    void inputConverter(const mementar::StampedFact::ConstPtr& msg);
-    void OntologeniusPublisher(const StateMachineOutput& output);
-
-
-    ros::NodeHandle* node_;
+    std::string name_;
+    double ttl_buffer_;
+    int buffer_max_size_;
+    
     ros::Publisher output_pub_;
     ros::Subscriber sub_input_stamped_facts_;
 
-    OntologyManipulator* onto_manipulator_;
-    mementar::TimelineManipulator* timeline_manipulator_;
-
-    std::string name_;
-
     YamlReader reader_;
     ActionBuilder builder_;
-    ActionRecognition* recognition_;
+    ActionRecognition recognition_;
     Feeder feeder_;
 
-    double ttl_buffer_;
-    int buffer_max_size_;
+    void build();
+    void link();
+
+    std_msgs::String outputConverter(const StateMachineFinishedMSG_& output);
+    void inputConverter(const mementar::StampedFact::ConstPtr& msg);
+    void ontologeniusPublisher(const StateMachineFinishedMSG_& output);
 
     std::string getTopicName(const std::string& topic_name);
     std::string getTopicName(const std::string& topic_name, const std::string& onto_name);

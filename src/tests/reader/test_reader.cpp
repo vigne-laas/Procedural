@@ -1,7 +1,7 @@
 #include <iostream>
 #include "procedural/reader/YamlReader.h"
 #include "procedural/reader/ActionBuilder.h"
-#include "procedural/utils/ActionRecognition.h"
+#include "procedural/core/ActionRecognition.h"
 
 int main()
 {
@@ -16,7 +16,8 @@ int main()
 
     procedural::ActionBuilder builder(reader.getSimpleActions(), reader.getComposedActions());
     auto Actions_ = builder.getActions();
-    procedural::ActionRecognition recognition(Actions_);
+    procedural::ActionRecognition recognition;
+    recognition.init(Actions_);
 
 
     std::vector<procedural::Fact> facts;

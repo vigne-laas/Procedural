@@ -47,12 +47,10 @@ void State::linkVariables(std::map<std::string, Variable_t>& variables_)
         pair.first.linkVariables(variables_);
 }
 
-
-void State::expandTransitions(ObjectPropertyClient* object_client)
+void State::expandTransitions(onto::ObjectPropertyClient* object_client)
 {
     for (auto& next: nexts_facts_)
         next.first.expandProperty(object_client);
-
 }
 
 std::string State::toString() const
@@ -70,6 +68,7 @@ std::string State::toString() const
 
     return msg;
 }
+
 void State::addTimeoutTransition()
 {
     has_timeout_transition = true;

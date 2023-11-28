@@ -1,20 +1,23 @@
 #ifndef PROCEDURAL_PARSEDFACTS_H
 #define PROCEDURAL_PARSEDFACTS_H
+
 #include <regex>
 
 namespace procedural {
+
 struct ParsedFact_t
 {
     ParsedFact_t()
             : subject(), property(), object(), insertion(false), required(false), level(0),
               regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)")
-    {};
+    {}
     ParsedFact_t(const std::string& str_value, uint32_t level)
             : subject(), property(), object(), insertion(false), required(false), level(level),
               regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)")
     {
         parse(str_value);
-    };
+    }
+
     void parse(std::string str_value)
     {
         std::smatch results;
@@ -24,7 +27,7 @@ struct ParsedFact_t
         property = results[3];
         object = results[4];
         required = results[5].str() == "REQUIRED";
-    };
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const ParsedFact_t& lhs)
     {
@@ -41,13 +44,12 @@ struct ParsedFact_t
     bool insertion;
     bool required;
     int level;
-
 };
 
 struct ParsedFacts_t
 {
-    ParsedFacts_t()
-    {};
+    ParsedFacts_t() {}
+
     friend std::ostream& operator<<(std::ostream& os, const ParsedFacts_t& lhs)
     {
         for (const auto& fact: lhs.facts_)
@@ -57,6 +59,7 @@ struct ParsedFacts_t
 
     std::vector<ParsedFact_t> facts_;
 };
-}
+
+} // namespace procedural
 
 #endif //PROCEDURAL_PARSEDFACTS_H
