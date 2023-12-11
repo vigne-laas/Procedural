@@ -1,7 +1,7 @@
 
 HTN {
 
-	action Pick(Agent A, Pickable O) {
+	action Pick_Over(Agent A, Pickable O) {
 		preconditions {
 		    O.isOn != NULL;
 			A >> O.isVisible;
