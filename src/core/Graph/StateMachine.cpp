@@ -23,6 +23,7 @@ StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : ty
 
 EvolveResult_t StateMachine::evolve(Fact* fact)
 {
+    just_evolve_ = false;
     EvolveResult_t res;
 
     if ((valid_ && closed_) == false)
@@ -43,11 +44,14 @@ EvolveResult_t StateMachine::evolve(Fact* fact)
     res.state = FeedResult::EVOLVE;
     if (current_state_->isFinalNode())
         res.state = FeedResult::FINISH;
+    if (res.state >= FeedResult::EVOLVE)
+        just_evolve_ = true;
     return res;
 }
 
 EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 {
+    just_evolve_ = false;
     EvolveResult_t res;
     if (level_ < stateMachine->getLevel())
         return res;
@@ -72,6 +76,8 @@ EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
     if (current_state_->isFinalNode())
         res.state = FeedResult::FINISH;
 //    notify();
+    if (res.state >= FeedResult::EVOLVE)
+        just_evolve_ = true;
     return res;
 }
 //
@@ -97,6 +103,7 @@ EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 
 EvolveResult_t StateMachine::evolve(Task* task)
 {
+    just_evolve_ = false;
     EvolveResult_t res;
     if ((valid_ && closed_) == false)
         return res;
@@ -112,6 +119,8 @@ EvolveResult_t StateMachine::evolve(Task* task)
 //    current_state_ = evolution;
 //    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
 //    new_explanations_ = checkIncompletsStateMachines();
+    if (res.state >= FeedResult::EVOLVE)
+        just_evolve_ = true;
     return res;
 }
 
@@ -335,6 +344,8 @@ std::string StateMachine::describe(bool expl)
 
 bool StateMachine::involveFacts(const std::set<uint32_t>& facts)
 {
+    if (just_evolve_)
+        return false;
     for (auto id_fact: id_facts_involve)
         if (facts.find(id_fact) == facts.end())
             return false;
