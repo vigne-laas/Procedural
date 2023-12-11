@@ -1,6 +1,6 @@
 Pick:
   parameters:
-    ttl: 2
+    ttl: 20
   sequence:
     - ?A hasHandMovingToward ?O
     - ?A isHolding ?O
@@ -26,7 +26,7 @@ Pick:
 #
 Place:
   parameters:
-    ttl: 2
+    ttl: 20
   sequence:
     - ?A hasHandMovingToward ?S
     - NOT ?A isHolding ?O
