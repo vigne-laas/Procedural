@@ -5,16 +5,20 @@
 int main()
 {
     procedural::YamlReader reader = procedural::YamlReader();
-    reader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/action_papier.yaml");
+//    reader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/action_papier.yaml");
+    reader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/reader/exemple2.yaml");
     std::cout << "simple action : " << std::endl;
     for (auto& action: reader.getSimpleActions())
         std::cout << action << std::endl;
     std::cout << "composed action : " << std::endl;
     for (auto& action: reader.getComposedActions())
         std::cout << action << std::endl;
-
+    std::cout << "----------------------------------------------------- Action builder ------------------------"
+              << std::endl;
     procedural::ActionBuilder builder(reader.getSimpleActions(), reader.getComposedActions());
     auto Actions_ = builder.getActions();
+    for (const auto& action: Actions_)
+        std::cout << action->getStrStructure() << std::endl << std::endl;
     procedural::ActionRecognition recognition;
     recognition.init(Actions_);
 

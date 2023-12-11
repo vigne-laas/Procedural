@@ -2,7 +2,7 @@
 #  over:
 #    ordered_facts:
 #      - ?A hasHandMovingToward ?O
-#      - ?A hasInHand ?O
+#      - ?A isHolding ?O
 #      - NOT ?O isOnTopOf ?S REQUIRED
 #    description:
 #      - ?? isA PickOverAction
@@ -12,7 +12,7 @@
 #  into:
 #    ordered_facts:
 #      - ?A hasHandMovingToward ?O
-#      - ?A hasInHand ?O
+#      - ?A isHolding ?O
 #      - NOT ?O isInContainer ?S REQUIRED
 #    description:
 #      - ?? isA PickIntoAction
@@ -29,7 +29,7 @@
 #    ordered_facts:
 #      - ?A hasHandMovingToward ?S
 #      - ?O isOnTopOf ?S REQUIRED
-#      - NOT ?A hasInHand ?O REQUIRED
+#      - NOT ?A isHolding ?O REQUIRED
 #    description:
 #      - ?? isA PlaceOverAction
 #      - ?? isPerformedBy ?A
@@ -39,32 +39,30 @@
 #    ordered_facts:
 #      - ?A hasHandMovingToward ?S
 #      - ?O isInContainer ?S REQUIRED
-#      - NOT ?A hasInHand ?O REQUIRED
+#      - NOT ?A isHolding ?O REQUIRED
 #    description:
 #      - ?? isA PlaceOverAction
 #      - ?? isPerformedBy ?A
 #      - ?? isPerformedOn ?O
 #      - ?? isPerformedFrom ?S
 
-ReleaseSimple:
-  ordered_facts:
-    - NOT ?A hasInHand ?O REQUIRED
-    - ?O isInContainer ?S
-    - ?O isOnTopOf ?S
-  description:
-    - ?? isA ReleaseAction
-    - ?? isPerformedBy ?A
-    - ?? isPerformedOn ?O
-    - ?? isPerformedFrom ?S
+#ReleaseSimple:
+#  sequence:
+#    - NOT ?A isHolding ?O REQUIRED
+#    - ?O isInContainer ?S
+#    - ?O isOnTopOf ?S
+#  description:
+#    - ?? isA ReleaseAction
+#    - ?? isPerformedBy ?A
+#    - ?? isPerformedOn ?O
+#    - ?? isPerformedFrom ?S
 
 
 
 Release:
-  ordered_facts:
-    - NOT ?A hasInHand ?O REQUIRED
-    - or_facts:
-        - ?O isInContainer ?S
-        - ?O isOnTopOf ?S
+  sequence:
+    - NOT ?A isHolding ?O REQUIRED
+    - ?O isOnTopOf ?S
   description:
     - ?? isA ReleaseAction
     - ?? isPerformedBy ?A
@@ -75,18 +73,18 @@ Release:
 Grasp:
   parameters:
     ttl: 20
-  ordered_facts:
+  sequence:
     - ?A hasHandMovingToward ?C
-    - ?A hasInHand ?C REQUIRED
+    - ?A isHolding ?C REQUIRED
   description:
     - ?? isA Grasp
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?C
 
 
-Pick_into:
-  pattern:
-    - G: Pick_over REQUIRED
+Pick_over:
+  composed_sequence:
+    - G: Grasp REQUIRED
     - NOT ?O isOnTopOf ?S REQUIRED
   remap:
     - G.C: O
@@ -96,8 +94,8 @@ Pick_into:
     - ?? isPerformedOn ?O
     - ?? isPerformedFrom ?S
 
-Pick_over:
-  pattern:
+Pick_into:
+  composed_sequence:
     - G: Grasp
     - NOT ?O isInContainer ?S REQUIRED
   remap:
