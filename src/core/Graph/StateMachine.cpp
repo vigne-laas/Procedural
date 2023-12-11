@@ -24,6 +24,7 @@ StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : ty
 EvolveResult_t StateMachine::evolve(Fact* fact)
 {
     EvolveResult_t res;
+
     if ((valid_ && closed_) == false)
         return res;
     auto evolution = current_state_->evolve(fact);
@@ -36,6 +37,7 @@ EvolveResult_t StateMachine::evolve(Fact* fact)
 
     current_state_ = evolution;
     id_facts_involve.push_back(fact->getId());
+
     new_explanations_ = checkIncompletsStateMachines();
     res.update_available = new_explanations_;
     res.state = FeedResult::EVOLVE;
@@ -72,33 +74,37 @@ EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 //    notify();
     return res;
 }
-
-bool StateMachine::evolve(Action* action)
-{
-    if ((valid_ && closed_) == false)
-        return false;
-    auto evolution = current_state_->evolve(action);
-
-    if (evolution == nullptr)
-        return false;
-//    if (current_state_->getId() == id_initial_state_)
-//        age_ = fact->getTimeStamp();
-//    last_update_ = fact->getTimeStamp();
 //
-//    current_state_ = evolution;
-//    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
-//    new_explanations_ = checkIncompletsStateMachines();
-    return true;
-}
+//EvolveResult_t StateMachine::evolve(Action* action)
+//{
+//        EvolveResult_t res;
+//    if ((valid_ && closed_) == false)
+//        return res;
+//    auto evolution = current_state_->evolve(action);
+//
+//    if (evolution == nullptr)
+//        return res;
+//    res.state = FeedResult::EVOLVE;
+////    if (current_state_->getId() == id_initial_state_)
+////        age_ = fact->getTimeStamp();
+////    last_update_ = fact->getTimeStamp();
+////
+////    current_state_ = evolution;
+////    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
+////    new_explanations_ = checkIncompletsStateMachines();
+//}
 
-bool StateMachine::evolve(Task* task)
+
+EvolveResult_t StateMachine::evolve(Task* task)
 {
+    EvolveResult_t res;
     if ((valid_ && closed_) == false)
-        return false;
+        return res;
     auto evolution = current_state_->evolve(task);
 
     if (evolution == nullptr)
-        return false;
+        return res;
+    res.state = FeedResult::EVOLVE;
 //    if (current_state_->getId() == id_initial_state_)
 //        age_ = fact->getTimeStamp();
 //    last_update_ = fact->getTimeStamp();
@@ -106,7 +112,7 @@ bool StateMachine::evolve(Task* task)
 //    current_state_ = evolution;
 //    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
 //    new_explanations_ = checkIncompletsStateMachines();
-    return true;
+    return res;
 }
 
 
@@ -203,11 +209,11 @@ void StateMachine::linkHTNTransition(int initial_state, int final_state, const H
         TransitionAction t(transition.id_subtask, final_state, {}, transition.arguments_);
         states_[initial_state]->addTransition(t, states_[final_state]);
     }
-    if (transition.type == TransitionType::ActionMethod)
-    {
-        TransitionActionMethod t(transition.id_subtask, final_state, transition.arguments_);
-        states_[initial_state]->addTransition(t, states_[final_state]);
-    }
+//    if (transition.type == TransitionType::ActionMethod)
+//    {
+//        TransitionActionMethod t(transition.id_subtask, final_state, transition.arguments_);
+//        states_[initial_state]->addTransition(t, states_[final_state]);
+//    }
     if (transition.type == TransitionType::Task)
     {
         TransitionTask t(transition.id_subtask, final_state, transition.arguments_);
@@ -277,11 +283,11 @@ StateMachine* StateMachine::clone(int new_id, int last_state_required)
             TransitionAction t = pair_transition.first;
             state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
         }
-        for (auto& pair_transition: states_.at(state.first)->getNextActions())
-        {
-            TransitionActionMethod t = pair_transition.first;
-            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
-        }
+//        for (auto& pair_transition: states_.at(state.first)->getNextActions())
+//        {
+//            TransitionActionMethod t = pair_transition.first;
+//            state.second->addTransition(t, N->states_.at(pair_transition.second->getId()));
+//        }
         for (auto& pair_transition: states_.at(state.first)->getNextTasks())
         {
             TransitionTask t = pair_transition.first;
@@ -386,8 +392,8 @@ void StateMachine::processInitialState()
             id_states_nexts.insert(nexts_state.second->getId());
         for (auto& nexts_state: pair_states.second->getNextStateMachines())
             id_states_nexts.insert(nexts_state.second->getId());
-        for (auto& nexts_state: pair_states.second->getNextActions())
-            id_states_nexts.insert(nexts_state.second->getId());
+//        for (auto& nexts_state: pair_states.second->getNextActions())
+//            id_states_nexts.insert(nexts_state.second->getId());
         for (auto& nexts_state: pair_states.second->getNextTasks())
             id_states_nexts.insert(nexts_state.second->getId());
     }

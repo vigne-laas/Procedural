@@ -18,6 +18,7 @@
 #include "procedural/core/Types/IncompleteStateMachine.h"
 #include "procedural/core/Types/Interface.h"
 #include "procedural/core/Types/ResultFeedProcess.h"
+#include "procedural/core/Types/HTNTransition.h"
 
 namespace procedural {
 
@@ -73,8 +74,8 @@ public:
 
     EvolveResult_t evolve(Fact* fact);
     EvolveResult_t evolve(StateMachine* state_machine);
-    bool evolve(Action* action);
-    bool evolve(Task* task);
+//    EvolveResult_t evolve(Action* action);
+    EvolveResult_t evolve(Task* task);
 
     const State* getCurrentState() const { return current_state_; }
     std::string getTypeStr() const { return type_str_; }

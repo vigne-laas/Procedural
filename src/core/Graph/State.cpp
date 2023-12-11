@@ -8,8 +8,7 @@ namespace procedural {
 State::State(const std::string& name, int id) : id_(id),
                                                 name_(name),
                                                 initial_node_(false),
-                                                has_timeout_transition(false)
-{}
+                                                has_timeout_transition(false) {}
 
 State* State::evolve(Fact* fact)
 {
@@ -29,14 +28,14 @@ std::pair<State*, TransitionAction*> State::evolve(StateMachine* state_machine)
     return std::make_pair(nullptr, nullptr);
 }
 
-State* State::evolve(Action* action)
-{
-    for (auto& pair: next_actions_methods_)
-        if (pair.first.match(action))
-            return pair.second;
-
-    return nullptr;
-}
+//State* State::evolve(Action* action)
+//{
+//    for (auto& pair: next_tasks_)
+//        if (pair.first.match(action))
+//            return pair.second;
+//
+//    return nullptr;
+//}
 
 State* State::evolve(Task* task)
 {
@@ -57,10 +56,10 @@ void State::addTransition(const TransitionAction& transition, State* next_state)
     next_actions_.emplace_back(transition, next_state);
 }
 
-void State::addTransition(const TransitionActionMethod& transition, State* next_state)
-{
-    next_actions_methods_.emplace_back(transition, next_state);
-}
+//void State::addTransition(const TransitionActionMethod& transition, State* next_state)
+//{
+//    next_actions_methods_.emplace_back(transition, next_state);
+//}
 
 void State::addTransition(const TransitionTask& transition, State* next_state)
 {
@@ -76,27 +75,27 @@ void State::linkVariables(std::map<std::string, Variable_t>& variables_)
         pair.first.linkVariables(variables_);
     for (auto& pair: next_tasks_)
         pair.first.linkVariables(variables_);
-    for (auto& pair: next_actions_methods_)
-        pair.first.linkVariables(variables_);
+//    for (auto& pair: next_actions_methods_)
+//        pair.first.linkVariables(variables_);
 }
 
 void State::expandTransitions(onto::OntologyManipulator* onto_manipulator)
 {
     for (auto& next: next_facts_)
         next.first.expandProperty(&(onto_manipulator->objectProperties));
-    for (auto& transition: next_actions_methods_)
-        transition.first.setOntologyClient(&(onto_manipulator->individuals));
+//    for (auto& transition: next_actions_methods_)
+//        transition.first.setOntologyClient(&(onto_manipulator->individuals));
     for (auto& transition: next_tasks_)
         transition.first.setOntologyClient(&(onto_manipulator->individuals));
 }
 
 std::string State::toString() const
 {
-    std::string msg = "State : " + name_+'_'+std::to_string(id_) + "\n";
+    std::string msg = "State : " + name_ + '_' + std::to_string(id_) + "\n";
     msg += isFinalNode() ? "\tFinal Node \n" : "";
     msg += initial_node_ ? "\tInitial Node \n" : "";
     msg += "\tTransitions (" + std::to_string(
-            next_facts_.size() + next_actions_.size() + next_tasks_.size() + next_actions_methods_.size()) + "):";
+            next_facts_.size() + next_actions_.size() + next_tasks_.size()) + "):";
     msg += " [ ";
     if (!next_facts_.empty())
         for (auto& pair_transition_state: next_facts_)
@@ -107,9 +106,9 @@ std::string State::toString() const
     if (!next_tasks_.empty())
         for (auto& pair_transition_state: next_tasks_)
             msg += "\t" + pair_transition_state.first.toString() + "\n";
-    if (!next_actions_methods_.empty())
-        for (auto& pair_transition_state: next_actions_methods_)
-            msg += "\t" + pair_transition_state.first.toString() + "\n";
+//    if (!next_actions_methods_.empty())
+//        for (auto& pair_transition_state: next_actions_methods_)
+//            msg += "\t" + pair_transition_state.first.toString() + "\n";
     msg += "]";
     return msg;
 }
@@ -149,22 +148,22 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 //        std::cout << "task pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
         if (pair.second == origin)
         {
-            TransitionTask t(pair.first,final_state->getId());
+            TransitionTask t(pair.first, final_state->getId());
             this->addTransition(t, final_state);
         }
     }
 
 
-    for (const auto& pair: parent->next_actions_methods_)
-    {
-//        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
-        if (pair.second == origin)
-        {
-            TransitionActionMethod t(pair.first, final_state->getId());
-            this->addTransition(t, final_state);
-
-        }
-    }
+//    for (const auto& pair: parent->next_actions_methods_)
+//    {
+////        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
+//        if (pair.second == origin)
+//        {
+//            TransitionActionMethod t(pair.first, final_state->getId());
+//            this->addTransition(t, final_state);
+//
+//        }
+//    }
 
     for (const auto& pair: parent->next_actions_)
     {

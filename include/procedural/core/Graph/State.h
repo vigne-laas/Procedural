@@ -29,7 +29,7 @@ public:
 
     void addTransition(const TransitionFact& transition, State* next_state);
     void addTransition(const TransitionAction& transition, State* next_state);
-    void addTransition(const TransitionActionMethod& transition, State* next_state);
+//    void addTransition(const TransitionActionMethod& transition, State* next_state);
     void addTransition(const TransitionTask& transition, State* next_state);
 
     void linkVariables(std::map<std::string, Variable_t>& variables_);
@@ -37,15 +37,15 @@ public:
     void expandTransitions(onto::OntologyManipulator* onto_manipulator);
     bool isFinalNode() const
     {
-        return next_facts_.empty() && next_actions_.empty() && next_actions_methods_.empty() && next_tasks_.empty();
+        return next_facts_.empty() && next_actions_.empty() && next_tasks_.empty();
     }
     int getId() const { return id_; };
     std::string toString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextFacts() const { return next_facts_; };
     const std::vector<std::pair<TransitionAction, State*>> getNextStateMachines() const { return next_actions_; };
-    const std::vector<std::pair<TransitionActionMethod, State*>>
-    getNextActions() const { return next_actions_methods_; };
+//    const std::vector<std::pair<TransitionActionMethod, State*>>
+//    getNextActions() const { return next_actions_methods_; };
     const std::vector<std::pair<TransitionTask, State*>> getNextTasks() const { return next_tasks_; };
 
     void set_new_id(int new_id) { id_ = new_id; };
@@ -72,7 +72,7 @@ private:
 
     std::vector<std::pair<TransitionFact, State*>> next_facts_;
     std::vector<std::pair<TransitionAction, State*>> next_actions_;
-    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
+//    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
     std::vector<std::pair<TransitionTask, State*>> next_tasks_;
 
     std::vector<State*> parents_;

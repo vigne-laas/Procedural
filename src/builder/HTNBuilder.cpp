@@ -12,9 +12,9 @@ void HTNBuilder::buildAction(const std::vector<PrimitiveActionParsed_t>& actions
 }
 void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                            const std::vector<PrimitiveActionParsed_t>& actions_htn,
-                           const std::vector<ActionMethod*>& actions_type)
+                           const std::vector<Action*>& actions_)
 {
-    if (not checkActions(actions_htn, actions_type))
+    if (not checkActions(actions_htn, actions_))
     {
         std::cout << "impossible to continue error on check action " << std::endl;
         return;
@@ -62,11 +62,12 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                     {
                         t.id_subtask = Action::action_types.get(action.name);
                         t.type = val->second;
-                    } else
-                    {
-                        t.id_subtask = ActionMethod::action_method_types.get(action.name);
-                        t.type = val->second;
                     }
+//                    else
+//                    {
+//                        t.id_subtask = ActionMethod::action_method_types.get(action.name);
+//                        t.type = val->second;
+//                    }
 
                 } else
                 {
@@ -94,31 +95,17 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
 
 }
 bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn,
-                              const std::vector<ActionMethod*>& action_type)
+                              const std::vector<Action*>& action_)
 {
     for (const auto& action: actions_htn)
     {
         bool find = false;
-        for (const auto& actionType: action_type) //TODO Optimiser avec while et find condition
+        for (const auto& actionType: action_) //TODO Optimiser avec while et find condition
         {
             if (action.name == actionType->getName())
             {
                 find = true;
-                actions_possible.insert(std::make_pair(action.name, TransitionType::ActionMethod));
-            }
-            if (find == false)
-            {
-                auto actions_ = actionType->getActions();
-                auto val = std::find_if(actions_.begin(), actions_.end(),
-                                        [action](Action* action_primitive) {
-                                            return action_primitive->getName() == action.name;
-                                        });
-                if (val != actions_.end())
-                {
-                    find = true;
-                    actions_possible.insert(std::make_pair((*val)->getName(), TransitionType::Action));
-                }
-
+                actions_possible.insert(std::make_pair(action.name, TransitionType::Action));
             }
         }
         if (find == false)

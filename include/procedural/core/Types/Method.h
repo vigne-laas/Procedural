@@ -3,6 +3,7 @@
 
 #include "procedural/core/Graph/StateMachine.h"
 #include "procedural/core/Types/HTNTransition.h"
+#include "procedural/core/Types/Action.h"
 namespace procedural {
 
 class Method : IObserver, ISubject
@@ -14,7 +15,7 @@ public:
     std::string getStrStructure();
     bool feed(Action* action);
     bool feed(Task* task);
-    bool feed(ActionMethod* action_method);
+//    bool feed(ActionMethod* action_method);
     int getNextSMId() { return compt_SM_++; }
 
 

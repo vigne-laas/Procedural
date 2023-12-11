@@ -125,11 +125,17 @@ void Action::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
     }
 }
 
-EvolveResult_t Action::feed(Fact* fact)
+EvolveResult_t Action::feed(Fact* fact, TimeStamp_t current_timestamp)
 {
     EvolveResult_t res;
     updated_states_machines.clear();
     bool evolve = false;
+    if ((current_timestamp - fact->getTimeStamp()) > this->getTtl())
+    {
+        std::cout << "Reject on timeStamp ttl" << std::endl;
+        return res;
+    }
+
 
     for (auto& state_machine: state_machines_)
     {
@@ -200,11 +206,11 @@ EvolveResult_t Action::feed(Fact* fact)
     return res;
 }
 
-EvolveResult_t Action::checksubAction(ActionMethod* action)
+EvolveResult_t Action::checksubAction(Action* action)
 {
     EvolveResult_t res;
     updated_states_machines.clear();
-    std::unordered_set<StateMachine*> complete_state_machines = action->getCompletesStateMachines();
+    std::unordered_set<StateMachine*> complete_state_machines = action->getFinishedStateMachine();
 
     if (complete_state_machines.empty())
         return res;
@@ -226,7 +232,7 @@ EvolveResult_t Action::checksubAction(ActionMethod* action)
                     evolve_sub_action_ = true;
                     if (res.state != FeedResult::FINISH)
                         res.state = FeedResult::EVOLVE;
-                        break;
+                    break;
                 case FeedResult::FINISH:
                     res.state = FeedResult::FINISH;
                     notify(MessageType::Finished);
@@ -325,7 +331,6 @@ std::vector<StateMachine*> Action::getNewExplanation()
 {
     return updated_states_machines;
 }
-
 
 
 } // namespace procedural

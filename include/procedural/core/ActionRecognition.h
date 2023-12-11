@@ -10,14 +10,14 @@
 
 namespace procedural {
 
-class ActionMethod;
+class Action;
 
-class ActionRecognition
+class ActionRecognition : public ISubject
 {
 public:
 
     ActionRecognition() : buffer_(nullptr) {};
-    void init(const std::vector<ActionMethod*>& actions, double tll = 25, int max_size = 500);
+    void init(const std::vector<Action*>& actions, double tll = 25, int max_size = 500);
 
 
     void addToQueue(Fact* fact) const;
@@ -28,15 +28,22 @@ public:
             const std::vector<StateMachineFinishedMSG_>&)>& callback) { callback_output_ = callback; }
 
     void linkToTaskRecognition(IObserver* task_recognition);
+    void attach(IObserver* observer) override;
+    void detach(IObserver* observer) override;
+    void notify(MessageType type) override;
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_{};
-    std::vector<ActionMethod*> actions_;
+    std::vector<Action*> actions_;
 
     std::function<void(const std::vector<StateMachineFinishedMSG_>&)> callback_output_;
-    std::vector<ActionMethod*> finished_actions_;
-    std::vector<ActionMethod*> updated_actions_;
+    std::vector<Action*> finished_actions_;
+    std::vector<Action*> updated_actions_;
 
+    std::list<IObserver*> recognition_process_observer_;
+
+
+    void send_updated_action_(std::vector<StateMachineFinishedMSG_> new_info_action);
 };
 
 } // namespace procedural

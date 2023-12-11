@@ -35,9 +35,9 @@ public:
 
     std::unordered_set<StateMachine*> getFinishedStateMachine() { return finished_state_machines_; };
 
-    EvolveResult_t feed(Fact* fact);
+    EvolveResult_t feed(Fact* fact,TimeStamp_t current_timestamp);
 
-    EvolveResult_t checksubAction(ActionMethod* action);
+    EvolveResult_t checksubAction(Action* action);
     bool checkNewUpdatedSubStateMachine() { return updated_states_machines.empty() == false; };
     std::vector<StateMachine*> getUpdatedStateMachines() { return updated_states_machines; };
 

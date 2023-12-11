@@ -5,7 +5,7 @@
 #include <ontologenius/OntologyManipulator.h>
 #include "procedural/reader/types/ParsedSimpleAction.h"
 #include "procedural/reader/types/ParsedComposedAction.h"
-#include "procedural/core/Types/ActionMethod.h"
+#include "procedural/core/Types/Action.h"
 #include "procedural/core/ActionRecognition.h"
 
 namespace procedural {
@@ -23,18 +23,18 @@ public:
 
     void display();
 
-    std::vector<ActionMethod*> getActions() { return actions_; };
+    std::vector<Action*> getActions() { return actions_; };
 private:
     onto::OntologyManipulator* onto_client_;
     std::vector<ParsedComposedAction_t> incomplete_creation_state_machine_;
-    std::vector<ActionMethod*> actions_;
+    std::vector<Action*> actions_;
 
     void buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions);
     void buildComposedAction(std::vector<ParsedComposedAction_t>& composed_actions);
 
     bool completeRemap(SubStateMachine_t& sub_state_machine);
-    void combineActions(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                        const std::vector<ParsedComposedAction_t>& composed_actions);
+//    void combineActions(const std::vector<ParsedSimpleAction_t>& simple_actions,
+//                        const std::vector<ParsedComposedAction_t>& composed_actions);
     void buildIncomplete();
 };
 

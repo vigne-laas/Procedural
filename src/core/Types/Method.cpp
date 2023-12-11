@@ -27,25 +27,34 @@ bool Method::feed(Action* action)
     bool evolve = false;
     for (auto& state_machine: current_state_machines_)
     {
-        if (state_machine->evolve(action))
+        for (const auto& finished_state_machine: action->getFinishedStateMachine())
         {
-            std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
-            evolve = true;
+            auto res = state_machine->evolve(finished_state_machine);
+            if (res.state >= FeedResult::EVOLVE)
+            {
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
+                evolve = true;
+            }
         }
+
     }
 
     if (evolve == false)
     {
         StateMachine* new_net = factory_machine_->clone(-1);
-        if (new_net->evolve(action))
+        for (const auto& finished_state_machine: action->getFinishedStateMachine())
         {
-            new_net->setId(getNextSMId());
-            current_state_machines_.insert(new_net);
-            std::cout << "create new state machine " << new_net->getName() << std::endl;
+            auto res = new_net->evolve(finished_state_machine);
+            if (res.state >= FeedResult::EVOLVE)
+            {
+                new_net->setId(getNextSMId());
+                current_state_machines_.insert(new_net);
+                std::cout << "create new state machine " << new_net->getName() << std::endl;
 
-            evolve = true;
-        } else
-            delete new_net;
+                evolve = true;
+            } else
+                delete new_net;
+        }
     }
 
     return evolve;
@@ -55,7 +64,8 @@ bool Method::feed(Task* task)
     bool evolve = false;
     for (auto& state_machine: current_state_machines_)
     {
-        if (state_machine->evolve(task))
+        auto res = state_machine->evolve(task);
+        if (res.state >= FeedResult::EVOLVE)
         {
             std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
             evolve = true;
@@ -65,7 +75,8 @@ bool Method::feed(Task* task)
     if (evolve == false)
     {
         StateMachine* new_net = factory_machine_->clone(-1);
-        if (new_net->evolve(task))
+        auto res = new_net->evolve(task);
+        if (res.state >= FeedResult::EVOLVE)
         {
             new_net->setId(getNextSMId());
             current_state_machines_.insert(new_net);
@@ -78,10 +89,10 @@ bool Method::feed(Task* task)
 
     return evolve;
 }
-bool Method::feed(ActionMethod* action_method)
-{
-    return false;
-}
+//bool Method::feed(ActionMethod* action_method)
+//{
+//    return false;
+//}
 void Method::updateStateMachine(MessageType type, StateMachine* machine)
 {
     std::cout << "receive info from SM : " << machine->getName() << " : " << std::to_string((int) type)
