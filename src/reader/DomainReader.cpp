@@ -1,16 +1,16 @@
 #include "procedural/reader/DomainReader.h"
 
 
-
 using namespace antlr4;
 
 
 namespace procedural {
-DomainReader::DomainReader()
+
+DomainReader::DomainReader(const std::string& path)
 {
-    read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/reader/domaine_update.dom");
+    read(path);
 }
-void DomainReader::read(std::string path)
+void DomainReader::read(const std::string& path)
 {
     std::ifstream stream;
     stream.open(path);
@@ -23,8 +23,6 @@ void DomainReader::read(std::string path)
 
     tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 
-    htn_=listener.getHTN();
-//    listener.displayParsedValue();
-
+    htn_ = listener.getHTN();
 }
 } // procedural
