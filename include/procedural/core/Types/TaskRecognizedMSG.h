@@ -3,16 +3,18 @@
 #include <cstdio>
 
 namespace procedural {
+class StateMachine;
+
 struct TaskRecognizedMSG_t
 {
     TaskRecognizedMSG_t(const std::string& task_name, Method* method) : name_(task_name)
     {
 
     }
-    TaskRecognizedMSG_t(const std::string& task_name, ActionMethod* action_method) : name_(task_name)
-    {
-
-    }
+//    TaskRecognizedMSG_t(const std::string& task_name, ActionMethod* action_method) : name_(task_name)
+//    {
+//
+//    }
     TaskRecognizedMSG_t(const std::string& task_name, Action* action) : name_(task_name)
     {
 
