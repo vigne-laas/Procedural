@@ -22,7 +22,6 @@ public:
     void setCallback(const std::function<void(
             const std::vector<TaskRecognizedMSG_t>&)>& callback) { callback_output_ = callback; }
 
-    void updateActionMethod(MessageType type, procedural::ActionMethod* action_method) override;
     void updateAction(MessageType type, Action* machine) override;
     void updateTask(MessageType type, Task* task) override;
 

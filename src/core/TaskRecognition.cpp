@@ -9,20 +9,11 @@ void TaskRecognition::init(const std::vector<Task*>& tasks, double ttl)
 {
     tasks_ = tasks;
     callback_output_ = TaskRecognition::defaultCallback;
-    for (const auto& task: tasks_)
-    {
-        task->attach(this);
-    }
-
-
 }
 void TaskRecognition::process(TimeStamp_t current_time)
 {
     for (auto task: tasks_)
     {
-        for (const auto& f_action_method: finished_actions_method_)
-            task->feed(f_action_method);
-
         for (const auto& f_action: finished_actions_)
             task->feed(f_action);
 
@@ -52,13 +43,7 @@ void TaskRecognition::process(TimeStamp_t current_time)
     finished_task_.clear();
 
 }
-void TaskRecognition::updateActionMethod(MessageType type, procedural::ActionMethod* action_method)
-{
-    if (type == MessageType::Finished or type == MessageType::Complete)
-        finished_actions_method_.push_back(action_method);
-    if (type == MessageType::Update)
-        updated_actions_method_.push_back(action_method);
-}
+
 void TaskRecognition::updateAction(MessageType type, Action* action)
 {
     if (type == MessageType::Finished or type == MessageType::Complete)
@@ -86,12 +71,6 @@ void TaskRecognition::checkNewExplanation(const std::string& task_name,std::vect
         auto nets = updated_task->getNewExplanation();
         for (auto& net: nets)
             msgs->emplace_back(updated_task->getName(), net);
-    }
-    for (auto& updated_action_method: updated_actions_method_)
-    {
-        auto nets = updated_action_method->getNewExplanation();
-        for (auto& net: nets)
-            msgs->emplace_back(task_name,net);
     }
     for (auto& updated_actions: updated_actions_)
     {
