@@ -19,11 +19,12 @@ StateMachine::StateMachine(const std::string& name, int id, uint32_t level) : ty
     full_name_ = type_str_ + "_" + std::to_string(id);
     variables_.emplace("self", full_name_);
     type_ = StateMachine::types_table.get(type_str_);
+    status_ = StateMachineStatus::UnClosed;
 }
 
 EvolveResult_t StateMachine::evolve(Fact* fact)
 {
-    just_evolve_ = false;
+    status_ = StateMachineStatus::Closed;
     EvolveResult_t res;
 
     if ((valid_ && closed_) == false)
@@ -43,15 +44,23 @@ EvolveResult_t StateMachine::evolve(Fact* fact)
     res.update_available = new_explanations_;
     res.state = FeedResult::EVOLVE;
     if (current_state_->isFinalNode())
+    {
         res.state = FeedResult::FINISH;
+        status_ = StateMachineStatus::Finish;
+        if (getCompletionRatio() == 1.0)
+            status_ = StateMachineStatus::Complete;
+    }
+
     if (res.state >= FeedResult::EVOLVE)
-        just_evolve_ = true;
+        if (status_ < StateMachineStatus::Finish)
+            status_ = StateMachineStatus::Evolve;
+
     return res;
 }
 
 EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 {
-    just_evolve_ = false;
+    status_ = StateMachineStatus::Closed;
     EvolveResult_t res;
     if (level_ < stateMachine->getLevel())
         return res;
@@ -74,36 +83,22 @@ EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
     res.update_available = new_explanations_;
     res.state = FeedResult::EVOLVE;
     if (current_state_->isFinalNode())
+    {
         res.state = FeedResult::FINISH;
-//    notify();
+        status_ = StateMachineStatus::Finish;
+        if (getCompletionRatio() == 1.0)
+            status_ = StateMachineStatus::Complete;
+    }
+
     if (res.state >= FeedResult::EVOLVE)
-        just_evolve_ = true;
+        if (status_ < StateMachineStatus::Finish)
+            status_ = StateMachineStatus::Evolve;
     return res;
 }
-//
-//EvolveResult_t StateMachine::evolve(Action* action)
-//{
-//        EvolveResult_t res;
-//    if ((valid_ && closed_) == false)
-//        return res;
-//    auto evolution = current_state_->evolve(action);
-//
-//    if (evolution == nullptr)
-//        return res;
-//    res.state = FeedResult::EVOLVE;
-////    if (current_state_->getId() == id_initial_state_)
-////        age_ = fact->getTimeStamp();
-////    last_update_ = fact->getTimeStamp();
-////
-////    current_state_ = evolution;
-////    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
-////    new_explanations_ = checkIncompletsStateMachines();
-//}
-
 
 EvolveResult_t StateMachine::evolve(Task* task)
 {
-    just_evolve_ = false;
+    status_ = StateMachineStatus::Closed;
     EvolveResult_t res;
     if ((valid_ && closed_) == false)
         return res;
@@ -119,8 +114,17 @@ EvolveResult_t StateMachine::evolve(Task* task)
 //    current_state_ = evolution;
 //    id_facts_involve.push_back(fact->getId()); // prepare to id on facts.
 //    new_explanations_ = checkIncompletsStateMachines();
+    if (current_state_->isFinalNode())
+    {
+        res.state = FeedResult::FINISH;
+        status_ = StateMachineStatus::Finish;
+        if (getCompletionRatio() == 1.0)
+            status_ = StateMachineStatus::Complete;
+    }
+
     if (res.state >= FeedResult::EVOLVE)
-        just_evolve_ = true;
+        if (status_ < StateMachineStatus::Finish)
+            status_ = StateMachineStatus::Evolve;
     return res;
 }
 
@@ -247,6 +251,7 @@ bool StateMachine::closeStateMachine()
     closed_ = true;
     processInitialState();
     valid_ = true;
+    status_ = StateMachineStatus::Closed;
     return valid_;
 }
 
@@ -344,7 +349,7 @@ std::string StateMachine::describe(bool expl)
 
 bool StateMachine::involveFacts(const std::set<uint32_t>& facts)
 {
-    if (just_evolve_)
+    if (status_ == StateMachineStatus::Linked or status_ == StateMachineStatus::Evolve)
         return false;
     for (auto id_fact: id_facts_involve)
         if (facts.find(id_fact) == facts.end())

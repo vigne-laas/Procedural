@@ -20,7 +20,19 @@
 #include "procedural/core/Types/ResultFeedProcess.h"
 #include "procedural/core/Types/HTNTransition.h"
 
+
 namespace procedural {
+
+enum class StateMachineStatus
+{
+    UnClosed = 0,
+    Closed = 1,
+    Evolve = 2,
+    Finish = 3,
+    Complete = 4,
+    Linked = 5
+
+};
 
 struct StateMachineException : public std::exception
 {
@@ -74,7 +86,6 @@ public:
 
     EvolveResult_t evolve(Fact* fact);
     EvolveResult_t evolve(StateMachine* state_machine);
-//    EvolveResult_t evolve(Action* action);
     EvolveResult_t evolve(Task* task);
 
     const State* getCurrentState() const { return current_state_; }
@@ -93,9 +104,6 @@ public:
     bool isFinished() const { return current_state_->isFinalNode(); }
     bool isClosed() const { return closed_; }
     bool isValid() const { return valid_; }
-
-
-
 
 
     bool addTransition(const PatternTransitionFact_t& transitionFact);
@@ -128,11 +136,15 @@ public:
     void expandProperties(onto::OntologyManipulator* onto_manipulator);
     bool timeEvolution(TimeStamp_t stamp, double time_to_live);
 
+
+
+
 private:
 
     bool checkIncompletsStateMachines();
     void addState(int id_state);
     void linkStateMachine();
+    void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);
     void insertVariable(const std::string& variable);
 
     void processInitialState();
@@ -167,9 +179,8 @@ private:
 
     std::vector<StateMachine*> updated_sub_state_machines_;
 
+    StateMachineStatus status_;
 
-    void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);
-    bool just_evolve_;
 };
 
 
