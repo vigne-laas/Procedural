@@ -8,8 +8,7 @@ struct Expression_t
     Expression_t(const std::string& subject, const std::string& property, const std::string& object) : subject(subject),
                                                                                                        property(
                                                                                                                property),
-                                                                                                       object(object)
-    {};
+                                                                                                       object(object) {};
     std::string subject;
     std::string property;
     std::string object;
@@ -23,8 +22,7 @@ struct Expression_t
 
 struct Arguments_t
 {
-    Arguments_t(const std::string& type, const std::string& varname) : type(type), varname(varname)
-    {};
+    Arguments_t(const std::string& type, const std::string& varname) : type(type), varname(varname) {};
     std::string type;
     std::string varname;
     friend std::ostream& operator<<(std::ostream& os, const Arguments_t& lhs)
@@ -45,8 +43,7 @@ struct Preconditions_t
 struct Selection_t
 {
     Selection_t(const std::string& attribut, const std::string& type, const Expression_t& expression) : attribut(
-            attribut), type(type), expression(expression)
-    {};
+            attribut), type(type), expression(expression) {};
     std::string attribut;
     std::string type;
     Expression_t expression;
@@ -172,10 +169,10 @@ struct HTNParserd_t
     friend std::ostream& operator<<(std::ostream& os, const HTNParserd_t& lhs)
     {
 
-        std::cout << "ACTION : ----------------------------------------"<<std::endl;
+        std::cout << "ACTION : ----------------------------------------" << std::endl;
         for (const auto& action: lhs.actions)
             os << action << "\n";
-        std::cout << "METHOD : ----------------------------------------"<<std::endl;
+        std::cout << "METHOD : ----------------------------------------" << std::endl;
         for (const auto& method: lhs.methods)
             os << method << "\n";
         return os;

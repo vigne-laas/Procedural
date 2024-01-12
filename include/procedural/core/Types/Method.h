@@ -13,22 +13,11 @@ public:
     void addTransition(const HTNTransition_t& transition);
     void close();
     std::string getStrStructure();
-    bool feed(Action* action);
-    bool feed(Task* task);
-//    bool feed(ActionMethod* action_method);
+    EvolveResult_t feed(StateMachine* sm);
+    EvolveResult_t feed(Task* task);
+
     int getNextSMId() { return compt_SM_++; }
-
-
-    void attach(IObserver* observer) override
-    {
-        list_observer_.push_back(observer);
-    }
-    void detach(IObserver* observer) override
-    {
-        list_observer_.remove(observer);
-    }
-    void updateStateMachine(MessageType type, StateMachine* machine);
-
+    std::string getName() { return name_; }
 
     void notify(MessageType type) override;
 
@@ -42,9 +31,7 @@ private:
     std::unordered_set<StateMachine*> current_state_machines_;
     std::unordered_set<StateMachine*> finished_state_machines_;
     std::vector<StateMachine*> updated_states_machines;
-
-    MessageType notify_type_;
-    std::list<IObserver*> list_observer_;
+    
 
 
 };

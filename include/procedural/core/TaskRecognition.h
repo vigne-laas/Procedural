@@ -22,18 +22,18 @@ public:
     void setCallback(const std::function<void(
             const std::vector<TaskRecognizedMSG_t>&)>& callback) { callback_output_ = callback; }
 
-    void updateAction(MessageType type, Action* machine) override;
+//    void updateAction(MessageType type, Action* machine) override;
     void updateTask(MessageType type, Task* task) override;
+    void actionEvent(ActionEvent_t event) override;
+
 
 private:
     static void defaultCallback(const std::vector<TaskRecognizedMSG_t>& outputs);
     std::vector<Task*> tasks_;
 
     std::function<void(const std::vector<TaskRecognizedMSG_t>&)> callback_output_;
-    std::vector<Action*> finished_actions_;
-    std::vector<Action*> updated_actions_;
-    std::vector<ActionMethod*> finished_actions_method_;
-    std::vector<ActionMethod*> updated_actions_method_;
+    std::vector<StateMachine*> finished_actions_;
+    std::vector<StateMachine*> updated_actions_;
     std::vector<Task*> finished_task_;
     std::vector<Task*> updated_task_;
 

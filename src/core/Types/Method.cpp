@@ -22,67 +22,133 @@ std::string Method::getStrStructure()
     res += factory_machine_->getStrStructure() + "\n";
     return res;
 }
-bool Method::feed(Action* action)
+EvolveResult_t Method::feed(StateMachine* state_machine_finished)
 {
+    EvolveResult_t res;
     bool evolve = false;
     for (auto& state_machine: current_state_machines_)
     {
-        for (const auto& finished_state_machine: action->getFinishedStateMachine())
+        std::cout << "check if " << state_machine_finished->getName() << " can evolve method : " << name_;
+        auto result = state_machine->evolve(state_machine_finished);
+        switch (result.state)
         {
-            auto res = state_machine->evolve(finished_state_machine);
-            if (res.state >= FeedResult::EVOLVE)
-            {
+
+            case FeedResult::NO_EVOLUTION:
+                break;
+            case FeedResult::EVOLVE:
                 std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
                 evolve = true;
-            }
+                if (res.state != FeedResult::FINISH)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::FINISH:
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << "reach final state"
+                          << std::endl;
+                evolve = true;
+                finished_state_machines_.insert(state_machine);
+                res.state = FeedResult::FINISH;
+
+                break;
+        }
+        if (result.update_available)
+        {
+            updated_states_machines.push_back(state_machine);
+            res.update_available = true;
         }
 
     }
-
     if (evolve == false)
     {
+//        std::cout << "Try to create new SM " << std::endl;
         StateMachine* new_net = factory_machine_->clone(-1);
-        for (const auto& finished_state_machine: action->getFinishedStateMachine())
+        auto result = new_net->evolve(state_machine_finished);
+        switch (result.state)
         {
-            auto res = new_net->evolve(finished_state_machine);
-            if (res.state >= FeedResult::EVOLVE)
-            {
+            case FeedResult::NO_EVOLUTION:
+                delete new_net;
+                break;
+            case FeedResult::EVOLVE:
                 new_net->setId(getNextSMId());
+//                    new_net->attach(this);
                 current_state_machines_.insert(new_net);
                 std::cout << "create new state machine " << new_net->getName() << std::endl;
-
-                evolve = true;
-            } else
-                delete new_net;
+                if (res.state != FeedResult::FINISH)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::FINISH:
+                new_net->setId(getNextSMId());
+                std::cout << "Method finish" << name_ << std::endl;
+                finished_state_machines_.insert(new_net);
+                break;
         }
-    }
 
-    return evolve;
+    }
+    return res;
 }
-bool Method::feed(Task* task)
+EvolveResult_t Method::feed(Task* task)
 {
+    EvolveResult_t res;
     bool evolve = false;
     for (auto& state_machine: current_state_machines_)
     {
         auto res = state_machine->evolve(task);
         if (res.state >= FeedResult::EVOLVE)
+        auto result = state_machine->evolve(task);
+        switch (result.state)
         {
-            std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
-            evolve = true;
+
+            case FeedResult::NO_EVOLUTION:
+                break;
+            case FeedResult::EVOLVE:
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << std::endl;
+                evolve = true;
+                if (res.state != FeedResult::FINISH)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::FINISH:
+                std::cout << "\t succes of evolution  : " << state_machine->getName() << "reach final state"
+                          << std::endl;
+                evolve = true;
+                finished_state_machines_.insert(state_machine);
+                res.state = FeedResult::FINISH;
+
+                break;
+        }
+        if (result.update_available)
+        {
+            updated_states_machines.push_back(state_machine);
+            res.update_available = true;
         }
     }
 
     if (evolve == false)
     {
         StateMachine* new_net = factory_machine_->clone(-1);
-        auto res = new_net->evolve(task);
-        if (res.state >= FeedResult::EVOLVE)
+        auto result = new_net->evolve(task);
+        switch (result.state)
         {
-            new_net->setId(getNextSMId());
-            current_state_machines_.insert(new_net);
-            std::cout << "create new state machine " << new_net->getName() << std::endl;
+            case FeedResult::NO_EVOLUTION:
+                delete new_net;
+                break;
+            case FeedResult::EVOLVE:
+                new_net->setId(getNextSMId());
+//                    new_net->attach(this);
+                current_state_machines_.insert(new_net);
+                std::cout << "create new state machine " << new_net->getName() << std::endl;
+                if (res.state != FeedResult::FINISH)
+                    res.state = FeedResult::EVOLVE;
+                break;
+            case FeedResult::FINISH:
+                new_net->setId(getNextSMId());
+                finished_state_machines_.insert(new_net);
+                break;
+        }
 
             evolve = true;
+    }
+
+    return res;
+}
         } else
             delete new_net;
     }

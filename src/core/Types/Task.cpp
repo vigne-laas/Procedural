@@ -3,33 +3,36 @@
 namespace procedural {
 WordTable Task::task_types;
 
-void Task::addMethods(const Method& method)
+void Task::addMethods(Method* method)
 {
     methods_.push_back(method);
-    methods_.back().close();
+    methods_.back()->close();
 }
 void Task::addArguments(const std::map<std::string, std::string>& arguments)
 {
     arguments_ = arguments;
 }
-bool Task::feed(Action* action)
+ResultFeedProcess_t<Method> Task::feed(StateMachine* state_machine)
 {
-//    auto sms = action->getFinishedStateMachine();
-//    for (auto sm: sms)
-//        for (auto var: sm->getLiteralVariables())
-//
-//
-//            return false;
+
+    state_machine->setRead();
+    std::cout << "\t\t --------------" << std::endl;
+    std::cout << "\t\t\taction finished in Task recognition: " << state_machine->getName() << " "
+              << state_machine->getAge() << "\n\n"
+              << std::endl;
+    ResultFeedProcess_t<Method> result;
+    for (auto& method: methods_)
+    {
+        auto feed_result = method->feed(state_machine);
+        result.combine(feed_result, method);
+    }
+    return result;
 }
 
 bool Task::feed(Task* task)
 {
     for (auto& method: methods_)
-        method.feed(task);
-    return false;
-}
-bool Task::feed(ActionMethod* action_method)
-{
+        method->feed(task);
     return false;
 }
 
@@ -58,12 +61,6 @@ void Task::updateMethod(MessageType type, Method* method)
             break;
     }
 }
-void Task::notify(MessageType type)
-{
-     for (const auto& obs: list_observer_)
-        obs->updateTask(type, this);
-}
-
 
 
 } // procedural

@@ -42,7 +42,7 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         std::cout << "fact in Action recognition: " << fact->toString() << " " << fact->getTimeStamp() << "\n\n"
                   << std::endl;
         std::set<uint32_t> set_id_facts;
-        ResultFeedProcess_t result;
+        ResultFeedProcess_t<Action> result;
         for (auto& action: actions_)
         {
             auto feed_result = action->feed(fact, current_time);
@@ -56,8 +56,9 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         {
             nb_update = 0;
             std::vector<StateMachineFinishedMSG_> msg_finished_SM_;
-            std::vector<Action*> finished_actions = result.finished_actions;
-            result.finished_actions.clear();
+            std::vector<ActionEvent_t> actions_events_;
+            std::vector<Action*> finished_actions = result.finished_;
+            result.finished_.clear();
 
             for (auto& finished_action: finished_actions)
             {
@@ -68,27 +69,35 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
                 for (auto& action: actions_)
                     if (action != finished_action)
                     {
-                        result.combine(action->checksubAction(finished_action),action);
+                        result.combine(action->checksubAction(finished_action), action);
                         if (result.evolve)
                             nb_update++;
                     }
 
                 auto complete_state_machines = finished_action->getFinishedStateMachine();
                 for (auto& complete_state_machine: complete_state_machines)
+                {
                     msg_finished_SM_.emplace_back(complete_state_machine);
+                    actions_events_.emplace_back(FeedResult::FINISH, complete_state_machine);
+                }
+
 
             }
-            for (auto& updated_action: result.updated_actions)
+            for (auto& updated_action: result.updated_)
             {
                 auto nets = updated_action->getNewExplanation();
                 for (auto& net: nets)
+                {
                     msg_finished_SM_.emplace_back(net, true);
+                    actions_events_.emplace_back(FeedResult::NEW_EXPLANATION, net);
+                }
+
             }
-            result.updated_actions.clear();
+            result.updated_.clear();
 
 
             callback_output_(msg_finished_SM_);
-            send_updated_action_(msg_finished_SM_);
+            sendActionEvent_(actions_events_);
 
             if (nb_update != 0)
                 for (auto& action: actions_)
@@ -113,8 +122,7 @@ void ActionRecognition::defaultCallback(const std::vector<StateMachineFinishedMS
 
 void ActionRecognition::linkToTaskRecognition(IObserver* task_recognition)
 {
-//    for (const auto& action: actions_)
-//        action->attachRecognitionProcess(task_recognition);
+    attach(task_recognition);
 }
 void ActionRecognition::attach(IObserver* observer)
 {
@@ -124,22 +132,15 @@ void ActionRecognition::detach(IObserver* observer)
 {
     recognition_process_observer_.remove(observer);
 }
-void ActionRecognition::notify(MessageType type)
+void ActionRecognition::notify(ActionEvent_t event)
 {
-    std::cout << "send data from ActionMethod " << std::to_string((int) type) << std::endl;
-//    for (const auto& obs: recognition_process_observer_)
-//        obs->updateAction(type,);
-
+    for (const auto& obs: recognition_process_observer_)
+        obs->actionEvent(event);
 }
-void ActionRecognition::send_updated_action_(std::vector<StateMachineFinishedMSG_> new_info_action)
+void ActionRecognition::sendActionEvent_(const std::vector<ActionEvent_t>& new_info_action)
 {
     for (const auto& msg: new_info_action)
-    {
-//        notify_msg
-//        if (msg.updated)
-
-    }
-
+        notify(msg);
 }
 
 

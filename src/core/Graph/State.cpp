@@ -154,17 +154,6 @@ void State::closeTo(State* final_state, State* parent, State* origin)
     }
 
 
-//    for (const auto& pair: parent->next_actions_methods_)
-//    {
-////        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
-//        if (pair.second == origin)
-//        {
-//            TransitionActionMethod t(pair.first, final_state->getId());
-//            this->addTransition(t, final_state);
-//
-//        }
-//    }
-
     for (const auto& pair: parent->next_actions_)
     {
 //        std::cout << "action pair : " << pair.second->name_ << "  origin : " << origin->name_ << std::endl;
@@ -175,35 +164,6 @@ void State::closeTo(State* final_state, State* parent, State* origin)
 
         }
     }
-
-//        std::cout << "into close to " << pair.first.toString() << "state :" << pair.second << std::endl;
-//
-//
-//    auto val = std::find_if(parent->getNextsTasks().cbegin(), parent->getNextTasks().cend(),
-//                            [origin](const std::pair<TransitionTask, State*>& pair) {
-//                                if (pair.second != nullptr)
-//                                    return pair.second == origin;
-//                                else
-//                                    return false;
-//                            });
-//    if (val != parent->getNextTasks().end())
-//    {
-//        this->addTransition(val->first, final_state);
-//        return;
-//
-//    }
-
-
-//    auto val_action = std::find_if(parent->getNextsActions().begin(), parent->getNextActions().end(),
-//                                   [origin](const std::pair<TransitionActionMethod, State*>& pair) {
-//                                       return pair.second == origin;
-//                                   });
-//    if (val_action != parent->getNextActions().end())
-//    {
-//        this->addTransition(val_action->first, final_state);
-//        return;
-//    }
-
 
 }
 void State::addValidateConstraints(const std::unordered_set<int>& constrains)

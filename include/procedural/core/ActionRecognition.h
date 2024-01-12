@@ -30,7 +30,8 @@ public:
     void linkToTaskRecognition(IObserver* task_recognition);
     void attach(IObserver* observer) override;
     void detach(IObserver* observer) override;
-    void notify(MessageType type) override;
+    void notify(ActionEvent_t event) override;
+
 private:
     static void defaultCallback(const std::vector<StateMachineFinishedMSG_>& outputs);
     BufferFacts* buffer_{};
@@ -40,10 +41,11 @@ private:
     std::vector<Action*> finished_actions_;
     std::vector<Action*> updated_actions_;
 
+
     std::list<IObserver*> recognition_process_observer_;
 
 
-    void send_updated_action_(std::vector<StateMachineFinishedMSG_> new_info_action);
+    void sendActionEvent_(const std::vector<ActionEvent_t>& new_info_action);
 };
 
 } // namespace procedural

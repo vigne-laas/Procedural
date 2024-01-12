@@ -94,12 +94,18 @@ void Action::clean()
 {
     for (auto complete_state_machine: finished_state_machines_)
         if (complete_state_machine->getCompletionRatio() == 1.0)
-            delete complete_state_machine;
+            if (complete_state_machine->getStatus() == StateMachineStatus::Readed)
+            {
+//                std::cout << "Clean Finished SM : " << complete_state_machine->getName() << std::endl;
+                finished_state_machines_.erase(complete_state_machine);
+//                delete complete_state_machine;
+            }
+
 
 //    for (auto network_to_del : networks_to_del_)
 //         delete network_to_del;
 
-    finished_state_machines_.clear();
+//    finished_state_machines_.clear();
 //    networks_to_del_.clear();
 }
 
@@ -115,11 +121,16 @@ void Action::cleanInvolve(const std::set<uint32_t>& list_valid_facts)
     for (auto& state_machine: state_machines_)
     {
         if (state_machine->involveFacts(list_valid_facts))
+        {
+//            std::cout << "may delete this network due to involve facts" << std::endl;
             state_machine_to_deletes.push_back(state_machine);
+        }
+
     }
 
     for (auto state_machine: state_machine_to_deletes)
     {
+//        std::cout << "delete : " << state_machine->getName() << std::endl;
         state_machines_.erase(state_machine);
         delete state_machine;
     }
@@ -157,7 +168,6 @@ EvolveResult_t Action::feed(Fact* fact, TimeStamp_t current_timestamp)
                 evolve = true;
                 finished_state_machines_.insert(state_machine);
                 res.state = FeedResult::FINISH;
-                notify(MessageType::Finished);
                 break;
         }
         if (result.update_available)
@@ -189,7 +199,6 @@ EvolveResult_t Action::feed(Fact* fact, TimeStamp_t current_timestamp)
             case FeedResult::FINISH:
                 new_net->setId(getNextId());
                 finished_state_machines_.insert(new_net);
-                notify(MessageType::Finished);
                 break;
         }
 //        if (result.state == FeedResult::EVOLVE)
@@ -208,6 +217,7 @@ EvolveResult_t Action::feed(Fact* fact, TimeStamp_t current_timestamp)
 
 EvolveResult_t Action::checksubAction(Action* action)
 {
+
     EvolveResult_t res;
     updated_states_machines.clear();
     std::unordered_set<StateMachine*> complete_state_machines = action->getFinishedStateMachine();
@@ -235,7 +245,6 @@ EvolveResult_t Action::checksubAction(Action* action)
                     break;
                 case FeedResult::FINISH:
                     res.state = FeedResult::FINISH;
-                    notify(MessageType::Finished);
                     break;
             }
             if (result.update_available)
@@ -268,7 +277,6 @@ EvolveResult_t Action::checksubAction(Action* action)
                 case FeedResult::FINISH:
                     new_net->setId(getNextId());
                     finished_state_machines_.insert(new_net);
-                    notify(MessageType::Finished);
                     break;
             }
 //            {
@@ -322,11 +330,7 @@ std::string Action::getStrStructure()
     return res;
 }
 
-void Action::notify(MessageType type)
-{
-    for (const auto& obs: list_observer_)
-        obs->updateAction(type, this);
-}
+
 std::vector<StateMachine*> Action::getNewExplanation()
 {
     return updated_states_machines;

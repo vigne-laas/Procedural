@@ -12,7 +12,7 @@
 namespace procedural {
 class ActionMethod;
 
-class Action : public ISubject
+class Action
 {
 public:
     Action(const std::string& name,
@@ -35,7 +35,7 @@ public:
 
     std::unordered_set<StateMachine*> getFinishedStateMachine() { return finished_state_machines_; };
 
-    EvolveResult_t feed(Fact* fact,TimeStamp_t current_timestamp);
+    EvolveResult_t feed(Fact* fact, TimeStamp_t current_timestamp);
 
     EvolveResult_t checksubAction(Action* action);
     bool checkNewUpdatedSubStateMachine() { return updated_states_machines.empty() == false; };
@@ -48,17 +48,6 @@ public:
     std::string toString();
     std::string getStrStructure();
 
-    void attach(IObserver* observer) override
-    {
-        list_observer_.push_back(observer);
-    }
-    void detach(IObserver* observer) override
-    {
-        list_observer_.remove(observer);
-    }
-
-    void notify(MessageType type) override;
-
     static WordTable action_types;
     std::vector<StateMachine*> getNewExplanation();
 private:
@@ -70,8 +59,6 @@ private:
     std::unordered_set<StateMachine*> state_machines_;
     std::unordered_set<StateMachine*> finished_state_machines_;
     std::vector<StateMachine*> updated_states_machines;
-
-    std::list<IObserver*> list_observer_;
 
 
     bool is_valid_;
