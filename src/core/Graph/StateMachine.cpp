@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
+#include <fstream>
 #include "procedural/core/Graph/StateMachine.h"
 #include "procedural/core/Graph/Transitions/TransitionAction.h"
 
@@ -60,6 +61,7 @@ EvolveResult_t StateMachine::evolve(Fact* fact)
 
 EvolveResult_t StateMachine::evolve(StateMachine* stateMachine)
 {
+//    std::cout << "Try to evolve " << full_name_ << "with : " << stateMachine->getName() << std::endl;
     status_ = StateMachineStatus::Closed;
     EvolveResult_t res;
     if (level_ < stateMachine->getLevel())
@@ -187,31 +189,54 @@ bool StateMachine::addTransition(const HTNTransition_t& transition)
 {
     int origin_id = transition.step * 10;
     int final_id = (transition.step + 1) * 10;
-    addState(origin_id);
-//    std::cout << "create state : " << std::to_string(origin_id) << std::endl;
 
+    addState(origin_id);
     addState(final_id);
-//    std::cout << "create state : " << std::to_string(final_id) << std::endl;
 
     for (auto& var: transition.arguments_)
         insertVariable(var.first);
 
 
     linkHTNTransition(origin_id, final_id, transition);
-    int new_state = 1;
-    for (const auto parent: states_[origin_id]->getParents_())
+    auto valide_parent = states_[origin_id]->getValideParents(transition.id_contraints_order);
+    // Convertir la map en un vecteur de paires
+    std::vector<std::pair<State*, Transitions_t>> ordered_parents(valide_parent.begin(), valide_parent.end());
+
+    // Trier le vecteur de paires en fonction de l'appel à la méthode getId()
+    std::sort(ordered_parents.begin(), ordered_parents.end(), [](const auto& a, const auto& b) {
+        return a.first->getId() > b.first->getId();
+    });
+
+    for (auto familiy: ordered_parents)
     {
-        if (parent->validateConstraints(transition.id_contraints_order))
+//        std::cout << "===============> parent found valide : " << familiy.first->toShortString()
+//                  << " with transition : "
+//                  << familiy.second.toString() << std::endl;
+        auto state_level_to_create = getStateByLevel(familiy.first->getLevel() + 1);
+        auto maxElement = std::max_element(state_level_to_create.begin(), state_level_to_create.end(),
+                                           [](const State* a, const State* b) {
+                                               return a->getId() < b->getId();
+                                           });
+        int new_state_id;
+        // Vérification si le vecteur n'est pas vide
+        if (maxElement != state_level_to_create.end())
         {
-//            std::cout << "parent : " << parent->toString()<< std::endl;
-//            linkHTNTransition(parent->getId(), origin_id + new_state, transition);
-            addState((transition.step * 10) + new_state);
-            linkHTNTransition(parent->getId(), (transition.step * 10) + new_state, transition);
-            states_[(transition.step * 10) + new_state]->closeTo(states_[(transition.step + 1) * 10], parent,
-                                                                 states_[transition.step * 10]);
-            new_state++;
+//            std::cout << "La valeur maximale de getLevel() est : " << (*maxElement)->getId() << std::endl;
+            new_state_id = (*maxElement)->getId() + 1;
+        } else
+        {
+//            std::cout << "Le vecteur est vide." << std::endl;
+            throw StateMachineException("No Max element found ! in the creation of new state!");
         }
+        std::cout << "Creation de : " << new_state_id << std::endl;
+        addState(new_state_id);
+        std::cout << "link de : " << familiy.first->getId() << "vers : " << new_state_id << "avec: "
+                  << transition.toString() << std::endl;
+        linkHTNTransition(familiy.first->getId(), new_state_id, transition);
+        states_[new_state_id]->closeTo(getStateByLevel(states_[new_state_id]->getLevel() + 1), familiy.second);
+
     }
+
     return true;
 }
 
@@ -222,19 +247,16 @@ void StateMachine::linkHTNTransition(int initial_state, int final_state, const H
         TransitionAction t(transition.id_subtask, final_state, {}, transition.arguments_);
         states_[initial_state]->addTransition(t, states_[final_state]);
     }
-//    if (transition.type == TransitionType::ActionMethod)
-//    {
-//        TransitionActionMethod t(transition.id_subtask, final_state, transition.arguments_);
-//        states_[initial_state]->addTransition(t, states_[final_state]);
-//    }
     if (transition.type == TransitionType::Task)
     {
         TransitionTask t(transition.id_subtask, final_state, transition.arguments_);
         states_[initial_state]->addTransition(t, states_[final_state]);
     }
-//    std::cout << "Add parents : " << std::to_string(initial_state) << std::endl;
+    std::cout << "in  " << std::to_string(final_state) << "add parents : " << std::to_string(initial_state)
+              << std::endl;
     states_[final_state]->addParents(states_[initial_state]);
     states_[final_state]->addValidateConstraints(transition.id_contraints_order);
+    states_[final_state]->addValidateConstraints((int) transition.id_subtask);
     states_[final_state]->addValidateConstraints(states_[initial_state]->getConstrains_());
 
 }
@@ -518,5 +540,52 @@ bool StateMachine::timeEvolution(TimeStamp_t stamp, double time_to_live) //TODO 
     }
     return true;
 }
+void StateMachine::setRead()
+{
+    status_ = StateMachineStatus::Readed;
+}
+StateMachineStatus StateMachine::getStatus()
+{
+    return status_;
+}
 
+void StateMachine::saveDot(std::ofstream& dot_file, bool partial)
+{
+    if (partial)
+    {
+        for (const auto& stateEntry: states_)
+        {
+            const State* currentState = stateEntry.second;
+            if (currentState)
+            {
+                dot_file << "subgraph cluster_state_" << currentState->getId() << " {" << std::endl;
+                // Save the DOT file for the current State
+                currentState->saveDOTFile(dot_file);
+                dot_file << "}" << std::endl;
+            }
+        }
+
+    } else
+    {
+        for (auto state: states_)
+        {
+            dot_file << "  " << state.second->getFullName() << " [label=\"" << state.second->toShortString();
+            dot_file << "\", shape=\"ellipse\"];" << std::endl;
+        }
+        current_state_->saveDOTFile(dot_file);
+    }
+}
+std::vector<State*> StateMachine::getStateByLevel(const int& lvl)
+{
+//    std::cout << "Search all states with level : " <<lvl << std::endl;
+    std::vector<State*> res;
+    for (auto pair_id_state: states_)
+        if (pair_id_state.second->getLevel() == lvl)
+        {
+//            std::cout << "\t state found : " << pair_id_state.second->getFullName() << std::endl;
+            res.push_back(pair_id_state.second);
+        }
+
+    return res;
+}
 } // namespace procedural

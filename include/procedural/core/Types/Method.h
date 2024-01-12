@@ -6,7 +6,7 @@
 #include "procedural/core/Types/Action.h"
 namespace procedural {
 
-class Method : IObserver, ISubject
+class Method
 {
 public:
     Method(const std::string& name, int id);
@@ -19,8 +19,7 @@ public:
     int getNextSMId() { return compt_SM_++; }
     std::string getName() { return name_; }
 
-    void notify(MessageType type) override;
-
+    void saveDot(int i,const std::string& suffix = "",bool partial= false);
 private:
 
     std::string name_;

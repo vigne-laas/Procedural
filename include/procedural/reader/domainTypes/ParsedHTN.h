@@ -60,6 +60,7 @@ struct Ordered_Action_t
     std::string name;
     std::vector<std::string> arguments;
     std::vector<int> after_id;
+    std::vector<int> link_to;
     friend std::ostream& operator<<(std::ostream& os, const Ordered_Action_t& lhs)
     {
         os << lhs.id << " " << lhs.name;
@@ -86,6 +87,19 @@ struct Subtask_t
         for (const auto& action: lhs.actions_)
             os << "\t" << action << "\n";
         return os;
+    }
+    void linkActions()
+    {
+        std::cout << "Call to link Actions " << std::endl;
+        for (auto& action: actions_)
+        {
+            for (auto& after_id: action.after_id)
+            {
+                for (auto& action_to_link: actions_)
+                    if (action_to_link.id == after_id)
+                        action_to_link.link_to.push_back(action.id);
+            }
+        }
     }
 };
 

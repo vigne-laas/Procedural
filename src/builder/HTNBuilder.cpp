@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "procedural/builder/HTNBuilder.h"
 #include "procedural/core/Types/Task.h"
+#include <stdexcept>
 
 namespace procedural {
 
@@ -10,35 +11,40 @@ void HTNBuilder::buildAction(const std::vector<PrimitiveActionParsed_t>& actions
 {
 
 }
-void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
+
+
+bool HTNBuilder::buildTask(std::vector<Abstract_task_t>& abstract_tasks,
                            const std::vector<PrimitiveActionParsed_t>& actions_htn,
                            const std::vector<Action*>& actions_)
 {
     if (not checkActions(actions_htn, actions_))
     {
         std::cout << "impossible to continue error on check action " << std::endl;
-        return;
+        throw std::bad_exception();
+        return false;
     }
 
     Task* new_task;
-    for (const auto& abstract_task: abstract_tasks)
+    for (auto& abstract_task: abstract_tasks)
     {
         std::cout << abstract_task << std::endl;
         new_task = new Task(abstract_task.name);
         std::map<std::string, std::string> arguments;
-        for (const auto& arg: abstract_task.arguments)
+        for (auto& arg: abstract_task.arguments)
             arguments.emplace(arg.varname, arg.type);
 
 
         new_task->addArguments(arguments);
         int compt = 0;
-        for (const auto& method: abstract_task.methods_)
+        int step = 0;
+        for (auto& method: abstract_task.methods_)
         {
-            Method new_method(abstract_task.name, compt);
+            auto new_method = new Method(abstract_task.name, compt);
             std::map<std::string, std::string> remap;
-            for (const auto& select: method.subtask.selections)
+            for (auto& select: method.subtask.selections)
                 remap.emplace(select.attribut, select.type);
             int compt_actions = 0;
+            method.subtask.linkActions();
             auto ordered_actions(method.subtask.actions_);
             std::sort(ordered_actions.begin(), ordered_actions.end(),
                       [](const Ordered_Action_t& a1, const Ordered_Action_t& a2) {
@@ -46,52 +52,22 @@ void HTNBuilder::buildTask(const std::vector<Abstract_task_t>& abstract_tasks,
                       });
             for (const auto& action: ordered_actions)
             {
-                HTNTransition_t t;
-                t.id_contraints_order = action.after_id;
-                t.id_subtask_parsed = action.id;
-                t.step = compt_actions;
-
-                auto val = std::find_if(actions_possible.begin(), actions_possible.end(),
-                                        [action](const std::pair<std::string, TransitionType>& action_pair) {
-                                            return action_pair.first == action.name;
-                                        });
-//                std::cout << "action find : " << val->first << std::endl;
-                if (val != actions_possible.end())
-                {
-                    if (val->second == TransitionType::Action)
-                    {
-                        t.id_subtask = Action::action_types.get(action.name);
-                        t.type = val->second;
-                    }
-//                    else
-//                    {
-//                        t.id_subtask = ActionMethod::action_method_types.get(action.name);
-//                        t.type = val->second;
-//                    }
-
-                } else
-                {
-                    t.id_subtask = Task::task_types.get(action.name);
-                    t.type = TransitionType::Task;
-                }
-                for (auto& arg: action.arguments)
-                {
-                    if (auto remap_val = remap.find(arg); remap_val != remap.end())
-                        t.arguments_.emplace(*remap_val);
-                    else if (auto remap_val_task = arguments.find(arg); remap_val_task != arguments.end())
-                        t.arguments_.emplace(*remap_val_task);
-                    else
-                        std::cout << "Error arg non find in remap : " << arg << std::endl;
-                }
-                compt_actions++;
+                auto t = createTransition(action, compt_actions, arguments, remap);
 //                std::cout << "transition " << t.toString() << std::endl;
-                new_method.addTransition(t);
+                new_method->addTransition(t);
+                compt_actions++;
+
+                new_method->saveDot(compt_actions, "", true);
+
             }
             new_task->addMethods(new_method);
+            new_method->saveDot(step++, "", false);
+
             compt++;
         }
         tasks_.push_back(new_task);
     }
+    return true;
 
 }
 bool HTNBuilder::checkActions(const std::vector<PrimitiveActionParsed_t>& actions_htn,
@@ -127,8 +103,48 @@ void HTNBuilder::displayTask()
     {
         std::cout << task->getName() << ":" << std::endl;
         for (auto& method: task->getMethods())
-            std::cout << method.getStrStructure() << "\n" << std::endl;
+            std::cout << method->getStrStructure() << "\n" << std::endl;
     }
 
+}
+HTNTransition_t
+HTNBuilder::createTransition(const Ordered_Action_t& action, int compt_action,
+                             const std::map<std::string, std::string>& arguments,
+                             const std::map<std::string, std::string>& remap)
+{
+    HTNTransition_t t;
+    t.id_contraints_order = action.after_id;
+    t.id_subtask_parsed = action.id;
+    t.step = compt_action;
+
+
+    auto val = std::find_if(actions_possible.begin(), actions_possible.end(),
+                            [action](const std::pair<std::string, TransitionType>& action_pair) {
+                                return action_pair.first == action.name;
+                            });
+//                std::cout << "action find : " << val->first << std::endl;
+    if (val != actions_possible.end())
+    {
+        if (val->second == TransitionType::Action)
+        {
+            t.id_subtask = Action::action_types.get(action.name);
+            t.type = val->second;
+        }
+
+    } else
+    {
+        t.id_subtask = Task::task_types.get(action.name);
+        t.type = TransitionType::Task;
+    }
+    for (auto& arg: action.arguments)
+    {
+        if (auto remap_val = remap.find(arg); remap_val != remap.end())
+            t.arguments_.emplace(*remap_val);
+        else if (auto remap_val_task = arguments.find(arg); remap_val_task != arguments.end())
+            t.arguments_.emplace(*remap_val_task);
+        else
+            std::cout << "Error arg non find in remap : " << arg << std::endl;
+    }
+    return t;
 }
 } // procedural

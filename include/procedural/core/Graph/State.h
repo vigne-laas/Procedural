@@ -16,6 +16,46 @@
 namespace procedural {
 class Action;
 class Task;
+class State;
+
+struct Transitions_t
+{
+//    std::vector<std::pair<TransitionFact, State*>> next_facts_;
+    std::set<TransitionAction> next_actions_;
+//    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
+    std::set<TransitionTask> next_tasks_;
+
+    std::string toString()
+    {
+        std::string msg;
+        if (!next_actions_.empty())
+        {
+            msg += "\t actions T: ";
+            for (auto it = next_actions_.begin(); it != next_actions_.end(); it++)
+            {
+                msg += it->toShortString();
+                if (std::next(it) != next_actions_.end())
+                    msg += ", ";
+
+            }
+        }
+
+        if (!next_tasks_.empty())
+        {
+            msg += "\t tasks T: ";
+            for (auto it = next_tasks_.begin(); it != next_tasks_.end(); it++)
+            {
+                msg += it->toShortString();
+                if (std::next(it) != next_tasks_.end())
+                    msg += ", ";
+
+            }
+        }
+        return msg;
+    };
+
+
+};
 
 class State
 {
@@ -41,6 +81,7 @@ public:
     }
     int getId() const { return id_; };
     std::string toString() const;
+    std::string toShortString() const;
 
     const std::vector<std::pair<TransitionFact, State*>> getNextFacts() const { return next_facts_; };
     const std::vector<std::pair<TransitionAction, State*>> getNextStateMachines() const { return next_actions_; };
@@ -51,7 +92,7 @@ public:
     void set_new_id(int new_id) { id_ = new_id; };
 
     bool hasTimeoutTransition() const { return has_timeout_transition; }
-    std::vector<State*> getParents_() { return parents_; }
+    std::set<State*> getParents_() { return parents_; }
     std::unordered_set<int> getConstrains_() { return valide_constrains_; }
 
 
@@ -61,11 +102,35 @@ public:
 
     void addValidateConstraints(const std::vector<int>& constrains);
     void addValidateConstraints(const std::unordered_set<int>& constrains);
+    void addValidateConstraints(int constrain);
     bool validateConstraints(const std::vector<int>& constrains);
+    bool validateConstraints(const std::unordered_set<int>& constraints) const;
     void closeTo(State* final_state, State* parent, State* origin);
+    void closeTo(std::vector<State*> possible_states, Transitions_t transitions);
+
+    std::map<State*, Transitions_t> getValideParents(std::vector<int> constraints);
+    std::map<State*, Transitions_t>
+    getValideParents(std::vector<int> constraints, std::map<State*, Transitions_t>& map, State* origin_state);
 
     State* doTimeoutTransition();
+
+    std::string getFullName() { return name_ + "_" + std::to_string(id_); };
+
+
+    // Save the DOT file
+    void saveDOTFile(std::ofstream& dot_file) const;
+
+    const int& getLevel() const { return level_; };
 private:
+
+    // Generate DOT specific to transitions of type Fact
+    void generateDOT_Facts(std::ofstream& dotFile, std::set<int>& visitedStates) const;
+add files for test builder domain
+    // Generate DOT specific to transitions of type Action
+    void generateDOT_Actions(std::ofstream& dotFile, std::set<int>& visitedStates) const;
+
+    // Generate DOT specific to transitions of type Task
+    void generateDOT_Tasks(std::ofstream& dotFile, std::set<int>& visitedStates) const;
     int id_;
     std::string name_;
     bool initial_node_;
@@ -75,10 +140,11 @@ private:
 //    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
     std::vector<std::pair<TransitionTask, State*>> next_tasks_;
 
-    std::vector<State*> parents_;
+    std::set<State*> parents_;
     std::unordered_set<int> valide_constrains_;
     bool has_timeout_transition;
     State* final_state_;
+    int level_;
 };
 
 } // namespace procedural

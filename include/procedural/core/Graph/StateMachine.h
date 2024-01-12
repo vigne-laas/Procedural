@@ -29,8 +29,9 @@ enum class StateMachineStatus
     Closed = 1,
     Evolve = 2,
     Finish = 3,
-    Complete = 4,
-    Linked = 5
+    Readed = 4,
+    Complete = 5,
+    Linked = 6
 
 };
 
@@ -137,8 +138,13 @@ public:
     bool timeEvolution(TimeStamp_t stamp, double time_to_live);
 
 
+    void setRead();
+    StateMachineStatus getStatus();
+//    void saveDot(int i, const std::string& suffix, bool partial);
+    void saveDot(std::ofstream& dotFile, bool partial);
 
-
+    State* getInitialState() {return states_[id_initial_state_];}
+    State* getFinalState() {return states_[id_final_state_];}
 private:
 
     bool checkIncompletsStateMachines();
@@ -146,6 +152,7 @@ private:
     void linkStateMachine();
     void linkHTNTransition(int initial_state, int final_state, const HTNTransition_t& transition);
     void insertVariable(const std::string& variable);
+    std::vector<State*> getStateByLevel(const int& lvl);
 
     void processInitialState();
 
