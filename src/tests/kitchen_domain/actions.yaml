@@ -1,0 +1,192 @@
+
+Release:
+  parameters:
+    ttl: 20
+  sequence:
+    - ?A hasHandMovingToward ?S
+    - NOT ?A isHolding ?O REQUIRED
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedOver ?S
+
+
+Grasp:
+  parameters:
+    ttl: 20
+  sequence:
+    - ?A hasHandMovingToward ?C
+    - ?A isHolding ?C REQUIRED
+  description:
+    - ?? isA GraspAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?C
+
+
+Pick_In:
+  args:
+    - A: Agent
+    - O: Pickable
+    - C: Container
+  parameters:
+    ttl: 25
+  composed_sequence:
+    - G: Grasp
+    - NOT ?O inIn ?C REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Pick_Over:
+  args:
+    -A: Agent
+    -O: Pickable
+    -S: Support
+  parameters:
+    ttl: 25
+  composed_sequence:
+    - G: Grasp
+    - NOT ?O isOnTopOf ?S REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+Place_In:
+  parameters:
+    ttl: 25
+  composed_sequence:
+    - R: Release
+    - ?O isInContainer ?S REQUIRED
+  description:
+    - ?? isA Place_InAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Place_Over:
+  parameters:
+    ttl: 25
+  composed_sequence:
+    - R: Release
+    - ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA Place_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+Give:
+  parameters:
+    ttl: 30
+  composed_sequence:
+    - G: Grasp
+    - NOT ?A2 isHolding ?G.C REQUIRED #TODO Check to add constrainst A2!=A
+  description:
+    - ?? isA GiveAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?G.C
+    - ?? isPerformedBy ?A2
+
+
+
+SplitEggs:
+  args:
+    - Y Bowl
+    - W Bowl
+    - EY EggYellow
+    - EW EggWhite
+    - E Egg
+  parameters:
+    ttl: 30
+  sequence:
+    - ?EY isIn ?Y
+    - ?EW isIn ?W
+    - ?A hisHolding ?E
+  description:
+    - ?? isA SplitEggAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?E
+    - ?? splitWhiteEgg in ?W
+    - ?? splitYellowEgg in ?Y
+
+
+
+Dispose:
+  args:
+    - A Agent
+    - B Bowl
+    - S Support
+  parameters:
+    ttl: 30
+  sequence:
+    - ?A hasInHand ?B
+    - ?S hasSpreadOver ?B
+    - NOT ?B hasIn ~
+  description:
+    - ?? isA DisposeAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?B
+    - ?? disposeMixtureOver ?S
+
+
+PoorBatter:
+  args:
+    - A Agent
+    - M Bowl
+    - B Batter
+  parameters:
+    ttl: 30
+  sequence:
+    - ?A hasInHand ?M
+    - ?B hasIn ?M
+    - NOT ?M hasIn ~
+  description:
+    - ?? isA PoorBatterAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?M
+    - ?? fill ?B
+
+
+PoorMold:
+  args:
+    - A Agent
+    - P Bowl
+    - M Mold
+  parameters:
+    ttl: 30
+  sequence:
+    - ?A hasInHand ?P
+    - ?M hasIn ?P
+    - NOT ?M hasIn ~
+  description:
+    - ?? isA PoorMoldAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?P
+    - ?? fill ?M
+
+Cut:
+  args:
+    - A Agent
+    - K Knife
+    - I Ingredient
+  parameters:
+    ttl: 30
+  sequence:
+    - ?A hasInHand ?K
+    - ?I isUnder ?K
+    - ?I isCutBy ?K
+  description:
+    - ?? isA CutAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?I
+    - ?? cut ?I
