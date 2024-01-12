@@ -1,0 +1,42 @@
+
+A:
+  parameters:
+    ttl: 25
+  sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA DAction
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+B:
+  parameters:
+    ttl: 25
+  sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA DAction
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+
+C:
+  parameters:
+    ttl: 25
+  sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA DAction
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
+
+D:
+  parameters:
+    ttl: 25
+  sequence:
+    - NOT ?O isOnTopOf ?S REQUIRED
+  description:
+    - ?? isA DAction
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S
