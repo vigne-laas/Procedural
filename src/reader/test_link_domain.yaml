@@ -1,7 +1,7 @@
 
 Release:
   parameters:
-    ttl: 10
+    ttl: 20
   sequence:
     - ?A hasHandMovingToward ?S
     - NOT ?A isHolding ?O REQUIRED
@@ -14,7 +14,7 @@ Release:
 
 Grasp:
   parameters:
-    ttl: 10
+    ttl: 20
   sequence:
     - ?A hasHandMovingToward ?C
     - ?A isHolding ?C REQUIRED
@@ -31,10 +31,10 @@ Pick_In:
     - O: Pickable
     - C: Container
   parameters:
-    ttl: 15
+    ttl: 25
   composed_sequence:
-    - NOT ?O inIn ?C REQUIRED
     - G: Grasp
+    - NOT ?O inIn ?C REQUIRED
   remap:
     - G.C: O
   description:
@@ -49,10 +49,10 @@ Pick_Over:
     -O: Pickable
     -S: Support
   parameters:
-    ttl: 15
+    ttl: 25
   composed_sequence:
-    - NOT ?O isOnTopOf ?S REQUIRED
     - G: Grasp
+    - NOT ?O isOnTopOf ?S REQUIRED
   remap:
     - G.C: O
   description:
@@ -64,7 +64,7 @@ Pick_Over:
 
 Place_In:
   parameters:
-    ttl: 15
+    ttl: 25
   composed_sequence:
     - R: Release
     - ?O isInContainer ?S REQUIRED
@@ -76,7 +76,7 @@ Place_In:
 
 Place_Over:
   parameters:
-    ttl: 15
+    ttl: 25
   composed_sequence:
     - R: Release
     - ?O isOnTopOf ?S REQUIRED
@@ -88,7 +88,7 @@ Place_Over:
 
 Give:
   parameters:
-    ttl: 20
+    ttl: 30
   composed_sequence:
     - G: Grasp
     - NOT ?A2 isHolding ?G.C REQUIRED #TODO Check to add constrainst A2!=A
