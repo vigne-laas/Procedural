@@ -79,5 +79,17 @@ std::string TransitionAction::toString() const
     return res;
 }
 
+std::string TransitionAction::toShortString() const
+{
+    std::string res =
+            "State Machine Transitions type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) +
+            ") to " + std::to_string(id_next_state_) + "\n";
+    return res;
+}
+bool TransitionAction::operator<(const TransitionAction other) const
+{
+    return id_next_state_ < other.id_next_state_;
+}
+
 
 } // namespace procedural

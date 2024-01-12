@@ -13,8 +13,7 @@ class TransitionTask
 {
 public:
     explicit TransitionTask(uint32_t task_id, int next_state, const std::map<std::string, std::string>& arguments);
-    TransitionTask(const TransitionTask& t,int next_state);
-
+    TransitionTask(const TransitionTask& t, int next_state);
 
 
     void linkVariables(std::map<std::string, Variable_t>& variables);
@@ -23,10 +22,17 @@ public:
 
 
     std::string toString() const;
+    std::string toShortString() const;
     void setOntologyClient(onto::IndividualClient* indiv_client);
+
+    bool operator<(const TransitionTask other) const;
+
+    uint32_t getTaskId() const { return task_id_; };
+
+
 private:
     uint32_t task_id_;
-    std::map<std::string,Variable_t*> variables_;
+    std::map<std::string, Variable_t*> variables_;
     int id_next_state_;
     std::map<std::string, std::string> arguments_;
     bool checkArgs(Task* task);
