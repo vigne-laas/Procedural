@@ -192,6 +192,11 @@ struct HTNParserd_t
         return os;
     }
 
+    bool empty() const
+    {
+        return methods.empty() && actions.empty();
+    }
+
 };
 }
 #endif //PROCEDURAL_PARSEDHTN_H
