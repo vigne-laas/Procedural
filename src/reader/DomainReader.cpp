@@ -10,7 +10,7 @@ DomainReader::DomainReader(const std::string& path)
 {
     read(path);
 }
-void DomainReader::read(const std::string& path)
+bool DomainReader::read(const std::string& path)
 {
     std::ifstream stream;
     stream.open(path);
@@ -24,5 +24,6 @@ void DomainReader::read(const std::string& path)
     tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 
     htn_ = listener.getHTN();
+    return not htn_.empty();
 }
 } // procedural
