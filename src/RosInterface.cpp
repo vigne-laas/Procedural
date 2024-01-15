@@ -9,7 +9,6 @@ RosInterface::RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto
                            mementar::TimelinesManipulator& time_manipulators, const std::string& name) : node_(n),
                                                                                                          run_(true),
                                                                                                          name_(name)
-
 {
     ROS_INFO("Action Recognition start : %s", name_.c_str());
 
@@ -26,9 +25,15 @@ RosInterface::RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto
     ROS_INFO("Action Recognition ready : %s", name_.c_str());
 }
 
-bool RosInterface::init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size)
+bool RosInterface::init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size,
+                        const std::string& domain_path)
 {
-    if(reader_.read(descriptions_path) == false)
+    if (reader_.read(descriptions_path) == false)
+        return false;
+
+    if (domain_path.empty())
+        task_recognition_enable_ = false;
+    else if (domain_reader_.read(domain_path) == false)
         return false;
 
     ttl_buffer_ = ttl_buffer;
@@ -55,24 +60,47 @@ void RosInterface::run()
 /// ------------------------------- Private PART ----------------------------------------------- ///
 void RosInterface::build()
 {
+    ROS_INFO("Action Recognition : %s build action part", name_.c_str());
     builder_.build(reader_.getSimpleActions(), reader_.getComposedActions(), onto_manipulator_);
 
     StateMachine::displayTypesTable();
 
     recognition_.init(builder_.getActions(), ttl_buffer_, buffer_max_size_);
+
+    if (task_recognition_enable_)
+    {
+        ROS_INFO("Action Recognition : %s build task part", name_.c_str());
+
+        htn_builder_.buildTask(domain_reader_.getMethods(), domain_reader_.getActions(), builder_.getActions());
+
+        task_recognition_.init(htn_builder_.getTask());
+
+    }
+
 }
 
 void RosInterface::link()
 {
+
+
     feeder_.setCallback([&](procedural::Fact* fact) { recognition_.addToQueue(fact); });
     output_pub_ = node_->advertise<std_msgs::String>(getTopicName("outputStateMachines"), 1);
 
     sub_input_stamped_facts_ = node_->subscribe<mementar::StampedFact>(getMementarTopicName(), buffer_max_size_,
                                                                        &RosInterface::inputConverter, this);
     recognition_.setCallback([&](const std::vector<procedural::StateMachineFinishedMSG_>& outputs) {
-        for (auto& output : outputs)
+        for (auto& output: outputs)
             output_pub_.publish(outputConverter(output));
     });
+    if (task_recognition_enable_)
+    {
+        recognition_.linkToTaskRecognition(&task_recognition_);
+        task_recognition_.setCallback([&](const std::vector<procedural::TaskRecognizedMSG_t>& outputs) {
+            for (auto& output: outputs)
+                output_pub_.publish(outputTaskConverter(output));
+        });
+    }
+
 }
 
 void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
@@ -82,7 +110,7 @@ void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
         onto_manipulator_->classes.exist(output.type) == false)
         onto_manipulator_->feeder.addInheritage(output.type + "Action", "ActionMethod");
 
-    for (auto& description : output.descriptions)
+    for (auto& description: output.descriptions)
     {
         std::string subject;
         std::string object;
@@ -92,8 +120,7 @@ void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
                 subject = output.name;
             else
                 subject = description.var_subject_str_;
-        }
-        else
+        } else
             subject = Fact::individuals_table[description.var_subject_->getValue()];
 
         if (description.var_object_ == nullptr)
@@ -102,8 +129,7 @@ void RosInterface::ontologeniusPublisher(const StateMachineFinishedMSG_& output)
                 object = output.name;
             else
                 object = description.var_object_str_;
-        }
-        else
+        } else
             object = Fact::individuals_table[description.var_object_->getValue()];
 
         if (object.empty() == false and subject.empty() == false)
@@ -125,6 +151,25 @@ std_msgs::String RosInterface::outputConverter(const StateMachineFinishedMSG_& o
     timeline_manipulator_->action_feeder.insert(output.name, {(uint32_t) start_time.sec_, (uint32_t) start_time.nsec_},
                                                 {(uint32_t) stop_time.sec_, (uint32_t) stop_time.nsec_});
     ontologeniusPublisher(output);
+
+    return res;
+}
+
+
+std_msgs::String RosInterface::outputTaskConverter(const TaskRecognizedMSG_t& output)
+{
+    std::cout << " new output : " << output << std::endl;
+    std_msgs::String res;
+    std::stringstream ss;
+    ss << output;
+    res.data = ss.str();
+    TimeStamp_t delta_t{0, 500000000};
+    auto start_time(output.start_time.removeDeltaT(delta_t));
+    auto stop_time(output.stop_time.addDeltaT(delta_t));
+
+//    timeline_manipulator_->action_feeder.insert(output.name, {(uint32_t) start_time.sec_, (uint32_t) start_time.nsec_},
+//                                                {(uint32_t) stop_time.sec_, (uint32_t) stop_time.nsec_});
+//    ontologeniusPublisher(output);
 
     return res;
 }
@@ -151,7 +196,7 @@ std::string RosInterface::getTopicName(const std::string& topic_name)
 std::string RosInterface::getTopicName(const std::string& topic_name, const std::string& onto_name)
 {
     return (onto_name.empty()) ? "/ActionRecognition/" + topic_name :
-                                 "/ActionRecognition/" + topic_name + "/" + onto_name;
+           "/ActionRecognition/" + topic_name + "/" + onto_name;
 }
 std::string RosInterface::getMementarTopicName()
 {

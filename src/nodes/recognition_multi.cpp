@@ -21,9 +21,9 @@ bool deleteInterface(const std::string& name)
     {
         interfaces_threads_[name].join();
     }
-    catch(std::runtime_error& ex)
+    catch (std::runtime_error& ex)
     {
-        ROS_ERROR("Catch error when joining the interface thread : %s",std::string(ex.what()).c_str());
+        ROS_ERROR("Catch error when joining the interface thread : %s", std::string(ex.what()).c_str());
         ROS_WARN("The thread will be detached");
         interfaces_threads_[name].detach();
     }
@@ -50,20 +50,21 @@ void callback_manager(const std_msgs::String::ConstPtr& msg)
 {
     std::cout << "msg received : " << msg << std::endl;
     std::vector<std::string> msg_params = parse_msg(msg->data);
-    if(msg_params[0]=="ADD")
+    if (msg_params[0] == "ADD")
     {
         auto it = interfaces_.find(msg_params[1]);
-        if(it != interfaces_.end())
+        if (it != interfaces_.end())
             return;
         else
         {
             auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, msg_params[1]);
-            if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
+            if (tmp->init(params.at("action_path").getFirst(), stod(params.at("ttl").getFirst()),
+                          stoi(params.at("max_size").getFirst()), params.at("domain_path").getFirst()))
             {
                 interfaces_[msg_params[1]] = tmp;
                 std::thread th(&procedural::RosInterface::run, tmp);
                 interfaces_threads_[msg_params[1]] = std::move(th);
-                std::cout <<"ActionRecognition : " << msg_params[1] << " STARTED" << std::endl;
+                std::cout << "ActionRecognition : " << msg_params[1] << " STARTED" << std::endl;
             }
         }
     }
@@ -78,9 +79,11 @@ int main(int argc, char** argv)
     onto_manipulators = new onto::OntologiesManipulator(node_);
     time_manipulators = new mementar::TimelinesManipulator(node_);
 
-    params.insert(procedural::Parameter("yaml_path", {"-d", "--description"}));
+    params.insert(procedural::Parameter("action_path", {"-a", "--action_path"}));
     params.insert(procedural::Parameter("ttl", {"-t", "--ttl"}, {"25"}));
     params.insert(procedural::Parameter("max_size", {"-s", "--max_size"}, {"500"}));
+    params.insert(procedural::Parameter("domain_path", {"-d", "--domain_path"}, {""}));
+
 //    params.insert(procedural::Parameter("name", {"-n", "--name"}, {"pepper"}));
 //
     params.set(argc, argv);
@@ -95,23 +98,25 @@ int main(int argc, char** argv)
 //        std::cout <<"ActionRecognition : " << params.at("name").getFirst() << " STARTED" << std::endl;
 //    }
 
-    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/overworld/new_assessor", 10, callback_manager);
+    ros::Subscriber subscriber_action = node_->subscribe<std_msgs::String>("/overworld/new_assessor", 10,
+                                                                           callback_manager);
 
     ros::ServiceClient client = node_->serviceClient<overworld::GetAgents>("/overworld/getAgents");
     overworld::GetAgents srv;
-    if(client.call(srv))
-        for(auto agent : srv.response.agents)
+    if (client.call(srv))
+        for (auto agent: srv.response.agents)
         {
             auto it = interfaces_.find(agent);
-            if(it == interfaces_.end())
+            if (it == interfaces_.end())
             {
                 auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, agent);
-                if(tmp->init(params.at("yaml_path").getFirst(), stod(params.at("ttl").getFirst()), stoi(params.at("max_size").getFirst())))
+                if (tmp->init(params.at("action_path").getFirst(), stod(params.at("ttl").getFirst()),
+                              stoi(params.at("max_size").getFirst()), params.at("domain_path").getFirst()))
                 {
                     interfaces_[agent] = tmp;
                     std::thread th(&procedural::RosInterface::run, tmp);
                     interfaces_threads_[agent] = std::move(th);
-                    std::cout <<"ActionRecognition : " << agent << " STARTED" << std::endl;
+                    std::cout << "ActionRecognition : " << agent << " STARTED" << std::endl;
                 }
             }
         }
@@ -120,9 +125,10 @@ int main(int argc, char** argv)
     ros::spin();
 
     std::vector<std::string> interfaces_names;
-    std::transform(interfaces_.cbegin(), interfaces_.cend(), std::back_inserter(interfaces_names), [](const auto& interface){ return interface.first; });
+    std::transform(interfaces_.cbegin(), interfaces_.cend(), std::back_inserter(interfaces_names),
+                   [](const auto& interface) { return interface.first; });
 
-    for(auto& interfaces_name : interfaces_names)
+    for (auto& interfaces_name: interfaces_names)
         deleteInterface(interfaces_name);
 
     ROS_DEBUG("KILL action recognition");

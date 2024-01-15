@@ -13,6 +13,9 @@
 
 #include "mementar/TimelinesManipulator.h"
 #include "mementar/StampedFact.h"
+#include "procedural/core/TaskRecognition.h"
+#include "procedural/builder/HTNBuilder.h"
+#include "procedural/reader/DomainReader.h"
 
 
 namespace procedural {
@@ -23,7 +26,8 @@ public:
     RosInterface(ros::NodeHandle* n, onto::OntologiesManipulator& onto_manipulators,
                  mementar::TimelinesManipulator& time_manipulators, const std::string& name = "");
 
-    bool init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size);
+    bool
+    init(const std::string& descriptions_path, double ttl_buffer, int buffer_max_size, const std::string& domain_path);
     void run();
     void stop() { run_ = false; }
     inline bool isRunning() const { return run_; }
@@ -38,25 +42,31 @@ private:
     std::string name_;
     double ttl_buffer_;
     int buffer_max_size_;
-    
+
     ros::Publisher output_pub_;
     ros::Subscriber sub_input_stamped_facts_;
 
     YamlReader reader_;
     ActionBuilder builder_;
     ActionRecognition recognition_;
+    DomainReader domain_reader_;
+    HTNBuilder htn_builder_;
+    TaskRecognition task_recognition_;
     Feeder feeder_;
 
     void build();
     void link();
 
     std_msgs::String outputConverter(const StateMachineFinishedMSG_& output);
+    std_msgs::String outputTaskConverter(const TaskRecognizedMSG_t& output);
+
     void inputConverter(const mementar::StampedFact::ConstPtr& msg);
     void ontologeniusPublisher(const StateMachineFinishedMSG_& output);
 
     std::string getTopicName(const std::string& topic_name);
     std::string getTopicName(const std::string& topic_name, const std::string& onto_name);
     std::string getMementarTopicName();
+    bool task_recognition_enable_;
 };
 
 } // procedural

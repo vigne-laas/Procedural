@@ -187,6 +187,7 @@ target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
         ${PROJECT_NAME}_reader_lib
         ${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_utils_lib
+        ${PROJECT_NAME}_task_recognition_lib
         ${catkin_LIBRARIES})
 
 add_library(${PROJECT_NAME}_task_recognition_lib
@@ -295,6 +296,7 @@ add_executable(recognition src/nodes/recognition.cpp)
 add_dependencies(recognition ${catkin_EXPORTED_TARGETS})
 target_link_libraries(recognition
         ${PROJECT_NAME}_interface_lib
+
         ${catkin_LIBRARIES}
         ${ontologenius_LIBRARIES}
 )
