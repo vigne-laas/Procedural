@@ -34,19 +34,19 @@
 //                    break;
 //                case FeedResult::EVOLVE:
 //                    std::cout << "Action : " << action->getName() << " has evolved" << std::endl;
-////                        result_feed_process.finished_actions.push_back(this);
+////                        result_feed_process.finished_.push_back(this);
 //                    if (!result_feed_process.evolve)
 //                        result_feed_process.evolve = true;
 //                    break;
 //                case FeedResult::FINISH:
-//                    result_feed_process.finished_actions.push_back(this);
+//                    result_feed_process.finished_.push_back(this);
 //                    if (!result_feed_process.evolve)
 //                        result_feed_process.evolve = true;
 //                    notify(MessageType::Finished);
 //                    break;
 //            }
 //            if (result_feed.update_available)
-//                result_feed_process.updated_actions.push_back(this);
+//                result_feed_process.updated_.push_back(this);
 //        }
 //    }
 ////    std::cout << "End feed Action Method " << name_ << std::endl;
@@ -142,19 +142,19 @@
 //            case FeedResult::NO_EVOLUTION:
 //                break;
 //            case FeedResult::EVOLVE:
-////                result_feed_process.finished_actions.push_back(this);
+////                result_feed_process.finished_.push_back(this);
 ////                if (!result_feed_process.evolve)
 ////                    result_feed_process.evolve = true;
 //                break;
 //            case FeedResult::FINISH:
-//                result_feed_process.finished_actions.push_back(this);
+//                result_feed_process.finished_.push_back(this);
 //                if (!result_feed_process.evolve)
 //                    result_feed_process.evolve = true;
 //                notify(MessageType::Finished);
 //                break;
 //        }
 //        if (result_feed.update_available)
-//            result_feed_process.updated_actions.push_back(this);
+//            result_feed_process.updated_.push_back(this);
 //    }
 //
 //    if (result_feed_process.evolve)

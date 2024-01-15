@@ -70,7 +70,7 @@ HTN {
 				O.isOn != NULL;
 			};
 			subtasks {
-				1:Pick(A, O);
+				1:Pick_Over(A, O);
 			};
 		}
 		{
