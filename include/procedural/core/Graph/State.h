@@ -125,7 +125,7 @@ private:
 
     // Generate DOT specific to transitions of type Fact
     void generateDOT_Facts(std::ofstream& dotFile, std::set<int>& visitedStates) const;
-add files for test builder domain
+
     // Generate DOT specific to transitions of type Action
     void generateDOT_Actions(std::ofstream& dotFile, std::set<int>& visitedStates) const;
 
