@@ -10,10 +10,10 @@ int main(int, const char**)
 {
     procedural::DomainReader domainReader;
     procedural::HTNBuilder builder;
-    domainReader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/test_builder/task.dom");
+    domainReader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/task.dom");
     domainReader.getMethods();
     procedural::YamlReader reader = procedural::YamlReader();
-    reader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/test_builder/actions.yaml");
+    reader.read("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/actions.yaml");
     procedural::ActionBuilder action_builder(reader.getSimpleActions(), reader.getComposedActions());
     auto actions_ = action_builder.getActions();
     std::cout << std::endl;

@@ -9,9 +9,9 @@ Method::Method(const std::string& name, int id) : name_(name), id_(id), compt_SM
     factory_machine_ = new StateMachine(name, id);
 }
 
-void Method::addTransition(const HTNTransition_t& transition)
+bool Method::addTransition(const HTNTransition_t& transition)
 {
-    factory_machine_->addTransition(transition);
+    return factory_machine_->addTransition(transition);
 }
 void Method::close()
 {

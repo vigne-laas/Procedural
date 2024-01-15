@@ -10,7 +10,7 @@ class Method
 {
 public:
     Method(const std::string& name, int id);
-    void addTransition(const HTNTransition_t& transition);
+    bool addTransition(const HTNTransition_t& transition);
     void close();
     std::string getStrStructure();
     EvolveResult_t feed(StateMachine* sm);

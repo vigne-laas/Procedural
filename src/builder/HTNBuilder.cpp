@@ -4,6 +4,7 @@
 #include "procedural/builder/HTNBuilder.h"
 #include "procedural/core/Types/Task.h"
 #include <stdexcept>
+#include <exception>
 
 namespace procedural {
 
@@ -50,16 +51,58 @@ bool HTNBuilder::buildTask(std::vector<Abstract_task_t>& abstract_tasks,
                       [](const Ordered_Action_t& a1, const Ordered_Action_t& a2) {
                           return a1.after_id.size() < a2.after_id.size();
                       });
+            std::vector<Ordered_Action_t> unapply_actions;
             for (const auto& action: ordered_actions)
             {
+
                 auto t = createTransition(action, compt_actions, arguments, remap);
 //                std::cout << "transition " << t.toString() << std::endl;
-                new_method->addTransition(t);
-                compt_actions++;
+                if (new_method->addTransition(t))
+                    compt_actions++;
+                else
+                    unapply_actions.push_back(action);
+
+                auto it = std::remove_if(unapply_actions.begin(), unapply_actions.end(),
+                                         [&](const Ordered_Action_t& unapply_action) {
+                                             auto t = createTransition(unapply_action, compt_actions, arguments, remap);
+                                             bool res = new_method->addTransition(t);
+                                             if (res)
+                                                 compt_actions++;
+                                             else
+                                                 std::cout << "actions pas valide a cette etape"
+                                                           << std::endl;
+                                             return res;
+                                         });
+
+                unapply_actions.erase(it, unapply_actions.end());
+
 
                 new_method->saveDot(compt_actions, "", true);
 
             }
+            int max_compt = unapply_actions.size();
+            int compt = 0;
+            while ((not unapply_actions.empty()) and compt < max_compt + 1)
+            {
+                auto it = std::remove_if(unapply_actions.begin(), unapply_actions.end(),
+                                         [&](const Ordered_Action_t& unapply_action) {
+                                             auto t = createTransition(unapply_action, compt_actions, arguments, remap);
+                                             bool res = new_method->addTransition(t);
+                                             if (res)
+                                                 compt_actions++;
+                                             else
+                                                 std::cout << "actions pas valide a cette etape"
+                                                           << std::endl;
+                                             return res;
+                                         });
+
+                unapply_actions.erase(it, unapply_actions.end());
+                compt++;
+            }
+
+            if (not unapply_actions.empty())
+                throw std::logic_error("All actions can't be link issue in modelisation of " + new_method->getName());
+
             new_task->addMethods(new_method);
             new_method->saveDot(step++, "", false);
 

@@ -187,11 +187,22 @@ bool StateMachine::addTransition(const PatternTransitionStateMachine_t& transiti
 
 bool StateMachine::addTransition(const HTNTransition_t& transition)
 {
+
+
     int origin_id = transition.step * 10;
     int final_id = (transition.step + 1) * 10;
 
     addState(origin_id);
+        // FIXME Issue on PrepareQuiche car contraintes pas valide pour le parent mais mise en place quand meme et si rajout de cela alors plus rien ne se construit correctement.
+//    if (not states_[origin_id]->validateConstraints(transition.id_contraints_order))
+//    {
+//        std::cout << "l'etat precedant ne valide pas les contraintes" << std::endl;
+//        return false;
+//    }
+
+
     addState(final_id);
+
 
     for (auto& var: transition.arguments_)
         insertVariable(var.first);
