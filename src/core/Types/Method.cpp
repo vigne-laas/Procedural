@@ -148,10 +148,11 @@ EvolveResult_t Method::feed(Task* task)
 
     return res;
 }
-void Method::saveDot(int i, const std::string& suffix, bool partial)
+void Method::saveDot(int i, const std::string& suffix, bool partial, const std::string& path)
 {
     std::ofstream dot_file;
-    std::string folder_name = "dot/" + name_ + "/" + std::to_string(id_);
+    std::string folder_name = (path.empty()) ? "" : path + "/";
+    folder_name += "dot/" + name_ + "/" + std::to_string(id_);
     std::filesystem::path full_folder_path = std::filesystem::absolute(folder_name);
     std::cout << "essaie creation : " << full_folder_path << std::endl;
     if (!std::filesystem::exists(full_folder_path))

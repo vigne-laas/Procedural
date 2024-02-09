@@ -19,7 +19,7 @@ public:
     int getNextSMId() { return compt_SM_++; }
     std::string getName() { return name_; }
 
-    void saveDot(int i,const std::string& suffix = "",bool partial= false);
+    void saveDot(int i,const std::string& suffix = "",bool partial= false,const std::string& path = "");
 private:
 
     std::string name_;

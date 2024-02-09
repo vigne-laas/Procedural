@@ -12,7 +12,7 @@ public:
     void buildAction(const std::vector<PrimitiveActionParsed_t>& actions);
     bool buildTask(std::vector<Abstract_task_t>& abstract_tasks,
                    const std::vector<PrimitiveActionParsed_t>& actions_htn,
-                   const std::vector<Action*>& actions_);
+                   const std::vector<Action*>& actions_,const std::string& path = "");
     void displayTask();
     std::vector<Task*> getTask() { return tasks_; }
 private:
