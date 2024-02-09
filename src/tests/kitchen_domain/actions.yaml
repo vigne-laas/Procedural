@@ -190,3 +190,21 @@ Cut:
     - ?? isPerformedBy ?A
     - ?? isPerformedOn ?I
     - ?? cut ?I
+
+
+Twist:
+  args:
+    - A Agent
+    - F Whisk
+    - C Container
+  parameters:
+    ttl: 30
+  sequence:
+    - ?A hasInHand ?F
+    - ?F isHoldIn ?C
+    - ?A CircularMove ?F
+  description:
+    - ?? isA TwistAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedWith ?F
+    - ?? isMixing ?C
