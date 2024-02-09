@@ -218,17 +218,15 @@ HTN {
 	method Place(Agent A, Pickable O, Table T) {
 		goal{O.isOn == T;};
 		{
-			preconditions {};
+			preconditions {A.hasInHand = O;};
 			subtasks {
-				1:Get(A, O);
-				2:Place_Over(A, O, T)>1;
+				1:Place_Over(A, O, T)>1;
 			};
 		}
 		{
-			preconditions {};
+			preconditions {A.hasInHand = O;};
 			subtasks {
-				1:Get(A, O);
-				2:Place_In(A, O, T)>1;
+				1:Place_In(A, O, T)>1;
 			};
 		}
 	}
@@ -238,13 +236,15 @@ HTN {
 		{
 			preconditions {};
 			subtasks {
-				1:Pick_Over(A, O);
+                S = SELECT(Support, {O.isOver == S;})
+				1:Pick_Over(A, O, S);
 			};
 		}
 		{
 			preconditions {};
 			subtasks {
-				1:Pick_In(A, O);
+			    C = SELECT(Container, {O.isIn == C;})
+				1:Pick_In(A, O, C);
 			};
 		}
 	}

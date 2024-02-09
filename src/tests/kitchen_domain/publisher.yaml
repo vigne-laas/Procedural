@@ -1,0 +1,28 @@
+Args:
+  - A: Bob
+  - F: Whisk
+  - S: Support0
+  - C: Container0
+  - C1: Bowl1
+  - C2: Bowl2
+  - Bowl: Bowl3
+  - I: Ham
+  - CakeMold: Mold0
+  - Milk: Milk1
+  - Cream: Cream2
+  - Cheese: Cheese0
+  - Flour: Flour0
+  - Eggs: Eggs1
+  - K: Knife1
+  - Hoven: Hoven0
+
+Sequence:
+  - Pick:
+      - A
+      - F
+  - Place:
+      - A
+      - F
+      - C2
+  - PrepareHamCake:
+      - A
