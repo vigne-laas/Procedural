@@ -1,11 +1,15 @@
 import os
 import re
+import time
 from pathlib import Path
 from typing import Union, Dict, Tuple, List, Callable
 
 import networkx as nx
 import pydot
 import matplotlib.pyplot as plt
+import rospy
+from ontologenius import OntologiesManipulator
+from ontologenius.msg import OntologeniusStampedString
 
 
 class Action:
@@ -457,7 +461,7 @@ class ActionExecutor:
 
     def parseSequence(self, sequence):
         for action in sequence:
-            for     ction_name, params in action.items():
+            for ction_name, params in action.items():
                 # action_params = {param: self.variables[param] for param in params}
                 self.actions.append((action_name, params))
 
@@ -503,11 +507,29 @@ def print_result(msg):
     list_msg.append(msg)
 
 
+class OntologyPublisher():
+
+    def __init__(self, name=None):
+        rospy.init_node("OntologyTaskPublisher", anonymous=False)
+        if name is not None:
+            self.pub = rospy.Publisher("/ontologies/insert_stamped/" + name, OntologeniusStampedString, queue_size=1)
+        else:
+            self.pub = rospy.Publisher("/ontologies/insert_stamped", OntologeniusStampedString, queue_size=1)
+
+    def sendSequence(self, sequence):
+        for s in sequence:
+            print(f'publish : {s}')
+            msg = OntologeniusStampedString(s)
+            self.pub.publish(msg)
+            time.sleep(0.1)
+
+
 # Utilisation de la classe
 if __name__ == '__main__':
+    publisher = OntologyPublisher("pr2")
     folder_path = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot'
     yaml_file = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/publisher.yaml'
     executor = ActionExecutor(yaml_file, folder_path)
     executor.displayAll()
-    executor.setCallback(print_result)
+    executor.setCallback(publisher.sendSequence)
     executor.executeActions()
