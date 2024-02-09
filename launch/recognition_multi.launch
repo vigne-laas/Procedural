@@ -8,15 +8,17 @@
         $(find dt_resources)/ontologies/dt_objects.owl
         $(find procedural)/ontologies/recognition.owl"/>
         <arg name="mementar_config_file" value="$(find procedural)/configs/mementar.yaml"/>
-        <arg name="onto_config_file" value="$(find procedural)/configs/ontologenius.yaml" />
+        <arg name="onto_config_file" value="$(find procedural)/configs/ontologenius.yaml"/>
     </include>
 
-    <arg name="yaml_path" default="$(find procedural)/src/reader/test.yaml"/>
+    <arg name="action_path" default="$(find procedural)/src/tests/kitchen_domain/actions.yaml"/>
+    <arg name="domain_path" default="$(find procedural)/src/tests/kitchen_domain/task.dom"/>
     <arg name="ttl_buffer" default="25"/>
     <arg name="max_size_buffer" default="500"/>
-    <arg name="name" default="pepper"/>
+    <arg name="name" default="pr2"/>
 
-<!--    <remap from="/overworld/new_assessor" to="/new_agent"/>-->
-    <node name="recognition" pkg="procedural" type="recognition_multi" output="screen" args="-n $(arg name) -d $(arg yaml_path) -t $(arg ttl_buffer) -s $(arg max_size_buffer)"/>
+    <!--    <remap from="/overworld/new_assessor" to="/new_agent"/>-->
+    <node name="recognition" pkg="procedural" type="recognition_multi" output="screen"
+          args="-n $(arg name) -a $(arg action_path) -d $(arg domain_path) -t $(arg ttl_buffer) -s $(arg max_size_buffer)"/>
 
 </launch>

@@ -72,11 +72,11 @@ void callback_manager(const std_msgs::String::ConstPtr& msg)
 
 int main(int argc, char** argv)
 {
-//    std::cout << "<<<<<<<<<<<<<<<<<< Launching Action Recognition <<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    std::cout << "<<<<<<<<<<<<<<<<<< Launching Action Recognition <<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     ros::init(argc, argv, "Action_Recognition_multi");
     ros::NodeHandle node;
     node_ = &node;
-    onto_manipulators = new onto::OntologiesManipulator(node_);
+    onto_manipulators = new onto::OntologiesManipulator();
     time_manipulators = new mementar::TimelinesManipulator(node_);
 
     params.insert(procedural::Parameter("action_path", {"-a", "--action_path"}));

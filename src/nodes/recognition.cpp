@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     std::cout << "<<<<<<<<<<<<<<<<<< Launching Action Recognition <<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     ros::init(argc, argv, "ActionRecognition");
     ros::NodeHandle n;
-    auto onto_manipulators = onto::OntologiesManipulator(&n);
+    auto onto_manipulators = onto::OntologiesManipulator();
     auto time_manipulators = mementar::TimelinesManipulator(&n);
 
     procedural::Parameters params;

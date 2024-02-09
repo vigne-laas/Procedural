@@ -109,6 +109,9 @@ catkin_package(
         #  DEPENDS system_lib
 )
 
+add_compile_options(-DONTO_ROS_VERSION=$ENV{ROS_VERSION})
+
+
 ###########
 ## Build ##
 ###########
@@ -134,7 +137,7 @@ add_library(${PROJECT_NAME}_graph_lib
         src/core/Graph/State.cpp
         src/core/Graph/StateMachine.cpp
         src/core/Graph/Transitions/TransitionAction.cpp)
-target_link_libraries(${PROJECT_NAME}_graph_lib ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_graph_lib  ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
 
 add_library(${PROJECT_NAME}_reader_lib
         src/reader/YamlReader.cpp)
