@@ -46,13 +46,15 @@ std::string TransitionTask::toShortString() const
 {
     std::string res =
             "Task Transitions : " + std::to_string(task_id_) + "(" + Task::task_types.get(task_id_) + ") \n";
+    res += "Args: ";
+    for (auto arg = arguments_.begin(); arg != arguments_.end(); ++arg)
+        res += arg->first + " => " + arg->second + (std::next(arg) != arguments_.end() ? "," : "");
+    res += "\n";
     if (!variables_.empty())
     {
         res += "\t Vars : ";
         for (auto it = variables_.begin(); it != variables_.end(); ++it)
             res += "\t" + it->first + (std::next(it) != variables_.end() ? "," : "");
-
-
     }
     return res;
 };

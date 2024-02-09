@@ -84,6 +84,15 @@ std::string TransitionAction::toShortString() const
     std::string res =
             "State Machine Transitions type : " + std::to_string(type_) + "(" + StateMachine::types_table.get(type_) +
             ") to " + std::to_string(id_next_state_) + "\n";
+    res += "\t Remap : ";
+    for (auto& pair: remap_var_)
+        res += "\t" + pair.first + " ==> " + pair.second + "\n";
+    if (!variables_.empty())
+    {
+        res += "\t Vars : ";
+        for (auto it = variables_.begin(); it != variables_.end(); ++it)
+            res += "\t" + it->first + (std::next(it) != variables_.end() ? "," : "");
+    }
     return res;
 }
 bool TransitionAction::operator<(const TransitionAction other) const
