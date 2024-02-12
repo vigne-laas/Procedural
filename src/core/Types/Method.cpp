@@ -148,7 +148,8 @@ EvolveResult_t Method::feed(Task* task)
 
     return res;
 }
-void Method::saveDot(int i, const std::string& suffix, bool partial, const std::string& path)
+void Method::saveDot(int i, const std::string& suffix, bool partial, const std::string& path,
+                     const std::map<std::string, std::string>& args)
 {
     std::ofstream dot_file;
     std::string folder_name = (path.empty()) ? "" : path + "/";
@@ -205,6 +206,16 @@ void Method::saveDot(int i, const std::string& suffix, bool partial, const std::
 
         dot_file << factory_machine_->getInitialState()->getFullName() << " [shape=Mdiamond];" << std::endl;
         dot_file << factory_machine_->getFinalState()->getFullName() << " [shape=Msquare];" << std::endl;
+        dot_file << "args [label=\"";
+        for (auto it = args.begin(); it != args.end(); ++it)
+        {
+            dot_file << it->first << ": " << it->second;
+            if (std::next(it) != args.end())
+            {
+                dot_file << ", ";
+            }
+        }
+        dot_file << "\" shape=none];\n";
         dot_file << "}" << std::endl;
         dot_file.close();
         std::cout << "DOT file generated successfully: " << full_path << std::endl;

@@ -30,8 +30,14 @@ bool HTNBuilder::buildTask(std::vector<Abstract_task_t>& abstract_tasks,
         std::cout << abstract_task << std::endl;
         new_task = new Task(abstract_task.name);
         std::map<std::string, std::string> arguments;
+        std::cout<< "Args of : " << abstract_task.name << std::endl;
         for (auto& arg: abstract_task.arguments)
+        {
             arguments.emplace(arg.varname, arg.type);
+            std::cout << "\t - "  << arg.varname << ": " << arg.type << std::endl;
+        }
+
+
 
 
         new_task->addArguments(arguments);
@@ -61,7 +67,7 @@ bool HTNBuilder::buildTask(std::vector<Abstract_task_t>& abstract_tasks,
 
             }
             new_task->addMethods(new_method);
-            new_method->saveDot(step++, "", false, path);
+            new_method->saveDot(step++, "", false, path,arguments);
 
             compt++;
         }
