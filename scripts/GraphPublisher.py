@@ -1,4 +1,3 @@
-import os
 import re
 import time
 from pathlib import Path
@@ -7,9 +6,11 @@ from typing import Union, Dict, Tuple, List, Callable
 import networkx as nx
 import pydot
 import matplotlib.pyplot as plt
-import rospy
-from ontologenius import OntologiesManipulator
-from ontologenius.msg import OntologeniusStampedString
+
+
+# import rospy
+# from ontologenius.msg import OntologeniusStampedString
+# from ontologenius import Ontoros
 
 
 class Action:
@@ -26,7 +27,7 @@ class Action:
     @staticmethod
     def Pick_In(A, O, C):
         grasp_sequence = Action.grasp(A, O)
-        grasp_sequence.append(f"[DEL]{O}|inIn|{C}")
+        grasp_sequence.append(f"[DEL]{O}|isIn|{C}")
         return grasp_sequence
 
     @staticmethod
@@ -99,7 +100,7 @@ class Action:
         return instructions
 
     @staticmethod
-    def Twist(A, F, C):
+    def Twist(A, C, F):
         instructions = [
             f"[ADD]{A}|hasInHand|{F}",
             f"[ADD]{F}|isHoldIn|{C}",
@@ -122,6 +123,10 @@ class GraphTask:
         self.actions_non_correspondantes = set()
         self.separer_actions(graph_names)
         self.output = None
+        self.graph_analyzer = None
+
+    def setGraphAnalyzer(self, graph_analyzer):
+        self.graph_analyzer = graph_analyzer
 
     def trouver_noeud_initial(self):
         """Trouve le nœud initial dans le graphe."""
@@ -217,9 +222,9 @@ class GraphTask:
             else:
                 self.actions_non_correspondantes.add(action)
 
-    def executer_graph(self, param, graph_analyzer, chemin_index=None):
+    def executer_graph(self, param, chemin_index=None, level=0):
         """Exécute les actions d'un chemin aléatoire ou sélectionné du graphe."""
-        print(f"\t Try to execute {self.name} with param : {param}")
+        print("\t" + "\t" * level + f"Try to execute {self.name} with param: {param} , level : {level}")
         if not self.paths:
             print("Aucun chemin disponible pour l'exécution.")
             return
@@ -235,33 +240,50 @@ class GraphTask:
             return
 
         actions_vars = self.actions_par_chemin[self.paths.index(chemin)]
-        # print("actions_vars:", actions_vars)
+        print("actions_vars:", actions_vars)
         # Exécuter les actions du chemin sélectionné
         for nom_action, local_var in actions_vars:
-            # Récupérer la méthode de la classe Action en utilisant getattr
+            print("--------------------------------")
+            print(f"\t sub part : {nom_action} : {local_var}")
             action_method = getattr(Action, nom_action, None)
-
+            # local_param = [self.graph_analyzer.variables[arg] for arg in param]
             if action_method:
-                local_param = [graph_analyzer.variables[arg] for arg in param]
+                local_param = list(param.values())
                 if len(local_param) != len(local_var):
                     nb_values = len(local_param)
                     for i in range(nb_values, len(local_var)):
-                        # print(f"missing param : {local_var[i]}")
-                        local_param.append(graph_analyzer.variables[local_var[i]])
-                # print(
-                # f"Exécution de {nom_action} avec les paramètres :{param} local var : {local_var} local remap : {local_param}")
+                        print(f"missing param : {local_var[i]}")
+                        local_param.append(self.graph_analyzer.variables[local_var[i]])
+                print(
+                    f"Exécution de {nom_action} avec les paramètres :{param} local var : {local_var} local param : {local_param}")
                 # Appeler la méthode avec des paramètres de test (ajustez selon vos besoins)
                 result = action_method(*local_param)  # Exemple avec des paramètres arbitraires
                 # print("sequence :", result)
                 self.output(result)
+                print("-------------------------")
             else:
-                # print(f"{nom_action} est une tâche donc décomposition.")
+                sub_executive_dict = self.get_exective_param(local_var, param)
+
+                print(
+                    f"{nom_action} est une tâche donc décomposition. {local_var},param {param}, local_param {sub_executive_dict}")
                 if nom_action == "Get":
-                    graph_analyzer.execute_graph(nom_action, local_var, 0)
-                graph_analyzer.execute_graph(nom_action, local_var)
+                    self.graph_analyzer.execute_graph(nom_action, sub_executive_dict, 0, level=level + 1)
+                self.graph_analyzer.execute_graph(nom_action, sub_executive_dict, level=level + 1)
 
     def set_output_callback(self, callback):
         self.output = callback
+
+    def get_exective_param(self, local_var, arg):
+        res = {}
+        for var in local_var:
+            print("local var : ", var)
+            if var in arg.keys():
+                print(f"Add {var} from local_executive context  value :{arg[var]}")
+                res[var] = arg[var]
+            else:
+                print(f"Add {var} from global context value : {self.graph_analyzer.variables[var]}")
+                res[var] = self.graph_analyzer.variables[var]
+        return res
 
 
 import random
@@ -370,14 +392,11 @@ class GraphAnalyzer:
         print("Actions :", self.actions_non_graph_keys)
         print("Task :", self.actions_graph_keys)
 
-    def execute_graph(self, graph_name, params, index=None):
+    def execute_graph(self, graph_name, params, index=None, level=0):
         # Trouver et exécuter un graphe spécifique par son nom
         graph_task = self.find_graph_by_name(graph_name, index)
         if graph_task:
-            graph_task.executer_graph(params, self)
-            # if return_value is not None:
-            #     print(f"incorrect call of {graph_name} with {params}")
-            #     print(f"try to call the graph : {return_value}")
+            graph_task.executer_graph(params, level=level)
         else:
             print(f"Graphe {graph_name} non trouvé.")
 
@@ -410,13 +429,14 @@ import yaml
 
 class ActionExecutor:
     def __init__(self, yaml_file, dot_folder):
-        self.debug = False
+        self.debug = True
         self.variables = {}
         self.actions: List[Tuple[str, Dict[str, str]]] = []
         self.graph_analyzer = GraphAnalyzer(dot_folder)
         self.graph_analyzer.run()
         self.loadYaml(yaml_file)
         self.checkActions()
+        self.link()
 
         # self.execute_actions()
 
@@ -448,6 +468,11 @@ class ActionExecutor:
                 print(f"{action} found")
         print("Check Actions Ok")
 
+    def link(self):
+        for graphs in self.graph_analyzer.graphs.values():
+            for graph in graphs:
+                graph.setGraphAnalyzer(self.graph_analyzer)
+
     def loadYaml(self, yaml_file):
         with open(yaml_file, 'r') as file:
             data = yaml.safe_load(file)
@@ -461,9 +486,12 @@ class ActionExecutor:
 
     def parseSequence(self, sequence):
         for action in sequence:
-            for ction_name, params in action.items():
-                # action_params = {param: self.variables[param] for param in params}
-                self.actions.append((action_name, params))
+            for action_name, params in action.items():
+                action_params = {}
+                for param in params:
+                    for literal, value in param.items():
+                        action_params[literal] = self.variables[value]
+                self.actions.append((action_name, action_params))
 
     def displayVariablesAndAction(self):
         """Affiche les actions et les variables traitées."""
@@ -477,6 +505,8 @@ class ActionExecutor:
     def executeActions(self):
         self.graph_analyzer.set_variables(self.variables)
         for action_name, args in self.actions:
+            # executive_dict = {arg: self.variables[arg] for arg in args}
+            # print("executive_dict: ", executive_dict)
             if self.graph_analyzer and action_name in self.graph_analyzer.graphs:
                 # Si l'action correspond au nom d'un graphe, exécute ce graphe
                 if self.debug:
@@ -507,21 +537,23 @@ def print_result(msg):
     list_msg.append(msg)
 
 
-class OntologyPublisher():
-
+class OntologyPublisher:
     def __init__(self, name=None):
-        rospy.init_node("OntologyTaskPublisher", anonymous=False)
-        if name is not None:
-            self.pub = rospy.Publisher("/ontologies/insert_stamped/" + name, OntologeniusStampedString, queue_size=1)
-        else:
-            self.pub = rospy.Publisher("/ontologies/insert_stamped", OntologeniusStampedString, queue_size=1)
+        # rospy.init_node("OntologyTaskPublisher", anonymous=False)
+        # if name is not None:
+        #     self.pub = rospy.Publisher("/ontologenius/insert_stamped/" + name, OntologeniusStampedString, queue_size=1)
+        # else:
+        #     self.pub = rospy.Publisher("/ontologenius/insert_stamped", OntologeniusStampedString, queue_size=1)
+        pass
 
     def sendSequence(self, sequence):
         for s in sequence:
             print(f'publish : {s}')
-            msg = OntologeniusStampedString(s)
-            self.pub.publish(msg)
-            time.sleep(0.1)
+            # stamp = Ontoros.getRosTime()
+            # msg = OntologeniusStampedString(data=s, stamp=stamp)
+            # self.pub.publish(msg)
+            # time.sleep(0.1)
+            pass
 
 
 # Utilisation de la classe
