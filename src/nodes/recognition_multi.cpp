@@ -83,8 +83,7 @@ int main(int argc, char** argv)
     params.insert(procedural::Parameter("ttl", {"-t", "--ttl"}, {"25"}));
     params.insert(procedural::Parameter("max_size", {"-s", "--max_size"}, {"500"}));
     params.insert(procedural::Parameter("domain_path", {"-d", "--domain_path"}, {""}));
-
-//    params.insert(procedural::Parameter("name", {"-n", "--name"}, {"pepper"}));
+    params.insert(procedural::Parameter("name", {"-n", "--name"}, {""}));
 //
     params.set(argc, argv);
     params.display();
@@ -120,6 +119,23 @@ int main(int argc, char** argv)
                 }
             }
         }
+    auto name = params.at("name").getFirst();
+    if (not name.empty())
+    {
+        auto it = interfaces_.find(name);
+        if (it == interfaces_.end())
+        {
+            auto tmp = new procedural::RosInterface(node_, *onto_manipulators, *time_manipulators, name);
+            if (tmp->init(params.at("action_path").getFirst(), stod(params.at("ttl").getFirst()),
+                          stoi(params.at("max_size").getFirst()), params.at("domain_path").getFirst()))
+            {
+                interfaces_[name] = tmp;
+                std::thread th(&procedural::RosInterface::run, tmp);
+                interfaces_threads_[name] = std::move(th);
+                std::cout << "ActionRecognition : " << name << " STARTED" << std::endl;
+            }
+        }
+    }
 
 
     ros::spin();
