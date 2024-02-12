@@ -6,7 +6,7 @@ Args:
   - C1: Bowl1
   - C2: Bowl2
   - Bowl: Bowl3
-  - I: Ham
+  - Ham: Ham
   - CakeMold: Mold0
   - Milk: Milk1
   - Cream: Cream2
@@ -17,12 +17,16 @@ Args:
   - Hoven: Hoven0
 
 Sequence:
-  - Pick:
-      - A
-      - F
-  - Place:
-      - A
-      - F
-      - C2
-  - PrepareHamCake:
-      - A
+#  - PrepareHamCake:
+#      - A: A
+  - Mix:
+      - A: A
+      - I: Flour
+      - C: C1
+#  - Pick:
+#      - A
+#      - F
+#  - Place:
+#      - A
+#      - F
+#      - C2
