@@ -165,7 +165,7 @@ HTN {
         preconditions{};
         effects{
             C.isTwisted == True;
-        }
+        };
         cost{cost1()};
         duration{duration1()};
     }
@@ -381,11 +381,11 @@ HTN {
              Milk = SELECT(Milk,{});
              Cheese = SELECT(Cheese,{});
              Flour = SELECT(Flour,{});
-             1: Mix(A,Flour,Bowl);
-             2: Mix(A,Eggs,Flour)>1;
-             3: Mix(A,Cream,Bowl)>2;
-             4: Mix(A,Milk,Bowl)>2;
-             5: Mix(A,Cheese,Bowl)>2;
+             1: Mix(A,Flour,B);
+             2: Mix(A,Eggs,B)>1;
+             3: Mix(A,Cream,B)>2;
+             4: Mix(A,Milk,B)>2;
+             5: Mix(A,Cheese,B)>2;
             };
         }
     }
