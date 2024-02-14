@@ -25,7 +25,7 @@ class Action:
         return sequence
 
     @staticmethod
-    def Pick_In(A, O, C):
+    def Pick_In(A, C, O):
         grasp_sequence = Action.grasp(A, O)
         grasp_sequence.append(f"[DEL]{O}|isIn|{C}")
         return grasp_sequence
@@ -559,8 +559,8 @@ class OntologyPublisher:
 # Utilisation de la classe
 if __name__ == '__main__':
     publisher = OntologyPublisher("pr2")
-    folder_path = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot'
-    yaml_file = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/publisher.yaml'
+    folder_path = '/home/adrien/Robots/Procedural/catkin_ws/src/Procedural/dot'
+    yaml_file = '/home/adrien/Robots/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/publisher.yaml'
     executor = ActionExecutor(yaml_file, folder_path)
     executor.displayAll()
     executor.setCallback(publisher.sendSequence)
