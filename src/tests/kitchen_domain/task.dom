@@ -344,8 +344,8 @@ HTN {
         {
            preconditions{A.isIn == Kitchen;};
            subtasks{
-               Hoven = SELECT(Hoven,{});
-               1: Place(A,S,Hoven);
+               Oven = SELECT(Oven,{});
+               1: Place(A,S,Oven);
            };
         }
     }
