@@ -66,7 +66,7 @@ private:
     std::string getTopicName(const std::string& topic_name);
     std::string getTopicName(const std::string& topic_name, const std::string& onto_name);
     std::string getMementarTopicName();
-    bool task_recognition_enable_;
+    bool task_recognition_enable_ = true;
 };
 
 } // procedural

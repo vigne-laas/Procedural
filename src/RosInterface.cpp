@@ -42,6 +42,7 @@ bool RosInterface::init(const std::string& descriptions_path, double ttl_buffer,
     build();
     link();
 
+    ROS_INFO("Action Recognition after init : %s", name_.c_str());
     return true;
 }
 
