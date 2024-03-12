@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://github.com/vigne-laas/Procedural/blob/master/ontologies/kitchen_onto#"
+     xml:base="https://github.com/vigne-laas/Procedural/blob/master/ontologies/kitchen_onto#"
+     xmlns:cg_food="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_food#"
+     xmlns:cg_kitchen="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_kitchen#"
+     xmlns:cg_objects="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_objects#"
+     xmlns:cg_language="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_language#"
+     xmlns:onto="ontologenius"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/vigne-laas/Procedural/blob/master/ontologies/kitchen_onto#">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_language"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_kitchen"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_food"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_objects"/>
+    </owl:Ontology>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- kitchenOnto#bob_0 -->
+    <owl:NamedIndividual rdf:about="agents#bob_0">
+        <rdf:type rdf:resource="cg_agents#Human"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#whisk_0 -->
+    <owl:NamedIndividual rdf:about="agents#whisk_0">
+        <rdf:type rdf:resource="cg_kitchen#Whisk"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#table_0 -->
+    <owl:NamedIndividual rdf:about="agents#table_0">
+        <rdf:type rdf:resource="cg_objects#Table"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#bowl_0 -->
+    <owl:NamedIndividual rdf:about="agents#bowl_0">
+        <rdf:type rdf:resource="cg_kitchen#Bowl"/>
+    </owl:NamedIndividual>
+
+    <!-- kitchenOnto#bowl_1 -->
+    <owl:NamedIndividual rdf:about="agents#bowl_1">
+        <rdf:type rdf:resource="cg_kitchen#Bowl"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#bowl_2 -->
+    <owl:NamedIndividual rdf:about="agents#bowl_2">
+        <rdf:type rdf:resource="cg_kitchen#Bowl"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#bowl_3 -->
+    <owl:NamedIndividual rdf:about="agents#bowl_3">
+        <rdf:type rdf:resource="cg_kitchen#Bowl"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#ham_0 -->
+    <owl:NamedIndividual rdf:about="agents#ham_0">
+        <rdf:type rdf:resource="cg_food#Ham"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#cakemold_0 -->
+    <owl:NamedIndividual rdf:about="agents#cakemold_0">
+        <rdf:type rdf:resource="cg_kitchen#CakeMold"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#milk_0 -->
+    <owl:NamedIndividual rdf:about="agents#ham_0">
+        <rdf:type rdf:resource="cg_food#Ham"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#cream_0 -->
+    <owl:NamedIndividual rdf:about="agents#cream_0">
+        <rdf:type rdf:resource="cg_food#Cream"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#cheese_0 -->
+    <owl:NamedIndividual rdf:about="agents#cheese_0">
+        <rdf:type rdf:resource="cg_food#Cheese"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#flour_0 -->
+    <owl:NamedIndividual rdf:about="agents#flour_0">
+        <rdf:type rdf:resource="cg_food#Flour"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#eggs_0 -->
+    <owl:NamedIndividual rdf:about="agents#eggs_0">
+        <rdf:type rdf:resource="cg_food#Eggs"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#knife_1 -->
+    <owl:NamedIndividual rdf:about="agents#knife_1">
+        <rdf:type rdf:resource="cg_kitchen#Knife"/>
+    </owl:NamedIndividual>
+
+
+    <!-- kitchenOnto#oven_0 -->
+    <owl:NamedIndividual rdf:about="agents#oven_0">
+        <rdf:type rdf:resource="cg_kitchen#Oven"/>
+    </owl:NamedIndividual>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->

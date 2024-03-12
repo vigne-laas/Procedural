@@ -1,24 +1,24 @@
 Args:
-  - A: Bob
-  - F: Whisk
-  - S: Support0
-  - C: Container0
-  - C1: Bowl1
-  - C2: Bowl2
-  - Bowl: Bowl3
-  - Ham: Ham
-  - CakeMold: Mold0
-  - Milk: Milk1
-  - Cream: Cream2
-  - Cheese: Cheese0
-  - Flour: Flour0
-  - Eggs: Eggs1
-  - K: Knife1
-  - Hoven: Hoven0
+  - A: bob_0
+  - F: whisk_0
+  - S: table_0
+  - C: bowl_0
+  - C1: bowl_1
+  - C2: bowl_2
+  - Bowl: bowl_3
+  - Ham: ham_0
+  - CakeMold: cakemold_0
+  - Milk: milk_0
+  - Cream: cream_0
+  - Cheese: cheese_0
+  - Flour: flour_0
+  - Eggs: eggs_0
+  - K: knife_1
+  - Oven: oven0
 
 Sequence:
-#  - PrepareHamCake:
-#      - A: A
+  - PrepareHamCake:
+      - A: A
   - Mix:
       - A: A
       - I: Flour
