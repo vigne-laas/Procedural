@@ -4,7 +4,7 @@ from typing import Dict, List
 import pydot
 from matplotlib import pyplot as plt
 import networkx as nx
-from scripts.graphPublisher.dataStructure import GraphTask
+from graphPublisher.dataStructure import GraphTask
 
 class GraphReader:
     def __init__(self, folder_path):

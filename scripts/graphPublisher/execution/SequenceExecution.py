@@ -1,8 +1,8 @@
 import random
 from typing import List
 
-from scripts.graphPublisher.dataStructure import *
-from scripts.graphPublisher.reader import SequencesLoader, GraphReader
+from graphPublisher.dataStructure import GraphTask,Action,Sequences
+from graphPublisher.reader import SequencesLoader, GraphReader
 
 
 class ActionExecutor:
@@ -105,7 +105,8 @@ class ActionExecutor:
 
 
 if __name__ == "__main__":
-    folder_path = '/home/adrien/Robots/Procedural/catkin_ws/src/Procedural/dot'
-    yaml_file = '/home/adrien/Robots/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/publisher.yaml'
+    folder_path = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot'
+    yaml_file = '/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/src/tests/kitchen_domain/publisher.yaml'
     A = ActionExecutor(dot_folder=folder_path, sequence_path=yaml_file)
     A.execute_actions()
+    pass
