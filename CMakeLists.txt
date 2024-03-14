@@ -36,6 +36,7 @@ set(ANTLR_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/tools/antlr-4.13.0-complete.jar
 find_package(ANTLR REQUIRED)
 
 # Call macro to add lexer and grammar to your build dependencies.
+
 antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPLexer.g4 LEXER
         PACKAGE procedural)
 antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
@@ -46,7 +47,8 @@ antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/
 message("output : ${ANTLR_SampleGrammarLexer_OUTPUT_DIR}")
 include_directories(${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
 include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
-#include_directories(${ANTLR_HATPGrammar_OUTPUT_DIR})
+
+
 # Call macro to add lexer and grammar to your build dependencies.
 # NOTE: Here, we define "antlrcpptest" as our project's namespace
 #antlr4cpp_process_grammar(demo procedural ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/htn.g4)
@@ -123,31 +125,40 @@ include_directories(
         ${ontologenius_INCLUDE_DIRS}
         ${MEMENTAR_INCLUDE_DIRS}
 )
+###################
+add_library(${PROJECT_NAME}_state_machine_lib
+        src/action_recognition/core/internal_structures/state_machine/State.cpp
+)
+
+
+########################## Before Refactor
+
+
 
 add_library(${PROJECT_NAME}_types_lib
-        src/core/Types/PatternFact.cpp
-        src/core/Types/WordTable.cpp
-        src/core/Types/Fact.cpp
+        src/old/core/Types/PatternFact.cpp
+        src/old/core/Types/WordTable.cpp
+        src/old/core/Types/Fact.cpp
 )
 
 add_library(${PROJECT_NAME}_graph_lib
-        src/core/Types/ActionMethod.cpp # TODO pb de lien si dans types_lib
-        src/core/Types/Action.cpp # TODO pb de lien si dans types_lib
-        src/core/Graph/Transitions/TransitionFact.cpp
-        src/core/Graph/State.cpp
-        src/core/Graph/StateMachine.cpp
-        src/core/Graph/Transitions/TransitionAction.cpp)
+        src/old/core/Types/ActionMethod.cpp # TODO pb de lien si dans types_lib
+        src/old/core/Types/Action.cpp # TODO pb de lien si dans types_lib
+        src/old/core/Graph/Transitions/TransitionFact.cpp
+        src/old/core/Graph/State.cpp
+        src/old/core/Graph/StateMachine.cpp
+        src/old/core/Graph/Transitions/TransitionAction.cpp)
 target_link_libraries(${PROJECT_NAME}_graph_lib  ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
 
 add_library(${PROJECT_NAME}_reader_lib
-        src/reader/YamlReader.cpp)
+        src/old/reader/YamlReader.cpp)
 target_link_libraries(${PROJECT_NAME}_reader_lib
         yaml-cpp
 )
 
 add_library(${PROJECT_NAME}_domain_reader_lib
-        src/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
-        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/reader/HATPListener.cpp)
+        src/old/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
+        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/old/reader/HATPListener.cpp)
 target_link_libraries(${PROJECT_NAME}_domain_reader_lib
         antlr4_shared
 )
@@ -157,14 +168,14 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
         -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(${PROJECT_NAME}_htn_type src/core/Types/Task.cpp src/core/Types/Method.cpp)
-add_library(${PROJECT_NAME}_htn_graph src/core/Graph/Transitions/TransitionActionMethod.cpp
-        src/core/Graph/Transitions/TransitionTask.cpp
+add_library(${PROJECT_NAME}_htn_type src/old/core/Types/Task.cpp src/old/core/Types/Method.cpp)
+add_library(${PROJECT_NAME}_htn_graph src/old/core/Graph/Transitions/TransitionActionMethod.cpp
+        src/old/core/Graph/Transitions/TransitionTask.cpp
 )
 
 add_library(${PROJECT_NAME}_builder_lib
-        src/builder/ActionBuilder.cpp
-        src/builder/HTNBuilder.cpp)
+        src/old/builder/ActionBuilder.cpp
+        src/old/builder/HTNBuilder.cpp)
 
 target_link_libraries(${PROJECT_NAME}_builder_lib
         ${PROJECT_NAME}_graph_lib
@@ -175,17 +186,17 @@ target_link_libraries(${PROJECT_NAME}_builder_lib
 )
 
 add_library(${PROJECT_NAME}_utils_lib
-        src/utils/BufferFacts.cpp
-        src/core/ActionRecognition.cpp
+        src/old/utils/BufferFacts.cpp
+        src/old/core/ActionRecognition.cpp
 )
 target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_graph_lib)
 
 add_library(${PROJECT_NAME}_feed_lib
-        src/feeder/Feeder.cpp)
+        src/old/feeder/Feeder.cpp)
 target_link_libraries(${PROJECT_NAME}_feed_lib ${PROJECT_NAME}_utils_lib)
 
 add_library(${PROJECT_NAME}_interface_lib
-        src/RosInterface.cpp)
+        src/old/RosInterface.cpp)
 target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
         ${PROJECT_NAME}_reader_lib
         ${PROJECT_NAME}_builder_lib
@@ -194,7 +205,7 @@ target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
         ${catkin_LIBRARIES})
 
 add_library(${PROJECT_NAME}_task_recognition_lib
-        src/core/TaskRecognition.cpp)
+        src/old/core/TaskRecognition.cpp)
 target_link_libraries(${PROJECT_NAME}_task_recognition_lib ${PROJECT_NAME}_utils_lib)
 
 
@@ -215,26 +226,26 @@ catkin_install_python(PROGRAMS scripts/testPublisher.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-#add_executable(test_facts src/tests/core/test_facts.cpp)
+#add_executable(test_facts src/old/tests/core/test_facts.cpp)
 #add_dependencies(test_facts ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_facts
 #        ${PROJECT_NAME}_types_lib
 #        )
 #
-#add_executable(test_wordtable src/tests/core/test_wordtable.cpp)
+#add_executable(test_wordtable src/old/tests/core/test_wordtable.cpp)
 #add_dependencies(test_wordtable ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_wordtable
 #        ${PROJECT_NAME}_types_lib
 #        )
 #
-#add_executable(test_network src/tests/graph/test_network.cpp)
+#add_executable(test_network src/old/tests/graph/test_network.cpp)
 #add_dependencies(test_network ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_network
 #        ${PROJECT_NAME}_types_lib
 #        ${PROJECT_NAME}_graph_lib
 #        )
 
-add_executable(test_reader src/tests/reader/test_reader.cpp)
+add_executable(test_reader src/old/tests/reader/test_reader.cpp)
 add_dependencies(test_reader ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_reader
         ${PROJECT_NAME}_reader_lib
@@ -245,7 +256,7 @@ target_link_libraries(test_reader
 )
 
 
-add_executable(test_domain_reader src/tests/reader/test_domain_builder.cpp)
+add_executable(test_domain_reader src/old/tests/reader/test_domain_builder.cpp)
 add_dependencies(test_domain_reader ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_domain_reader
         ${PROJECT_NAME}_reader_lib
@@ -253,7 +264,7 @@ target_link_libraries(test_domain_reader
         ${catkin_LIBRARIES}
 )
 
-add_executable(test_task_recognition src/tests/test_task_recognition.cpp)
+add_executable(test_task_recognition src/old/tests/test_task_recognition.cpp)
 add_dependencies(test_task_recognition ${catkin_EXPORTED_TARGETS})
 target_link_libraries(test_task_recognition
         ${PROJECT_NAME}_reader_lib
@@ -261,7 +272,7 @@ target_link_libraries(test_task_recognition
         ${PROJECT_NAME}_task_recognition_lib
         ${catkin_LIBRARIES}
 )
-#add_executable(test_action src/tests/test_action.cpp)
+#add_executable(test_action src/old/tests/test_action.cpp)
 #add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action
 #       ${PROJECT_NAME}_types_lib
@@ -269,7 +280,7 @@ target_link_libraries(test_task_recognition
 #       ${catkin_LIBRARIES}
 #       )
 
-#add_executable(actionRecogniton src/core/ActionRecognition.cpp)
+#add_executable(actionRecogniton src/old/core/ActionRecognition.cpp)
 #add_dependencies(actionRecogniton ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(actionRecogniton
 #        ${PROJECT_NAME}_types_lib
@@ -278,14 +289,14 @@ target_link_libraries(test_task_recognition
 #        )
 
 
-#add_executable(test_action2 src/tests/test_action2.cpp)
+#add_executable(test_action2 src/old/tests/test_action2.cpp)
 #add_dependencies(test_action2 ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action2
 #        ${PROJECT_NAME}_utils_lib
 #        ${catkin_LIBRARIES}
 #        )
 #
-#add_executable(test_feeder src/tests/test_feeder.cpp)
+#add_executable(test_feeder src/old/tests/test_feeder.cpp)
 #add_dependencies(test_feeder ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_feeder
 #        ${PROJECT_NAME}_feed_lib
@@ -295,7 +306,7 @@ target_link_libraries(test_task_recognition
 #        )
 
 
-add_executable(recognition src/nodes/recognition.cpp)
+add_executable(recognition src/old/nodes/recognition.cpp)
 add_dependencies(recognition ${catkin_EXPORTED_TARGETS})
 target_link_libraries(recognition
         ${PROJECT_NAME}_interface_lib
@@ -304,7 +315,7 @@ target_link_libraries(recognition
         ${ontologenius_LIBRARIES}
 )
 
-add_executable(recognition_multi src/nodes/recognition_multi.cpp)
+add_executable(recognition_multi src/old/nodes/recognition_multi.cpp)
 add_dependencies(recognition_multi ${catkin_EXPORTED_TARGETS})
 target_link_libraries(recognition_multi
         ${PROJECT_NAME}_interface_lib

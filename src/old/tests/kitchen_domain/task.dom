@@ -1,0 +1,570 @@
+
+HTN {
+    action Release(Agent A, Pickable O, Support S)
+    {
+        preconditions {
+            A >> S.isVisible;
+			A >> S.isReachable;
+			A.hasInRightHand == O;
+        };
+        effects {
+            FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = Null;
+			O.isOn = S;
+        };
+        cost{cost1()};
+		duration{duration1()};
+    }
+
+    action Grasp(Agent A, Pickable O)
+    {
+        preconditions {
+            A >> O.isVisible;
+			A >> O.isReachable;
+			A.hasInRightHand == NULL;
+        };
+        effects {
+            FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = O;
+        };
+        cost{cost1()};
+		duration{duration1()};
+    }
+
+    action Pick_In(Agent A, Pickable O) {
+		preconditions {
+		    O.isOn != NULL;
+			A >> O.isVisible;
+			A >> O.isReachable;
+			A.hasInRightHand == NULL;
+		};
+		effects {
+			FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = O;
+			O.isIn = NULL;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+
+	action Pick_Over(Agent A, Pickable O) {
+		preconditions {
+		    O.isOn != NULL;
+			A >> O.isVisible;
+			A >> O.isReachable;
+			A.hasInRightHand == NULL;
+		};
+		effects {
+			FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = O;
+			O.isOn = NULL;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+    action Place_In(Agent A, Pickable O, Object S) {
+		preconditions {
+			A.hasInRightHand == O;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			O.isIn = S;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action Place_Over(Agent A, Pickable O, Object S) {
+		preconditions {
+			A.hasInRightHand == O;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			O.isOn = S;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action Give(Agent A1, Pickable O, Agent A2) {
+		preconditions {
+			A1.hasInRightHand == O;
+			A2.hasInRightHand == NULL;
+		};
+		effects {
+			A1.hasInRightHand = NULL;
+			A2.hasInRightHand = O;
+		};
+		cost{cost10()};
+		duration{duration1()};
+	}
+
+	action SplitEggs(Agent A,Eggs E,Bowl Y,Bowl W)
+    {
+       preconditions{};
+       effects{
+            E_yellow.isIn = Y;
+            W.isFillWith = E.white;
+       };
+       cost{cost1()};
+       duration{duration1()};
+    }
+
+    action Dispose(Agent A,Bowl B,Support S)
+    {
+       preconditions{};
+       effects{
+           S.hasSpreadOver = B.hasIn ;
+           B.isFillWith = Null;
+       };
+       cost{cost1()};
+       duration{duration1()};
+    }
+
+
+    action PoorBatter(Agent A,Batter B,Bowl P)
+    {
+       preconditions{};
+       effects{
+            P.isFillWith = B.hasIn;
+            P.isFillWith = Null;
+       };
+       cost{cost1()};
+       duration{duration1()};
+    }
+
+    action PoorMold(Agent A,Mold M,Bowl P)
+    {
+       preconditions{};
+       effects{
+            P.isFillWith = M.hasIn;
+            P.hasIn = Null;
+       };
+       cost{cost1()};
+       duration{duration1()};
+    }
+
+    action Cut(Agent A,Knife K,Ingredient I)
+    {
+       preconditions{};
+       effects{
+            I.isSplit == True;
+       };
+       cost{cost1()};
+       duration{duration1()};
+    }
+
+    action Twist(Agent A,Container C,F Whisk)
+    {
+        preconditions{};
+        effects{
+            C.isTwisted == True;
+        };
+        cost{cost1()};
+        duration{duration1()};
+    }
+
+
+
+	// ----------------------------------------------
+
+	task Get(Agent A, Pickable O) {
+		goal{A.hasInRightHand == O;};
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A >> O.isReachable;
+				O.isOn != NULL;
+			};
+			subtasks {
+				1:Pick(A, O);
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A >> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				T = SELECT(Table, {O.isOn == T;});
+				1:Place(A, C2, T);
+				2:Pick(A, O)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				B = SELECT(Agent, {B >> O.isReachable;});
+				1:Get(B, O);
+				2:Give(B, O, A)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				B = SELECT(Agent, {B >> O.isReachable;});
+				T = SELECT(Table, {});
+				1:Place(A, C2, T);
+				2:Get(B, O);
+				3:Give(B, O, A)>1,>2;
+			};
+		}
+	}
+
+	task Place(Agent A, Pickable O, Table T) {
+		goal{O.isOn == T;};
+		{
+			preconditions {A.hasInHand = O;};
+			subtasks {
+				1:Place_Over(A, O, T)>1;
+			};
+		}
+		{
+			preconditions {A.hasInHand = O;};
+			subtasks {
+				1:Place_In(A, O, T)>1;
+			};
+		}
+	}
+
+	task Pick(Agent A, Pickable O) {
+		goal{A.hasInRightHand == O;};
+		{
+			preconditions {};
+			subtasks {
+                S = SELECT(Support, {O.isOver == S;})
+				1:Pick_Over(A, O, S);
+			};
+		}
+		{
+			preconditions {};
+			subtasks {
+			    C = SELECT(Container, {O.isIn == C;})
+				1:Pick_In(A, O, C);
+			};
+		}
+	}
+
+    // Kitchen part
+
+    task Mix(Agent A, Ingredients I, Container C)
+    {
+        goal{I.mixedIn == C;};
+        {
+            preconditions{};
+            subtasks {
+                F = SELECT(Whisk, {F.isReachable == A;});
+                1:Pick(A,I);
+                2:Place_In(A,I,C)>1;
+                3:Pick(A,F)>2;
+                4:MixMixture(A,F,C)>2,>3;
+            };
+        }
+    }
+
+    task MixMixture(Agent A, Whisk F, Container C)
+    {
+        goal{C.TwistedIn == True;};
+        {
+            preconditions{};
+            subtasks {
+                1:Twist(A,F,C);
+            };
+        }
+    }
+
+
+
+    task CutOver(Agent A, Ingredients I)
+    {
+        goal{I.isCutOver == S;};
+        {
+            preconditions{};
+            subtasks {
+                K = SELECT(Knife, {K.isReachable == A;});
+                S = SELECT(Support,{});
+                1:Pick(A,I);
+                2:Place(A,I,S)>1;
+                3:Pick(A,K);
+                4:Cut(A,K,I)>2,>3;
+            };
+        }
+    }
+
+    task SpreadBatter(Agent A, Batter B)
+    {
+        goal{B.isSpreadOver == P;};
+        {
+            preconditions{};
+            subtasks {
+                P = SELECT(Pan, {P.isReachable == A;});
+                S = SELECT(Support, {});
+                1:Pick(A,P);
+                2:Place(A,P,S)>1;
+                3:Pick(A,B);
+                4:Place(A,B,P)>2,>3;
+            };
+        }
+    }
+
+    task Fill(Agent A, Container C, Bowl P)
+    {
+        goal{C.isFillWith == P;};
+        {
+            preconditions{C.isA == Batter;C.isSpreadOver != Null;};
+            subtasks {
+                1:PoorBatter(A,P,C);
+            };
+        }
+        {
+            preconditions{C.isA == Mold;};
+            subtasks{
+                1:PoorMold(A,P,C);
+            };
+        }
+    }
+
+    task Bake(Agent A,Support S)
+    {
+        goal{S.isCooking == true;};
+        {
+           preconditions{A.isIn == Kitchen;};
+           subtasks{
+               Oven = SELECT(Oven,{});
+               1: Place(A,S,Oven);
+           };
+        }
+    }
+
+
+
+//  --------------------------  RECIPE -------------------
+    task PrepareMixtureForQuiche(Agent A, Bowl B)
+    {
+        goal{A.isDoing == PrepareMixtureForQuiche;};
+        {
+            preconditions{A.isIn == Kitchen;};
+            subtasks{
+             Eggs = SELECT(Eggs,{});
+             Cream = SELECT(Cream,{});
+             Milk = SELECT(Milk,{});
+             Onion = SELECT(Onion,{});
+             1: Mix(A,Eggs,B);
+             2: Mix(A,Cream,B);
+             3: Mix(A,Milk,B);
+             3: Mix(A,Onion,B);
+            };
+        }
+    }
+
+
+    task PrepareMixtureForCake(Agent A, Bowl B)
+    {
+        goal{A.isDoing = PrepareMixtureForCake;};
+        {
+            preconditions{A.isIn == Kitchen;};
+            subtasks{
+             Eggs = SELECT(Eggs,{});
+             Cream = SELECT(Cream,{});
+             Milk = SELECT(Milk,{});
+             Cheese = SELECT(Cheese,{});
+             Flour = SELECT(Flour,{});
+             1: Mix(A,Flour,B);
+             2: Mix(A,Eggs,B)>1;
+             3: Mix(A,Cream,B)>2;
+             4: Mix(A,Milk,B)>2;
+             5: Mix(A,Cheese,B)>2;
+            };
+        }
+    }
+
+    task PrepareQuiche(Agent A, Ingredient I)
+    {
+        goal{A.isDoing = PrepareQuiche;};
+        {
+        preconditions{};
+        subtasks{
+           Bowl = SELECT(Bowl,{});
+           Batter = SELECT(Batter,{});
+
+           1: PrepareMixtureForQuiche(A,Bowl);
+           2: CutOver(A,I);
+           3: Mix(A,I,Bowl)>1;
+           4: SpreadBatter(A,Batter);
+           5: Fill(A,Batter,Bowl)>1,>3,>4;
+           6: Bake(A,Batter)>5;
+        };
+
+        }
+    }
+
+
+    task PrepareCake(Agent A, Ingredient I)
+    {
+        goal{A.isDoing = PrepareCake;};
+        {
+        preconditions{};
+        subtasks{
+           Bowl = SELECT(Bowl,{});
+           CakeMold = SELECT(Mold,{});
+
+           1: PrepareMixtureForCake(A,Bowl);
+           2: CutOver(A,I);
+           3: Mix(A,I,Bowl)>1;
+           4: Fill(A,CakeMold,Bowl)>1,>3;
+           5: Bake(A,CakeMold)>4;
+        };
+
+        }
+    }
+
+    task PrepareLorraineQuiche(Agent A)
+    {
+        goal{A.isDoing = PrepareLorraineQuiche;};
+        {
+            preconditions{A.isIn == Kitchen;};
+            subtasks{
+               Bacon = SELECT(Bacon,{});
+               1: PrepareQuiche(A,Bacon);
+            };
+        }
+    }
+
+    task PrepareHamQuiche(Agent A,Ham H)
+    {
+        goal{A.isDoing = PrepareHamQuiche;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+               Ham = SELECT(Ham,{});
+               1: PrepareQuiche(A,Ham);
+            };
+        }
+    }
+
+    task PrepareHamCake(Agent A)
+    {
+        goal{A.isDoing = PrepareHamCake;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+               Ham = SELECT(Ham,{});
+               1: PrepareCake(A,Ham);
+            };
+        }
+    }
+
+
+    task PrepareFrenchMeringue(Agent A)
+    {
+        goal{A.isDoing = PrepareFrenchMeringue;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+               Eggs = SELECT(Eggs,{});
+               IcingSugar = SELECT(IcingSugar,{});
+               YellowEggsContainer = SELECT(Bowl,{});
+               WhiteEggsContainer =  SELECT(Bowl, {});
+               BakingTray = SELECT(BakingTray,{});
+               1: SplitEggs(A,Eggs,YellowEggsContainer,WhiteEggsContainer);
+               2: Mix(A,IcingSugar,WhiteEggsContainer)>1;
+               3: Dispose(A,WhiteEggsContainer,BakingTray)>2;
+               4: Bake(A,BakingTray)>3;
+            };
+        }
+    }
+
+//    task PrepareFrenchMeringue(Agent A)
+//    {
+//        goal{};
+//        {
+//            preconditions(A.inIn == Kitchen)
+//            subtasks{
+//               Eggs = SELECT(Eggs,{});
+//               Sugar = SELECT(CasterSugar,{});
+//               YellowEggsContainer = SELECT(Bowl,{});
+//               WhiteEggsContainer =  SELECT(Bowl, {});
+//               1: SplitEggs(A,E,YellowEggsContainer,WhiteEggsContainer)
+//               2: Mix(A,Sugar,WhiteEggsContainer)>1;
+//               3: Dispose(A,WhiteEggsContainer,BakingTray)>2;
+//               4: Bake(A,BakingTray)>3;
+//            }
+//        }
+//    }
+
+    task PrepareStarters(Agent A)
+    {
+        goal{A.isDoing = PrepareStarters;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+                1: PrepareHamCake(A);
+            };
+        }
+    }
+
+    task PrepareMainDishes(Agent A)
+    {
+        goal{A.isDoing = PrepareMainDishes;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+                1: PrepareLorraineQuiche(A);
+            };
+        }
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+                1: PrepareHamQuiche(A);
+            };
+        }
+    }
+
+    task PrepareDessert(Agent A)
+    {
+        goal{A.isDoing = PrepareDessert;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+                1: PrepareFrenchMeringue(A);
+            };
+        }
+    }
+
+    task CookMeal(Agent A)
+    {
+        goal{A.isDoing = CookMeal;};
+        {
+            preconditions{A.inIn == Kitchen;};
+            subtasks{
+                1: PrepareStarters(A);
+                2: PrepareMainDishes(A);
+                3: PrepareDessert(A);
+            };
+
+        }
+    }
+
+
+
+
+}
+
+// ----------------------------------------------
+
+timePart { priority = 0; }
+
