@@ -1,0 +1,42 @@
+Release:
+  parameters:
+    ttl: 20
+  sequence:
+    - ?A hasHandMovingToward ?S
+    - NOT ?A isHolding ?O REQUIRED
+  description:
+    - ?? isA ReleaseAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedOver ?S
+
+
+Grasp:
+  parameters:
+    ttl: 20
+  sequence:
+    - ?A hasHandMovingToward ?C
+    - ?A isHolding ?C REQUIRED
+  description:
+    - ?? isA GraspAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?C
+
+
+Pick_In:
+  args:
+    - A: Agent
+    - O: Pickable
+    - C: Container
+  parameters:
+    ttl: 25
+  composed_sequence:
+    - G: Grasp
+    - NOT ?O inIn ?C REQUIRED
+  remap:
+    - G.C: O
+  description:
+    - ?? isA Pick_OverAction
+    - ?? isPerformedBy ?A
+    - ?? isPerformedOn ?O
+    - ?? isPerformedFrom ?S

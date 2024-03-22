@@ -6,6 +6,7 @@ add_compile_options(-std=c++17)
 
 find_package(catkin REQUIRED COMPONENTS
         roscpp
+        roslib
         rospy
         std_msgs
         ontologenius
@@ -127,8 +128,25 @@ include_directories(
 )
 ###################
 add_library(${PROJECT_NAME}_state_machine_lib
+       # src/action_recognition/core/internal_structures/state_machine/ActionTransition.cpp
         src/action_recognition/core/internal_structures/state_machine/State.cpp
 )
+
+add_library(${PROJECT_NAME}_action_reader_lib
+    src/action_recognition/reader/YamlReader.cpp
+)
+target_link_libraries(${PROJECT_NAME}_action_reader_lib
+        yaml-cpp
+)
+######## TEST section ########
+
+
+
+catkin_add_gtest(state_test test/action_recognition/core/state_test.cpp)
+target_link_libraries(state_test ${catkin_LIBRARIES} ${PROJECT_NAME}_state_machine_lib)
+
+catkin_add_gtest(action_reader_test test/action_recognition/reader/test_yaml_reader.cpp)
+target_link_libraries(action_reader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_reader_lib)
 
 
 ########################## Before Refactor
