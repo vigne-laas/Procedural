@@ -6,7 +6,7 @@
 #include "procedural/action_recognition/reader/types/ParsedSimpleAction.h"
 #include "procedural/action_recognition/reader/types/ParsedComposedAction.h"
 
-namespace action_recognition
+namespace procedural
 {
 
 class YamlReader

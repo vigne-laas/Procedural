@@ -6,7 +6,7 @@
 #include <ostream>
 #include <regex>
 
-namespace action_recognition {
+namespace procedural {
 
 struct ParsedRemap_t
 {

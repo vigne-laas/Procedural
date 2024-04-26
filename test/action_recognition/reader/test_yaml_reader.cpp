@@ -3,7 +3,7 @@
 #include "procedural/action_recognition/reader/YamlReader.h"
 #include <ros/package.h>
 
-namespace action_recognition {
+namespace procedural {
 
 class YamlReaderTest : public ::testing::Test {
 protected:
@@ -84,7 +84,7 @@ TEST_F(YamlReaderTest, TestGetComposedActions) {
     ASSERT_EQ(composedActions[0].getName(), "Pick_In"); // Replace with your expected action name
 }
 
-}  // namespace action_recognition
+}  // namespace procedural
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);

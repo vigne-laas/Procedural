@@ -7,7 +7,7 @@
 #include "procedural/action_recognition/reader/types/subtypes/ParsedFacts.h"
 #include "procedural/action_recognition/reader/types/subtypes/ParsedDescription.h"
 
-namespace action_recognition {
+namespace procedural {
 
 struct ParsedSimpleAction_t
 {

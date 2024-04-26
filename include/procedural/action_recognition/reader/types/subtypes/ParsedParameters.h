@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-namespace action_recognition
+namespace procedural
 {
 
 struct ParsedParameters_t

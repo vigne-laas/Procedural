@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace action_recognition {
+namespace procedural {
 
 struct ParsedComposedAction_t
 {

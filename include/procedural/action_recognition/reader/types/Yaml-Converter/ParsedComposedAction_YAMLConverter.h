@@ -9,14 +9,14 @@
 
 namespace YAML {
 template<>
-struct convert<action_recognition::ParsedComposedAction_t>
+struct convert<procedural::ParsedComposedAction_t>
 {
-    static Node encode(const action_recognition::ParsedComposedAction_t& rhs)
+    static Node encode(const procedural::ParsedComposedAction_t& rhs)
     {
         Node node;
         return node;
     }
-    static bool decode(const Node& node, action_recognition::ParsedComposedAction_t& new_composed_action)
+    static bool decode(const Node& node, procedural::ParsedComposedAction_t& new_composed_action)
     {
         if (!node.IsMap())
         {
@@ -26,13 +26,13 @@ struct convert<action_recognition::ParsedComposedAction_t>
         {
             std::string key = iter_node.first.as<std::string>();
             if (key == "parameters")
-                new_composed_action.parameters = iter_node.second.as<action_recognition::ParsedParameters_t>();
+                new_composed_action.parameters = iter_node.second.as<procedural::ParsedParameters_t>();
             if (key == "composed_sequence")
-                new_composed_action.addPattern(iter_node.second.as<action_recognition::ParsedPattern_t>());
+                new_composed_action.addPattern(iter_node.second.as<procedural::ParsedPattern_t>());
             if (key == "description")
-                new_composed_action.descriptions = iter_node.second.as<action_recognition::ParsedDescriptions_t>();
+                new_composed_action.descriptions = iter_node.second.as<procedural::ParsedDescriptions_t>();
             if (key == "remap")
-                new_composed_action.addRemap(iter_node.second.as<action_recognition::ParsedRemaps_t>());
+                new_composed_action.addRemap(iter_node.second.as<procedural::ParsedRemaps_t>());
         }
 
         return true;

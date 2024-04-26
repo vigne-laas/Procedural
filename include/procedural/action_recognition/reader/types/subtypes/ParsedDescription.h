@@ -3,7 +3,7 @@
 
 #include <regex>
 
-namespace action_recognition
+namespace procedural
 {
 
 struct ParsedDescription_t

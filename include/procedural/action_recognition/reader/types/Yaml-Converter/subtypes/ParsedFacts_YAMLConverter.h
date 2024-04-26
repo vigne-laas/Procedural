@@ -7,14 +7,14 @@
 namespace YAML {
 
 template<>
-struct convert<action_recognition::ParsedFacts_t>
+struct convert<procedural::ParsedFacts_t>
 {
-    static Node encode(const action_recognition::ParsedFacts_t& rhs)
+    static Node encode(const procedural::ParsedFacts_t& rhs)
     {
         Node node;
         return node;
     }
-    static bool decode(const Node& node, action_recognition::ParsedFacts_t& parsed_facts)
+    static bool decode(const Node& node, procedural::ParsedFacts_t& parsed_facts)
     {
         if (!node.IsSequence())
         {

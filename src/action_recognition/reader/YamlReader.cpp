@@ -5,7 +5,7 @@
 #include "procedural/action_recognition/reader/types/Yaml-Converter/ParsedComposedAction_YAMLConverter.h"
 
 
-namespace action_recognition {
+namespace procedural {
 
 bool YamlReader::read(const std::string& path)
 {

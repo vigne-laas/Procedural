@@ -6,7 +6,7 @@
 #include <map>
 #include "procedural/action_recognition/reader/types/subtypes/ParsedFacts.h"
 
-namespace action_recognition {
+namespace procedural {
     
 struct SubStateMachine_t
 {

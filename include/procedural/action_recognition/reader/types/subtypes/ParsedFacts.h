@@ -3,15 +3,13 @@
 
 #include <regex>
 
-namespace action_recognition
-{
+namespace procedural {
 
-struct ParsedFact_t
-{
+struct ParsedFact_t {
     ParsedFact_t()
             : subject(), property(), object(), insertion(false), required(false), level(0),
-              regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)")
-    {}
+              regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)") {}
+
     ParsedFact_t(const std::string& str_value, uint32_t level)
             : subject(), property(), object(), insertion(false), required(false), level(level),
               regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)")
@@ -32,9 +30,7 @@ struct ParsedFact_t
 
     friend std::ostream& operator<<(std::ostream& os, const ParsedFact_t& lhs)
     {
-        os << ((lhs.insertion) ? "[ADD] " : "[DEL] ");
-        os << lhs.subject << " " << lhs.property << " " << lhs.object << " " << ((lhs.required) ? " Required " : "");
-        os << "level : " << lhs.level ;
+        os << lhs.toString();
         return os;
     }
 
@@ -45,10 +41,17 @@ struct ParsedFact_t
     bool insertion;
     bool required;
     int level;
+
+    std::string toString() const
+    {
+        std::string str = ((insertion) ? "[ADD] " : "[DEL] ");
+        str += subject + " " + property + " " + object + " " + ((required) ? " Required " : "");
+        str += "level : " + std::to_string(level);
+        return str;
+    }
 };
 
-struct ParsedFacts_t
-{
+struct ParsedFacts_t {
     ParsedFacts_t() {}
 
     friend std::ostream& operator<<(std::ostream& os, const ParsedFacts_t& lhs)

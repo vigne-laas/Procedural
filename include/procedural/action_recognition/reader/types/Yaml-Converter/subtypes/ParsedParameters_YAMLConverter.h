@@ -5,14 +5,14 @@
 namespace YAML {
 
 template<>
-struct convert<action_recognition::ParsedParameters_t>
+struct convert<procedural::ParsedParameters_t>
 {
-    static Node encode(const action_recognition::ParsedParameters_t& rhs)
+    static Node encode(const procedural::ParsedParameters_t& rhs)
     {
         Node node;
         return node;
     }
-    static bool decode(const Node& node, action_recognition::ParsedParameters_t& parameters)
+    static bool decode(const Node& node, procedural::ParsedParameters_t& parameters)
     {
         if (!node.IsMap())
         {
