@@ -2,29 +2,39 @@
 #define PROCEDURAL_STATE_H
 
 #include <unordered_set>
+#include <set>
+#include <string>
+#include <vector>
+#include <ontologenius/OntologyManipulator.h>
+#include "iostream"
+
+#include "procedural/action_recognition/core/internal_structures/state_machine/structures/StateEvolveResult.h"
+#include "procedural/action_recognition/core/internal_structures/state_machine/structures/ActionObservation.h"
+#include "procedural/action_recognition/core/internal_structures/state_machine/ActionTransition.h"
+#include "procedural/utils/structures/Variable.h"
 
 namespace procedural {
+using namespace recognition;
 
 class State {
 public:
     explicit State(const std::string& name, int id);
 
-    State* evolve(Fact* fact);
+    StateEvolveResult_t* evolve(ActionObservation_t* obs);
 
-    std::pair<State*, TransitionAction*> evolve(StateMachine* state_machine);
+     template <typename PatternType, ActionTransitionType transitionType>
+     void addTransition(const ActionTransition<PatternType, transitionType>& transition, State* next_state)
+     {
+         childreens.emplace_back(transition, next_state);
+     }
 
-
-    void addTransition(const TransitionFact& transition, State* next_state);
-
-    void addTransition(const TransitionAction& transition, State* next_state);
-
-    void linkVariables(std::map<std::string, Variable_t>& variables_);
+    void close(std::map<std::string, Variable_t>& variables_);
 
     void expandTransitions(onto::OntologyManipulator* onto_manipulator);
 
     bool isFinalNode() const
     {
-        return next_facts_.empty() && next_actions_.empty() && next_tasks_.empty();
+        return final_node_;
     }
 
     int getId() const { return id_; };
@@ -33,77 +43,36 @@ public:
 
     std::string toShortString() const;
 
-    const std::vector<std::pair<TransitionFact, State*>> getNextFacts() const { return next_facts_; };
-
-    const std::vector<std::pair<TransitionAction, State*>> getNextStateMachines() const { return next_actions_; };
-
-    const std::vector<std::pair<TransitionTask, State*>> getNextTasks() const { return next_tasks_; };
+    const std::vector<std::pair<ActionTransition_t, State*>> getNextState() const { return childreens; };
 
     void set_new_id(int new_id) { id_ = new_id; };
 
-    bool hasTimeoutTransition() const { return has_timeout_transition; }
-
     std::set<State*> getParents_() { return parents_; }
 
-    std::unordered_set<int> getConstrains_() { return valide_constrains_; }
+    void addParents(State* parent_state) { parents_.insert(parent_state); };
 
-
-    void addTimeoutTransition(State* final_state);
-
-    void addParents(State* parent_state);
-
-    void addValidateConstraints(const std::vector<int>& constrains);
-
-    void addValidateConstraints(const std::unordered_set<int>& constrains);
-
-    void addValidateConstraints(int constrain);
-
-    bool validateConstraints(const std::vector<int>& constrains);
-
-    bool validateConstraints(const std::unordered_set<int>& constraints) const;
-
-    void closeTo(State* final_state, State* parent, State* origin);
-
-    void closeTo(std::vector<State*> possible_states, Transitions_t transitions);
-
-    std::map<State*, Transitions_t> getValideParents(std::vector<int> constraints);
-
-    std::map<State*, Transitions_t>
-    getValideParents(std::vector<int> constraints, std::map<State*, Transitions_t>& map, State* origin_state);
-
-    State* doTimeoutTransition();
 
     std::string getFullName() { return name_ + "_" + std::to_string(id_); };
-
 
     // Save the DOT file
     void saveDOTFile(std::ofstream& dot_file) const;
 
     const int& getLevel() const { return level_; };
+
 private:
 
     // Generate DOT specific to transitions of type Fact
-    void generateDOT_Facts(std::ofstream& dotFile, std::set<int>& visitedStates) const;
+    void generateDOT_Transition(std::ofstream& dotFile, std::set<int>& visitedStates) const;
 
-    // Generate DOT specific to transitions of type Action
-    void generateDOT_Actions(std::ofstream& dotFile, std::set<int>& visitedStates) const;
-
-    // Generate DOT specific to transitions of type Task
-    void generateDOT_Tasks(std::ofstream& dotFile, std::set<int>& visitedStates) const;
 
     int id_;
     std::string name_;
     bool initial_node_;
+    bool final_node_;
 
-    std::vector<std::pair<TransitionFact, State*>> next_facts_;
-    std::vector<std::pair<TransitionAction, State*>> next_actions_;
-//    std::vector<std::pair<TransitionActionMethod, State*>> next_actions_methods_;
-    std::vector<std::pair<TransitionTask, State*>> next_tasks_;
+    std::vector<std::pair<ActionTransition_t, State*>> childreens;
 
     std::set<State*> parents_;
-    std::unordered_set<int> valide_constrains_;
-    bool has_timeout_transition;
-    State* final_state_;
     int level_;
 
 };

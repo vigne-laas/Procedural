@@ -1,10 +1,10 @@
 #include "procedural/old/core/Graph/State.h"
-
 #include <iostream>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
 #include <fstream>
 #include <filesystem>
 #include "algorithm"
+
 namespace procedural {
 
 State::State(const std::string& name, int id) : id_(id),
@@ -493,3 +493,4 @@ void State::closeTo(std::vector<State*> possible_states, Transitions_t transitio
 
 
 } // namespace procedural
+

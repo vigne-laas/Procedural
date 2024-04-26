@@ -21,13 +21,13 @@ public:
                std::vector<ParsedComposedAction_t>& composed_actions,
                onto::OntologyManipulator* client);
 
-    void display();
+    void display() const;
 
-    std::vector<Action*> getActions() { return actions_; };
+    std::vector<std::shared_ptr<Action>> getActions() { return actions_; };
 private:
-    onto::OntologyManipulator* onto_client_;
+    std::shared_ptr<onto::OntologyManipulator> onto_client_;
     std::vector<ParsedComposedAction_t> incomplete_creation_state_machine_;
-    std::vector<Action*> actions_;
+    std::vector<std::shared_ptr<Action>> actions_;
 
     void buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions);
     void buildComposedAction(std::vector<ParsedComposedAction_t>& composed_actions);
