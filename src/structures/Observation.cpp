@@ -56,7 +56,7 @@ Observation::Observation(const Observation& other)
 {
     this->id_ = other.id_;
     for (auto& var: other.table_variables_.variables) {
-        auto new_var = std::make_shared<Variable_t>(var.second->literal_);
+        auto new_var = std::make_shared<Variable_t>(*var.second);
         new_var->value_ = var.second->value_;
         table_variables_.variables[var.first] = new_var;
     }

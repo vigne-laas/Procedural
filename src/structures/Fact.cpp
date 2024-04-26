@@ -140,10 +140,10 @@ void Fact::link(VariableTable_t& table_variables)
 Fact::Fact(const Fact& other)
 {
     add_ = other.add_;
-    subject_ = std::make_shared<Variable_t>(other.subject_->literal_);
-    subject_->value_ = other.subject_->value_;
-    object_ = std::make_shared<Variable_t>(other.object_->literal_);
-    object_->value_ = other.object_->value_;
+    subject_ = std::make_shared<Variable_t>(*other.subject_);
+//    subject_->value_ = other.subject_->value_;
+    object_ = std::make_shared<Variable_t>(*other.object_);
+//    object_->value_ = other.object_->value_;
     id_property_ = other.id_property_;
     id_extended_properties_ = other.id_extended_properties_;
     timestamp_ = other.timestamp_;

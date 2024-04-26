@@ -7,8 +7,8 @@ ObservationFact::ObservationFact(const Fact& fact) : Observation(
         (int64_t) std::hash<std::string>{}((fact.getAdd() ? "ADD " : "DEL ") + fact.getStrProperty())),
                                                      fact_(fact)
 {
-    table_variables_.variables[fact.getLiteralObject()] = std::make_shared<Variable_t>(fact.getObject());
-    table_variables_.variables[fact.getLiteralSubject()] = std::make_shared<Variable_t>(fact.getSubject());
+    table_variables_.variables[fact.getLiteralObject()] = std::make_shared<Variable_t>(*fact.getObject());
+    table_variables_.variables[fact.getLiteralSubject()] = std::make_shared<Variable_t>(*fact.getSubject());
     fact_.link(table_variables_);
 
 //    LOG_DEBUG << "ObservationFact constructor\n";
