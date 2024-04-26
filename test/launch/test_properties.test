@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(find ontologenius)/launch/ontologenius.launch">
+    <arg name="intern_file" default="none"/>
+    <arg name="files" default=""/>
+    <arg name="display" default="false"/>
+  </include>
+  <test pkg="procedural" type="Fact_test" test-name="Fact_test" time-limit="60" retry="0"/>
+</launch>
