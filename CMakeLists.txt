@@ -11,7 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         ontologenius
         mementar
+
 )
+find_package(GTest REQUIRED)
+include_directories(/usr/src/gmock/gtest/include)
 
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -38,9 +41,9 @@ find_package(ANTLR REQUIRED)
 
 # Call macro to add lexer and grammar to your build dependencies.
 
-antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPLexer.g4 LEXER
+antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/old/reader/grammar/HATPLexer.g4 LEXER
         PACKAGE procedural)
-antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
+antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/old/reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
         PACKAGE procedural
         DEPENDS_ANTLR SampleGrammarLexer
         COMPILE_FLAGS -lib ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
@@ -125,106 +128,195 @@ include_directories(
         ${YAML_INCLUDE_DIRS}
         ${ontologenius_INCLUDE_DIRS}
         ${MEMENTAR_INCLUDE_DIRS}
+        ${GTEST_INCLUDE_DIRS}
+
 )
 ###################
-add_library(${PROJECT_NAME}_state_machine_lib
-       # src/action_recognition/core/internal_structures/state_machine/ActionTransition.cpp
-        src/action_recognition/core/internal_structures/state_machine/State.cpp
+add_library(${PROJECT_NAME}_logger_lib
+        src/utils/Logger.cpp
+)
+
+add_library(${PROJECT_NAME}_utils_lib
+        src/utils/WordTable.cpp
+)
+target_link_libraries(${PROJECT_NAME}_utils_lib
+        ${PROJECT_NAME}_logger_lib
+)
+
+add_library(${PROJECT_NAME}_structures_lib
+        src/structures/Fact.cpp
+        src/structures/Observation.cpp
+        src/structures/ObservationFact.cpp
+)
+target_link_libraries(${PROJECT_NAME}_structures_lib
+        ${PROJECT_NAME}_utils_lib
+        ${PROJECT_NAME}_logger_lib
+        ${ontologenius_LIBRARIES}
+)
+
+add_library(${PROJECT_NAME}_structures_graph_lib
+        src/structures/graph/Transition.cpp
+        src/structures/graph/Node.cpp
+        src/structures/graph/Graph.cpp
+)
+target_link_libraries(${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_structures_lib
+        ${PROJECT_NAME}_logger_lib
 )
 
 add_library(${PROJECT_NAME}_action_reader_lib
-    src/action_recognition/reader/YamlReader.cpp
+        src/action_recognition/reader/YamlReader.cpp
 )
 target_link_libraries(${PROJECT_NAME}_action_reader_lib
         yaml-cpp
+        ${PROJECT_NAME}_logger_lib
 )
+add_library(${PROJECT_NAME}_action_lib
+        src/action_recognition/core/internal_structures/Action.cpp
+)
+target_link_libraries(${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_structures_graph_lib
+)
+
+
+add_library(${PROJECT_NAME}_action_builder_lib
+        src/action_recognition/builder/ActionBuilder.cpp
+)
+target_link_libraries(${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_action_reader_lib
+        ${PROJECT_NAME}_logger_lib
+)
+
+
+
+
+
 ######## TEST section ########
 
 
+#
+#catkin_add_gtest(state_test test/action_recognition/core/state_test.cpp)
+#target_link_libraries(state_test ${catkin_LIBRARIES} ${PROJECT_NAME}_state_machine_lib)
+#
 
-catkin_add_gtest(state_test test/action_recognition/core/state_test.cpp)
-target_link_libraries(state_test ${catkin_LIBRARIES} ${PROJECT_NAME}_state_machine_lib)
 
-catkin_add_gtest(action_reader_test test/action_recognition/reader/test_yaml_reader.cpp)
-target_link_libraries(action_reader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_reader_lib)
+
+if (CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    ############### TESTS Variables Table################
+    catkin_add_gtest(VariablesTable_test test/structures/test_VariablesTable.cpp)
+    target_link_libraries(VariablesTable_test ${catkin_LIBRARIES})
+    ############### TESTS Observation ################
+    catkin_add_gtest(Observations_test test/structures/test_Observations.cpp)
+    target_link_libraries(Observations_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib)
+    ############### TESTS Fact ################
+    add_rostest_gtest(Fact_test test/launch/test_properties.test test/structures/test_fact.cpp)
+    #    message(STATUS "ontolenius lib  : ${ontologenius_LIBRARIES}")
+    target_include_directories(Fact_test PRIVATE ${catkin_INCLUDE_DIRS})
+    target_link_libraries(Fact_test ${catkin_LIBRARIES} ${GTEST_LIBRARIES} pthread ${ontologenius_LIBRARIES} ${PROJECT_NAME}_structures_lib)
+    ############### TESTS Node ################
+    catkin_add_gtest(Node_test test/structures/graph/test_node.cpp)
+    target_link_libraries(Node_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib ${PROJECT_NAME}_structures_graph_lib)
+    ############### TESTS Graph ################
+    catkin_add_gtest(Graph_test test/structures/graph/test_graph.cpp)
+    target_link_libraries(Graph_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib ${PROJECT_NAME}_structures_graph_lib)
+    ############### TESTS Action ################
+    catkin_add_gtest(Action_test test/action_recognition/core/test_action.cpp)
+    target_link_libraries(Action_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_structures_graph_lib)
+    ############### TESTS ActionBuilder ################
+    catkin_add_gtest(ActionBuilder_test test/action_recognition/action_builder/test_action_builder.cpp)
+    target_link_libraries(ActionBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_builder_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_structures_graph_lib)
+    ############### TESTS ActionReader ################
+    catkin_add_gtest(action_reader_test test/action_recognition/reader/test_yaml_reader.cpp)
+    target_link_libraries(action_reader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_reader_lib)
+endif ()
+
+########################### Brouillons ############################
+#add_executable(test_polymorphe test/test.cpp)
+
+
+#add_rostest_gtest(ontologenius_dynamic_tester test/launch/dynamic.test test/launch/dynamic.cpp)
+#target_include_directories(ontologenius_dynamic_tester PRIVATE ${catkin_INCLUDE_DIRS})
+#target_link_libraries(ontologenius_dynamic_tester ${ontologenius_LIBRARIES} ${catkin_LIBRARIES})
 
 
 ########################## Before Refactor
 
 
-
-add_library(${PROJECT_NAME}_types_lib
-        src/old/core/Types/PatternFact.cpp
-        src/old/core/Types/WordTable.cpp
-        src/old/core/Types/Fact.cpp
-)
-
-add_library(${PROJECT_NAME}_graph_lib
-        src/old/core/Types/ActionMethod.cpp # TODO pb de lien si dans types_lib
-        src/old/core/Types/Action.cpp # TODO pb de lien si dans types_lib
-        src/old/core/Graph/Transitions/TransitionFact.cpp
-        src/old/core/Graph/State.cpp
-        src/old/core/Graph/StateMachine.cpp
-        src/old/core/Graph/Transitions/TransitionAction.cpp)
-target_link_libraries(${PROJECT_NAME}_graph_lib  ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
-
-add_library(${PROJECT_NAME}_reader_lib
-        src/old/reader/YamlReader.cpp)
-target_link_libraries(${PROJECT_NAME}_reader_lib
-        yaml-cpp
-)
-
-add_library(${PROJECT_NAME}_domain_reader_lib
-        src/old/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
-        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/old/reader/HATPListener.cpp)
-target_link_libraries(${PROJECT_NAME}_domain_reader_lib
-        antlr4_shared
-)
-add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND}
-        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
-add_library(${PROJECT_NAME}_htn_type src/old/core/Types/Task.cpp src/old/core/Types/Method.cpp)
-add_library(${PROJECT_NAME}_htn_graph src/old/core/Graph/Transitions/TransitionActionMethod.cpp
-        src/old/core/Graph/Transitions/TransitionTask.cpp
-)
-
-add_library(${PROJECT_NAME}_builder_lib
-        src/old/builder/ActionBuilder.cpp
-        src/old/builder/HTNBuilder.cpp)
-
-target_link_libraries(${PROJECT_NAME}_builder_lib
-        ${PROJECT_NAME}_graph_lib
-        ${PROJECT_NAME}_types_lib
-        ${PROJECT_NAME}_domain_reader_lib
-        ${PROJECT_NAME}_htn_type
-        ${PROJECT_NAME}_htn_graph
-)
-
-add_library(${PROJECT_NAME}_utils_lib
-        src/old/utils/BufferFacts.cpp
-        src/old/core/ActionRecognition.cpp
-)
-target_link_libraries(${PROJECT_NAME}_utils_lib ${PROJECT_NAME}_graph_lib)
-
-add_library(${PROJECT_NAME}_feed_lib
-        src/old/feeder/Feeder.cpp)
-target_link_libraries(${PROJECT_NAME}_feed_lib ${PROJECT_NAME}_utils_lib)
-
-add_library(${PROJECT_NAME}_interface_lib
-        src/old/RosInterface.cpp)
-target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
-        ${PROJECT_NAME}_reader_lib
-        ${PROJECT_NAME}_builder_lib
-        ${PROJECT_NAME}_utils_lib
-        ${PROJECT_NAME}_task_recognition_lib
-        ${catkin_LIBRARIES})
-
-add_library(${PROJECT_NAME}_task_recognition_lib
-        src/old/core/TaskRecognition.cpp)
-target_link_libraries(${PROJECT_NAME}_task_recognition_lib ${PROJECT_NAME}_utils_lib)
+#
+#add_library(${PROJECT_NAME}_types_lib
+#        src/old/core/Types/PatternFact.cpp
+#        src/old/core/Types/WordTable.cpp
+#        src/old/core/Types/Fact.cpp
+#)
+#
+#add_library(${PROJECT_NAME}_graph_lib
+#        src/old/core/Types/ActionMethod.cpp # TODO pb de lien si dans types_lib
+#        src/old/core/Types/Action.cpp # TODO pb de lien si dans types_lib
+#        src/old/core/Graph/Transitions/TransitionFact.cpp
+#        src/old/core/Graph/State.cpp
+#        src/old/core/Graph/StateMachine.cpp
+#        src/old/core/Graph/Transitions/TransitionAction.cpp)
+#target_link_libraries(${PROJECT_NAME}_graph_lib  ${PROJECT_NAME}_types_lib ${ontologenius_LIBRARIES})
+#
+#add_library(${PROJECT_NAME}_reader_lib
+#        src/old/reader/YamlReader.cpp)
+#target_link_libraries(${PROJECT_NAME}_reader_lib
+#        yaml-cpp
+#)
+#
+#add_library(${PROJECT_NAME}_domain_reader_lib
+#        src/old/reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
+#        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/old/reader/HATPListener.cpp)
+#target_link_libraries(${PROJECT_NAME}_domain_reader_lib
+#        antlr4_shared
+#)
+#add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
+#        POST_BUILD
+#        COMMAND ${CMAKE_COMMAND}
+#        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+#
+#add_library(${PROJECT_NAME}_htn_type src/old/core/Types/Task.cpp src/old/core/Types/Method.cpp)
+#add_library(${PROJECT_NAME}_htn_graph src/old/core/Graph/Transitions/TransitionActionMethod.cpp
+#        src/old/core/Graph/Transitions/TransitionTask.cpp
+#)
+#
+#add_library(${PROJECT_NAME}_builder_lib
+#        src/old/builder/ActionBuilder.cpp
+#        src/old/builder/HTNBuilder.cpp)
+#
+#target_link_libraries(${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_graph_lib
+#        ${PROJECT_NAME}_types_lib
+#        ${PROJECT_NAME}_domain_reader_lib
+#        ${PROJECT_NAME}_htn_type
+#        ${PROJECT_NAME}_htn_graph
+#)
+#
+#add_library(${PROJECT_NAME}_utils_old_lib
+#        src/old/utils/BufferFacts.cpp
+#        src/old/core/ActionRecognition.cpp
+#)
+#target_link_libraries(${PROJECT_NAME}_utils_old_lib ${PROJECT_NAME}_graph_lib)
+#
+#add_library(${PROJECT_NAME}_feed_lib
+#        src/old/feeder/Feeder.cpp)
+#target_link_libraries(${PROJECT_NAME}_feed_lib ${PROJECT_NAME}_utils_old_lib)
+#
+#add_library(${PROJECT_NAME}_interface_lib
+#        src/old/RosInterface.cpp)
+#target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_utils_old_lib
+#        ${PROJECT_NAME}_task_recognition_lib
+#        ${catkin_LIBRARIES})
+#
+#add_library(${PROJECT_NAME}_task_recognition_lib
+#        src/old/core/TaskRecognition.cpp)
+#target_link_libraries(${PROJECT_NAME}_task_recognition_lib ${PROJECT_NAME}_utils_old_lib)
 
 
 #add_library(${PROJECT_NAME}_domaine_parser_lib
@@ -232,7 +324,7 @@ target_link_libraries(${PROJECT_NAME}_task_recognition_lib ${PROJECT_NAME}_utils
 #target_link_libraries(${PROJECT_NAME}_interface_lib ${PROJECT_NAME}_feed_lib
 #        ${PROJECT_NAME}_reader_lib
 #        ${PROJECT_NAME}_builder_lib
-#        ${PROJECT_NAME}_utils_lib
+#        ${PROJECT_NAME}_utils_old_lib
 #        ${catkin_LIBRARIES})
 
 ##################################
@@ -263,33 +355,33 @@ catkin_install_python(PROGRAMS scripts/testPublisher.py
 #        ${PROJECT_NAME}_graph_lib
 #        )
 
-add_executable(test_reader src/old/tests/reader/test_reader.cpp)
-add_dependencies(test_reader ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_reader
-        ${PROJECT_NAME}_reader_lib
-        ${PROJECT_NAME}_graph_lib
-        ${PROJECT_NAME}_builder_lib
-        ${PROJECT_NAME}_utils_lib
-        ${catkin_LIBRARIES}
-)
-
-
-add_executable(test_domain_reader src/old/tests/reader/test_domain_builder.cpp)
-add_dependencies(test_domain_reader ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_domain_reader
-        ${PROJECT_NAME}_reader_lib
-        ${PROJECT_NAME}_builder_lib
-        ${catkin_LIBRARIES}
-)
-
-add_executable(test_task_recognition src/old/tests/test_task_recognition.cpp)
-add_dependencies(test_task_recognition ${catkin_EXPORTED_TARGETS})
-target_link_libraries(test_task_recognition
-        ${PROJECT_NAME}_reader_lib
-        ${PROJECT_NAME}_builder_lib
-        ${PROJECT_NAME}_task_recognition_lib
-        ${catkin_LIBRARIES}
-)
+#add_executable(test_reader src/old/tests/reader/test_reader.cpp)
+#add_dependencies(test_reader ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_reader
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_graph_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_utils_old_lib
+#        ${catkin_LIBRARIES}
+#)
+#
+#
+#add_executable(test_domain_reader src/old/tests/reader/test_domain_builder.cpp)
+#add_dependencies(test_domain_reader ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_domain_reader
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${catkin_LIBRARIES}
+#)
+#
+#add_executable(test_task_recognition src/old/tests/test_task_recognition.cpp)
+#add_dependencies(test_task_recognition ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(test_task_recognition
+#        ${PROJECT_NAME}_reader_lib
+#        ${PROJECT_NAME}_builder_lib
+#        ${PROJECT_NAME}_task_recognition_lib
+#        ${catkin_LIBRARIES}
+#)
 #add_executable(test_action src/old/tests/test_action.cpp)
 #add_dependencies(test_action ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action
@@ -310,7 +402,7 @@ target_link_libraries(test_task_recognition
 #add_executable(test_action2 src/old/tests/test_action2.cpp)
 #add_dependencies(test_action2 ${catkin_EXPORTED_TARGETS})
 #target_link_libraries(test_action2
-#        ${PROJECT_NAME}_utils_lib
+#        ${PROJECT_NAME}_utils_old_lib
 #        ${catkin_LIBRARIES}
 #        )
 #
@@ -320,26 +412,26 @@ target_link_libraries(test_task_recognition
 #        ${PROJECT_NAME}_feed_lib
 #        ${PROJECT_NAME}_reader_lib
 #        ${PROJECT_NAME}_builder_lib
-#        ${PROJECT_NAME}_utils_lib
+#        ${PROJECT_NAME}_utils_old_lib
 #        )
 
-
-add_executable(recognition src/old/nodes/recognition.cpp)
-add_dependencies(recognition ${catkin_EXPORTED_TARGETS})
-target_link_libraries(recognition
-        ${PROJECT_NAME}_interface_lib
-
-        ${catkin_LIBRARIES}
-        ${ontologenius_LIBRARIES}
-)
-
-add_executable(recognition_multi src/old/nodes/recognition_multi.cpp)
-add_dependencies(recognition_multi ${catkin_EXPORTED_TARGETS})
-target_link_libraries(recognition_multi
-        ${PROJECT_NAME}_interface_lib
-        ${catkin_LIBRARIES}
-        ${ontologenius_LIBRARIES}
-)
+#
+#add_executable(recognition src/old/nodes/recognition.cpp)
+#add_dependencies(recognition ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(recognition
+#        ${PROJECT_NAME}_interface_lib
+#
+#        ${catkin_LIBRARIES}
+#        ${ontologenius_LIBRARIES}
+#)
+#
+#add_executable(recognition_multi src/old/nodes/recognition_multi.cpp)
+#add_dependencies(recognition_multi ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(recognition_multi
+#        ${PROJECT_NAME}_interface_lib
+#        ${catkin_LIBRARIES}
+#        ${ontologenius_LIBRARIES}
+#)
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(${PROJECT_NAME}_node
