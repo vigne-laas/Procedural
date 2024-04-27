@@ -2,6 +2,8 @@
 #define PROCEDURAL_PARSEDFACTS_H
 
 #include <regex>
+#include <ontologenius/OntologyManipulator.h>
+#include <unordered_set>
 
 namespace procedural {
 
@@ -28,6 +30,21 @@ struct ParsedFact_t {
         required = results[5].str() == "REQUIRED";
     }
 
+    void complete(onto::OntologyManipulator& ontology_manip)
+    {
+        auto str_type = ontology_manip.classes.getUp(subject, 1);
+        subject_type = str_type.front();
+        for (const auto& type: str_type)
+            for (const auto& type_extended: ontology_manip.classes.getDown(type))
+                type_subject_extended.insert(type_extended);
+        str_type = ontology_manip.classes.getUp(object, 1);
+        object_type = str_type.front();
+        for (const auto& type: str_type)
+            for (const auto& type_extended: ontology_manip.classes.getDown(type))
+                type_subject_extended.insert(type_extended);
+
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const ParsedFact_t& lhs)
     {
         os << lhs.toString();
@@ -36,8 +53,11 @@ struct ParsedFact_t {
 
     std::regex regex_facts_;
     std::string subject;
+    std::string subject_type;
+    std::unordered_set<std::string> type_subject_extended;
     std::string property;
     std::string object;
+    std::string object_type;
     bool insertion;
     bool required;
     int level;
@@ -45,7 +65,41 @@ struct ParsedFact_t {
     std::string toString() const
     {
         std::string str = ((insertion) ? "[ADD] " : "[DEL] ");
-        str += subject + " " + property + " " + object + " " + ((required) ? " Required " : "");
+        str += subject;
+        if (!subject_type.empty()){
+            if (!type_subject_extended.empty())
+            {
+                str += " (";
+                for (const auto& type_subject: type_subject_extended)
+                {
+                    str += type_subject + ", ";
+                }
+                str.pop_back();
+                str.pop_back();
+                str += ")";
+            }
+            else
+                str += " (" + subject_type + ")";
+        }
+
+        str += " " + property + " ";
+        str += object;
+        if (!object_type.empty()){
+            if (!type_subject_extended.empty())
+            {
+                str += " (";
+                for (const auto& type_object: type_subject_extended)
+                {
+                    str += type_object + ", ";
+                }
+                str.pop_back();
+                str.pop_back();
+                str += ")";
+            }
+            else
+                str += " (" + object_type + ")";
+        }
+        str += ((required) ? " Required " : " ");
         str += "level : " + std::to_string(level);
         return str;
     }
