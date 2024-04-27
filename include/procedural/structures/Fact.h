@@ -6,6 +6,7 @@
 #include "procedural/utils/TimeStamp.h"
 #include "procedural/utils/WordTable.h"
 #include "procedural/structures/Variable.h"
+#include "procedural/action_recognition/reader/types/subtypes/ParsedFacts.h"
 
 namespace procedural {
 struct VariableTable_t;
@@ -16,6 +17,8 @@ public:
 
     Fact(bool add, const std::string& subject, const std::string& subject_type, const std::string& property,
          const std::string& object, const std::string& object_type, const TimeStamp_t& time);
+
+    Fact(ParsedFact_t& parsed_fact);
 
     Fact(const Fact& other);
 

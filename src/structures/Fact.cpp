@@ -10,7 +10,7 @@ WordTable Fact::individuals_table;
 
 Fact::Fact(bool add, const std::string& subject, const std::string& subject_type, const std::string& property,
            const std::string& object, const std::string& object_type, const TimeStamp_t& time) : add_(add),
-                                                                                                 timestamp_(time)
+                                                                                                 timestamp_(time),id_(0)
 {
 //    LOG_DEBUG << "Fact constructor\n";
 //    LOG_DEBUG << "subject: " << subject << " property: " << property << " object: " << object << "\n";
@@ -137,7 +137,7 @@ void Fact::link(VariableTable_t& table_variables)
 //    LOG_DEBUG << "subject is set ? " << subject_->isSet() << " object is set ? " << object_->isSet() << "\n";
 }
 
-Fact::Fact(const Fact& other)
+Fact::Fact(const Fact& other): id_(0)
 {
     add_ = other.add_;
     subject_ = std::make_shared<Variable_t>(*other.subject_);
@@ -148,6 +148,17 @@ Fact::Fact(const Fact& other)
     id_extended_properties_ = other.id_extended_properties_;
     timestamp_ = other.timestamp_;
 
+}
+
+Fact::Fact(ParsedFact_t& parsed_fact): id_(0)
+{
+    add_ = parsed_fact.required;
+    subject_ = std::make_shared<Variable_t>(parsed_fact.subject, parsed_fact.subject_type);
+    object_ = std::make_shared<Variable_t>(parsed_fact.object, parsed_fact.object_type);
+    id_property_ = properties_table.getConst(parsed_fact.property);
+    id_extended_properties_.insert(add_ ? int32_t(1 * id_property_) : int32_t(-1 * id_property_));
+    subject_->value_ = individuals_table.get(parsed_fact.subject);
+    object_->value_ = individuals_table.get(parsed_fact.object);
 }
 
 
