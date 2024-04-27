@@ -12,7 +12,7 @@ WordTable Graph::graph_table;
 Graph::Graph(const std::string& name, int64_t id, const std::string& type_str) : name_(name), id_(id),
                                                                                  type_str_(type_str)
 {
-    table_variables_.variables["self"] = std::make_shared<Variable_t>(getName());
+    table_variables_.variables["self"] = std::make_shared<Variable_t>(getName(),type_str);
     type_id_ = graph_table.get(type_str_);
 }
 

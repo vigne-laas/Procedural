@@ -21,7 +21,7 @@ bool Action::build(const procedural::ParsedSimpleAction_t& simple_action, const 
     for (const auto& parsed_fact: simple_action.facts.facts_) {
 //        LOG_DEBUG << "parsed fact: " << parsed_fact << "\n";
         Fact::properties_table.add(parsed_fact.property);
-        auto new_fact = Fact(parsed_fact.insertion, parsed_fact.subject, parsed_fact.property, parsed_fact.object);
+        auto new_fact = Fact(parsed_fact.insertion, parsed_fact.subject,parsed_fact.subject_type, parsed_fact.property, parsed_fact.object,parsed_fact.object_type);
         auto obs = new ObservationFact(new_fact);
         int id_dest = parsed_fact.level * 10;
         for (uint64_t i = last_required / 10; i < (id_dest / 10); i++) {

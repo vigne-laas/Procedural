@@ -106,7 +106,7 @@ void Observation::completeVar(const std::vector<std::shared_ptr<Action>>& action
             if (table_variables_.variables.find(var.first) == table_variables_.variables.end()) {
                 if(var.first != "self")
                 {
-                    table_variables_.variables[var.first] = std::make_shared<Variable_t>(var.second->literal_);
+                    table_variables_.variables[var.first] = std::make_shared<Variable_t>(*var.second);
                     LOG_DEBUG << "Adding variable " << var.first << " to observation " << id_ << " with value "
                              << var.second->toString();
                 }
