@@ -20,35 +20,42 @@ public:
 
     Fact(ParsedFact_t& parsed_fact);
 
+    Fact(ParsedFact_t& parsed_fact, const std::map<std::string, std::string>& type_map);
+
+    Fact(const ParsedFact_t& parsed_fact);
+
+    Fact(const ParsedFact_t& parsed_fact, const std::map<std::string, std::string>& type_map);
+
     Fact(const Fact& other);
 
-    Fact(bool add, const std::string& literal_subject,const std::string& subject_type, const std::string& property, const std::string& literal_object, const std::string& object_type);
+    Fact(bool add, const std::string& literal_subject, const std::string& subject_type, const std::string& property,
+         const std::string& literal_object, const std::string& object_type);
 
-    std::string getLiteralSubject() const { return subject_->literal_; }
+    std::string getLiteralSubject() const { return subject_.first; }
 
-    std::string getLiteralObject() const { return object_->literal_; }
+    std::string getLiteralObject() const { return object_.first; }
 
     std::string getStrSubject() const
     {
-        return (subject_->isSet()) ? individuals_table[subject_->getValue()] : subject_->literal_;
+        return (subject_.second->isSet()) ? WordTable::individuals_table[subject_.second->getValue()] : subject_.first;
     }
 
-    std::string getStrProperty() const { return properties_table[id_property_]; }
+    std::string getStrProperty() const { return WordTable::properties_table[id_property_]; }
 
     std::string getStrObject() const
     {
-        return (object_->isSet()) ? individuals_table[object_->getValue()] : object_->literal_;
+        return (object_.second->isSet()) ? WordTable::individuals_table[object_.second->getValue()] : object_.first;
     }
 
-    uint32_t getIdSubject() const { return subject_->getValue(); }
+    uint32_t getIdSubject() const { return subject_.second->getValue(); }
 
     uint32_t getIdProperty() const { return id_property_; }
 
-    uint32_t getIdObject() const { return object_->getValue(); }
+    uint32_t getIdObject() const { return object_.second->getValue(); }
 
-    std::shared_ptr<Variable_t> getSubject() const { return subject_; }
+    std::pair<std::string, std::shared_ptr<Variable_t>> getSubject() const { return subject_; }
 
-    std::shared_ptr<Variable_t> getObject() const { return object_; }
+    std::pair<std::string, std::shared_ptr<Variable_t>> getObject() const { return object_; }
 
     bool getAdd() const { return add_; }
 
@@ -68,20 +75,19 @@ public:
 
     void link(VariableTable_t& table_variables);
 
-    static WordTable properties_table;
-    static WordTable individuals_table;
 
     void expandProperty(onto::ObjectPropertyClient* object_property_client);
 
 private:
     bool add_;
-    std::shared_ptr<Variable_t> subject_;
-    std::shared_ptr<Variable_t> object_;
+    std::pair<std::string, std::shared_ptr<Variable_t>> subject_;
+    std::pair<std::string, std::shared_ptr<Variable_t>> object_;
 
     uint32_t id_;
     uint32_t id_property_;
     std::unordered_set<int32_t> id_extended_properties_;
     TimeStamp_t timestamp_;
+    static uint32_t id_fact;
 };
 
 } // procedural
