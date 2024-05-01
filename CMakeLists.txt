@@ -147,6 +147,7 @@ add_library(${PROJECT_NAME}_structures_lib
         src/structures/Fact.cpp
         src/structures/Observation.cpp
         src/structures/ObservationFact.cpp
+        src/utils/BufferFacts.cpp
 )
 target_link_libraries(${PROJECT_NAME}_structures_lib
         ${PROJECT_NAME}_utils_lib
@@ -160,6 +161,7 @@ add_library(${PROJECT_NAME}_structures_graph_lib
         src/structures/graph/Graph.cpp
 )
 target_link_libraries(${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_utils_lib
         ${PROJECT_NAME}_structures_lib
         ${PROJECT_NAME}_logger_lib
 )
@@ -169,12 +171,14 @@ add_library(${PROJECT_NAME}_action_reader_lib
 )
 target_link_libraries(${PROJECT_NAME}_action_reader_lib
         yaml-cpp
+        ${PROJECT_NAME}_utils_lib
         ${PROJECT_NAME}_logger_lib
 )
 add_library(${PROJECT_NAME}_action_lib
         src/action_recognition/core/internal_structures/Action.cpp
 )
 target_link_libraries(${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_utils_lib
         ${PROJECT_NAME}_structures_graph_lib
 )
 
@@ -183,11 +187,21 @@ add_library(${PROJECT_NAME}_action_builder_lib
         src/action_recognition/builder/ActionBuilder.cpp
 )
 target_link_libraries(${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_utils_lib
         ${PROJECT_NAME}_action_lib
         ${PROJECT_NAME}_action_reader_lib
         ${PROJECT_NAME}_logger_lib
 )
 
+add_library(${PROJECT_NAME}_action_recognition_lib
+        src/action_recognition/core/ActionRecognition.cpp
+)
+target_link_libraries(${PROJECT_NAME}_action_recognition_lib
+        ${PROJECT_NAME}_utils_lib
+        ${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_logger_lib
+)
 
 
 
@@ -212,9 +226,8 @@ if (CATKIN_ENABLE_TESTING)
     target_link_libraries(Observations_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib)
     ############### TESTS Fact ################
     add_rostest_gtest(Fact_test test/launch/test_properties.test test/structures/test_fact.cpp)
-    #    message(STATUS "ontolenius lib  : ${ontologenius_LIBRARIES}")
     target_include_directories(Fact_test PRIVATE ${catkin_INCLUDE_DIRS})
-    target_link_libraries(Fact_test ${catkin_LIBRARIES} ${GTEST_LIBRARIES} pthread ${ontologenius_LIBRARIES} ${PROJECT_NAME}_structures_lib)
+    target_link_libraries(Fact_test ${catkin_LIBRARIES} ${GTEST_LIBRARIES} pthread ${ontologenius_LIBRARIES} ${PROJECT_NAME}_structures_lib ${PROJECT_NAME}_action_lib)
     ############### TESTS Node ################
     catkin_add_gtest(Node_test test/structures/graph/test_node.cpp)
     target_link_libraries(Node_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib ${PROJECT_NAME}_structures_graph_lib)
@@ -230,6 +243,9 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS ActionReader ################
     catkin_add_gtest(action_reader_test test/action_recognition/reader/test_yaml_reader.cpp)
     target_link_libraries(action_reader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_reader_lib)
+    ############### TESTS ActionRecognition ################
+    catkin_add_gtest(ActionRecognition_test test/action_recognition/core/test_actionrecognition.cpp)
+    target_link_libraries(ActionRecognition_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_recognition_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_structures_graph_lib ${PROJECT_NAME}_action_builder_lib)
 endif ()
 
 ########################### Brouillons ############################
