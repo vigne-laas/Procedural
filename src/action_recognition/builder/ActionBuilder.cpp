@@ -35,16 +35,6 @@ bool ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_action
     buildSimpleAction(simple_actions, path);
     if (buildComposedAction(composed_actions, path))
         return true;
-//    {
-//        if(composed_actions.empty())
-//            return true;
-////        else
-////        {
-////            completeRemap();
-////            return true;
-////        }
-//    }
-
     LOG_ERROR << "Failed to build composed actions";
     throw ActionBuilderException("Failed to build composed actions");
 }
@@ -52,7 +42,7 @@ bool ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_action
 void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions, const std::string& path)
 {
     for (const auto& simple_action: simple_actions) {
-        auto action = std::make_shared<Action>(simple_action.type);
+        auto action = new Action(simple_action.type);
         if (action->build(simple_action, path)) {
             actions_.push_back(action);
             action_build.push_back(action->getName());
@@ -67,14 +57,13 @@ bool ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& com
 {
     auto toBuildActions = composed_actions;
     std::vector<ParsedComposedAction_t> incomplete_action_;
-    int nb_built_actions_ = 0;
+    int nb_built_actions_;
     do {
         nb_built_actions_ = 0;
         for (auto& composed_action: toBuildActions) {
             if (checkAlreadyBuiltAction(composed_action.pattern.sub_state_machines)) {
-                auto action = std::make_shared<Action>(composed_action.getName());
-                if (action->build(composed_action, path)) {
-                    action->completeRemap(actions_);
+                auto action = new Action(composed_action.getName());
+                if (action->build(composed_action, actions_, path)) {
                     action->getFactory()->saveDot(path);
                     actions_.push_back(action);
                     action_build.push_back(action->getName());
@@ -140,11 +129,11 @@ bool ActionBuilder::checkAction(const std::vector<ParsedSimpleAction_t>& simple_
         }
     }
 
-    LOG_DEBUG << "actions needed by composed actions: ";
-    for (const auto& action: action_needed_by_composed_action_types) {
-        LOG_DEBUG << action << " ";
-    }
-    LOG_DEBUG << "\n";
+//    LOG_DEBUG << "actions needed by composed actions: ";
+//    for (const auto& action: action_needed_by_composed_action_types) {
+//        LOG_DEBUG << action << " ";
+//    }
+//    LOG_DEBUG << "\n";
     for (const auto& action: action_needed_by_composed_action_types) {
         if (action_types.find(action) == action_types.end()) {
             LOG_ERROR << "action " << action << " needed by composed action not found";

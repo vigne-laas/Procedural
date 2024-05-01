@@ -34,11 +34,11 @@ public:
 
     void display() const;
 
-    std::vector<std::shared_ptr<Action>> getActions() const { return actions_; };
+    std::vector<Action*> getActions() const { return actions_; };
 private:
     std::shared_ptr<onto::OntologyManipulator> onto_client_;
     std::vector<ParsedComposedAction_t> incomplete_creation_state_machine_;
-    std::vector<std::shared_ptr<Action>> actions_;
+    std::vector<Action*> actions_;
     std::vector<std::string> action_build;
 
     void buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions, const std::string& path = "");
