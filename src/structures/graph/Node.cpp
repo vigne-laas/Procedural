@@ -6,7 +6,6 @@ uint64_t Node::match(const Observation* observation) const
 {
     for (const auto& transition: transitions_) {
         uint64_t target_id = transition->match(observation);
-//        LOG_DEBUG << "Transition " << *transition << " match result: " << target_id;
         if (target_id != 0) {
             return target_id;
         }
