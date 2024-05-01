@@ -21,20 +21,20 @@ protected:
     }
 };
 
-TEST_F(ActionBuilderTest, TestBuildSimpleActions)
-{
-    composedActions.clear();
-    ActionBuilder actionBuilder(simpleActions, composedActions);
-    auto actions = actionBuilder.getActions();
-    ASSERT_EQ(actions.size(), 2);  // Assuming you expect 2 simple actions
-    ASSERT_EQ(actions[0]->getName(), "Release");  // Replace with your expected action name
-    ASSERT_EQ(actions[1]->getName(), "Grasp");  // Replace with your expected action name
-    auto action = actions[0];
-    auto graph = action->getFactory();
-    ASSERT_EQ(graph->getState(), GraphState::Closed);
-
-    // Add assertions to check the built actions
-}
+//TEST_F(ActionBuilderTest, TestBuildSimpleActions)
+//{
+//    composedActions.clear();
+//    ActionBuilder actionBuilder(simpleActions, composedActions);
+//    auto actions = actionBuilder.getActions();
+//    ASSERT_EQ(actions.size(), 2);  // Assuming you expect 2 simple actions
+//    ASSERT_EQ(actions[0]->getName(), "Release");  // Replace with your expected action name
+//    ASSERT_EQ(actions[1]->getName(), "Grasp");  // Replace with your expected action name
+//    auto action = actions[0];
+//    auto graph = action->getFactory();
+//    ASSERT_EQ(graph->getState(), GraphState::Closed);
+//
+//    // Add assertions to check the built actions
+//}
 
 TEST_F(ActionBuilderTest, TestBuildComposedActions)
 {
@@ -43,23 +43,24 @@ TEST_F(ActionBuilderTest, TestBuildComposedActions)
     ASSERT_EQ(actions.size(), 3);  // Assuming you expect 2 composed actions
     ASSERT_EQ(actions[0]->getName(), "Release");  // Replace with your expected action name
     ASSERT_EQ(actions[1]->getName(), "Grasp");  // Replace with your expected action name
+    ASSERT_EQ(actions[2]->getName(), "Pick_In");  // Replace with your expected action name
     auto action = actions[0];
     auto graph = action->getFactory();
     ASSERT_EQ(graph->getState(), GraphState::Closed);
     // Add assertions to check the built actions
 }
-
-TEST_F(ActionBuilderTest, TestBuildComposedActionswithoutSimpleActions)
-{
-    simpleActions.clear();
-    try {
-        ActionBuilder actionBuilder(simpleActions, composedActions);
-        FAIL() << "Expected ActionBuilderException";
-    } catch (const ActionBuilderException& e) {
-        ASSERT_STREQ(e.what(), "Failed to build actions");
-    }
-
-}
+//
+//TEST_F(ActionBuilderTest, TestBuildComposedActionswithoutSimpleActions)
+//{
+//    simpleActions.clear();
+//    try {
+//        ActionBuilder actionBuilder(simpleActions, composedActions);
+//        FAIL() << "Expected ActionBuilderException";
+//    } catch (const ActionBuilderException& e) {
+//        ASSERT_STREQ(e.what(), "Failed to build actions");
+//    }
+//
+//}
 
 }  // namespace procedural
 

@@ -7,7 +7,7 @@
 TEST(NodeTest, matchTest)
 {
     // Create a Node instance
-    procedural::Node node(1, "test_node");
+    procedural::Node node(1, "test_node",0);
 
     // Create an Observation instance
     procedural::Observation observation(1);
@@ -29,7 +29,7 @@ TEST(NodeTest, matchTest)
 TEST(NodeTest, getIdTest)
 {
     // Create a Node instance
-    procedural::Node node(1, "test_node");
+    procedural::Node node(1, "test_node",0);
 
     // Test the getId function
     uint64_t id = node.getId();
@@ -41,7 +41,7 @@ TEST(NodeTest, getIdTest)
 TEST(NodeTest, getFullNameTest)
 {
     // Create a Node instance
-    procedural::Node node(1, "test_node");
+    procedural::Node node(1, "test_node",0);
 
     // Test the getFullName function
     std::string full_name = node.getFullName();
@@ -53,7 +53,7 @@ TEST(NodeTest, getFullNameTest)
 TEST(NodeTest, addParentsTest)
 {
     // Create a Node instance
-    procedural::Node node(1, "test_node");
+    procedural::Node node(1, "test_node",0);
 
     // Add a parent to the node
     node.addParent(2);

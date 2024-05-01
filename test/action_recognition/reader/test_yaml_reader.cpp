@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 #include "procedural/action_recognition/reader/YamlReader.h"
+#include "procedural/utils/Logger.h"
 #include <ros/package.h>
 
 namespace procedural {
@@ -82,6 +83,7 @@ TEST_F(YamlReaderTest, TestGetComposedActions) {
     // Add assertions based on your expected composed actions
     ASSERT_EQ(composedActions.size(), 1); // Assuming you expect 1 composed action
     ASSERT_EQ(composedActions[0].getName(), "Pick_In"); // Replace with your expected action name
+    LOG_INFO << composedActions[0];
 }
 
 }  // namespace procedural

@@ -1,4 +1,8 @@
 Release:
+  args:
+    - A: Agent
+    - O: Pickable
+    - S: Support
   parameters:
     ttl: 20
   sequence:
@@ -12,6 +16,9 @@ Release:
 
 
 Grasp:
+  args:
+    - A: Agent
+    - C: Pickable
   parameters:
     ttl: 20
   sequence:
@@ -32,7 +39,7 @@ Pick_In:
     ttl: 25
   composed_sequence:
     - G: Grasp
-    - NOT ?O inIn ?C REQUIRED
+    - NOT ?O isIn ?C REQUIRED
   remap:
     - G.C: O
   description:

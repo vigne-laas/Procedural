@@ -29,6 +29,7 @@ protected:
         fact.subject = "subject2";
         fact.property = "property2";
         fact.object = "object2";
+        LOG_DEBUG << fact.toString();
         facts.push_back(fact);
         // Third fact
         fact.insertion = false;
@@ -37,8 +38,16 @@ protected:
         fact.subject = "subject3";
         fact.property = "property3";
         fact.object = "object3";
+        LOG_DEBUG << fact.toString();
         facts.push_back(fact);
         simple_action.type = "test_action0";
+        std::map<std::string, std::string> args = {{std::string("subject"), std::string("agent")},
+                                                   {std::string("object"),  std::string("bowl")}};
+        args.insert({std::string("subject2"), std::string("bowl")});
+        args.insert({std::string("object2"), std::string("table")});
+        args.insert({std::string("subject3"), std::string("table")});
+        args.insert({std::string("object3"), std::string("bowl")});
+        simple_action.args.args = args;
         simple_action.facts.facts_ = facts;
     }
 
@@ -83,6 +92,10 @@ protected:
         facts.push_back(fact);
         simple_action.type = "test_action1";
         simple_action.facts.facts_ = facts;
+        std::map<std::string, std::string> args = {{std::string("A"), std::string("agent")},
+                                                   {std::string("B"), std::string("bowl")},
+                                                   {std::string("C"), std::string("table")}};
+        simple_action.args.args = args;
         facts.clear();
     }
 
@@ -131,6 +144,9 @@ TEST_F(ActionTest, buildTest)
                     expected_targets10.end());
         auto obs = dynamic_cast<procedural::ObservationFact*>(transition->getObservation());
         if (transition->getTargetId() == 20) {
+            LOG_DEBUG << "Transition 20";
+            LOG_DEBUG << obs->getFact().toString();
+            LOG_DEBUG << facts[1].toString();
             EXPECT_EQ(obs->getFact().getStrSubject(), facts[1].subject);
             EXPECT_EQ(obs->getFact().getStrObject(), facts[1].object);
             EXPECT_EQ(obs->getFact().getStrProperty(), facts[1].property);
@@ -223,14 +239,17 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
 
     // Test the evolve function
     auto timestamp = procedural::TimeStamp_t();
-    auto test_fact = procedural::Fact(true, "agent", "pick", "bowl", timestamp);
+    auto test_fact = procedural::Fact(true, "bob", "agent", "pick", "bowl_0", "bowl", timestamp);
     procedural::ObservationFact observation(test_fact);
     LOG_DEBUG << "Observation : " << observation.toString();
     LOG_DEBUG << "Observation variables : " << observation.table_variables_.toString();
+    LOG_INFO << ">>>>>>>>>>>>>>>>>>>>>>>>>>> Trying to evolve with observation";
     auto res = action.evolve(&observation);
+    LOG_INFO << ">>>>>>>>>>>>>>>>>>>>>>>>>>> Evolve result : " << res;
+    EXPECT_TRUE(res);
+
     graph = action.getActiveGraphs().back();
     nodes = graph->getNodes();
-    EXPECT_TRUE(res);
     // Check the structure of the graph
     LOG_DEBUG << "Graph after first evolution";
     LOG_DEBUG << graph->getTableVariables().toString();
@@ -247,13 +266,13 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
 //                LOG_DEBUG << "Fact to check : " << fact.toString();
                 if (fact.getLiteralSubject() == "A") {
 //                    LOG_DEBUG << "Subject is agent ?= " << fact.getStrSubject();
-                    EXPECT_EQ(fact.getStrSubject(), "agent");
+                    EXPECT_EQ(fact.getStrSubject(), "bob");
                 } else if (fact.getLiteralSubject() == "B") {
-                    EXPECT_EQ(fact.getStrSubject(), "bowl");
+                    EXPECT_EQ(fact.getStrSubject(), "bowl_0");
                 } else if (fact.getLiteralObject() == "B") {
-                    EXPECT_EQ(fact.getStrObject(), "bowl");
+                    EXPECT_EQ(fact.getStrObject(), "bowl_0");
                 } else if (fact.getLiteralObject() == "A") {
-                    EXPECT_EQ(fact.getStrObject(), "agent");
+                    EXPECT_EQ(fact.getStrObject(), "bob");
                 }
             }
         }
@@ -263,12 +282,12 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
 
     auto factory = action.getFactory();
     EXPECT_EQ(factory->getState(), procedural::GraphState::Closed);
-    EXPECT_EQ(factory->getInitialNode(),factory->getCurrentNode());
-    EXPECT_EQ(factory->getCompletionRatio(),0.0);
-    EXPECT_EQ(factory->getAdvancementRatio(),0.0);
+    EXPECT_EQ(factory->getInitialNode(), factory->getCurrentNode());
+    EXPECT_EQ(factory->getCompletionRatio(), 0.0);
+    EXPECT_EQ(factory->getAdvancementRatio(), 0.0);
 
     // Test with a second observation
-    test_fact = procedural::Fact(true, "agent", "move", "table", timestamp);
+    test_fact = procedural::Fact(true, "bob", "agent", "move", "table_0", "table", timestamp);
     procedural::ObservationFact observation2(test_fact);
     LOG_DEBUG << "Observation 2 : " << observation2.toString();
     LOG_INFO << "Trying to evolve with observation 2";
@@ -285,17 +304,17 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
                 auto fact = obs->getFact();
 //                LOG_DEBUG << "Fact to check : " << fact.toString();
                 if (fact.getLiteralSubject() == "A") {
-                    EXPECT_EQ(fact.getStrSubject(), "agent");
+                    EXPECT_EQ(fact.getStrSubject(), "bob");
                 } else if (fact.getLiteralSubject() == "B") {
-                    EXPECT_EQ(fact.getStrSubject(), "bowl");
+                    EXPECT_EQ(fact.getStrSubject(), "bowl_0");
                 } else if (fact.getLiteralObject() == "B") {
-                    EXPECT_EQ(fact.getStrObject(), "bowl");
+                    EXPECT_EQ(fact.getStrObject(), "bowl_0");
                 } else if (fact.getLiteralObject() == "A") {
-                    EXPECT_EQ(fact.getStrObject(), "agent");
+                    EXPECT_EQ(fact.getStrObject(), "bob");
                 } else if (fact.getLiteralObject() == "C") {
-                    EXPECT_EQ(fact.getStrObject(), "table");
+                    EXPECT_EQ(fact.getStrObject(), "table_0");
                 } else if (fact.getLiteralSubject() == "C") {
-                    EXPECT_EQ(fact.getStrSubject(), "table");
+                    EXPECT_EQ(fact.getStrSubject(), "table_0");
                 }
 
             }
@@ -304,13 +323,19 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
     graph->saveDot("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/debug/" +
                    action.getName() + "_evolve2.dot");
     // Test with a third observation
-    test_fact = procedural::Fact(false, "bowl", "isIn", "table", timestamp);
+    test_fact = procedural::Fact(false, "bowl_0", "bowl", "isIn", "table_0", "table", timestamp);
     procedural::ObservationFact observation3(test_fact);
     LOG_DEBUG << "Observation 3 : " << observation3.toString();
     LOG_INFO << "Trying to evolve with observation 3";
     res = action.evolve(&observation3);
     EXPECT_FALSE(res);
-    test_fact = procedural::Fact(true, "bowl", "isIn", "table", timestamp);
+    test_fact = procedural::Fact(true, "bowl_0", "container", "isIn", "table_0", "table", timestamp);
+    procedural::ObservationFact observation5(test_fact);
+    LOG_DEBUG << "Observation 5 : " << observation5.toString();
+    LOG_INFO << "Trying to evolve with observation 5 wrong type";
+    res = action.evolve(&observation5);
+    EXPECT_FALSE(res);
+    test_fact = procedural::Fact(true, "bowl_0", "bowl", "isIn", "table_0", "table", timestamp);
     procedural::ObservationFact observation4(test_fact);
     LOG_DEBUG << "Observation 4 : " << observation4.toString();
     LOG_INFO << "Trying to evolve with observation 4";
@@ -328,9 +353,9 @@ TEST_F(ActionEvolveTest, evolveAndPropagateTest)
     EXPECT_EQ(finished_graph->getState(), procedural::GraphState::Completed);
     factory = action.getFactory();
     EXPECT_EQ(factory->getState(), procedural::GraphState::Closed);
-    EXPECT_EQ(factory->getInitialNode(),factory->getCurrentNode());
-    EXPECT_EQ(factory->getCompletionRatio(),0.0);
-    EXPECT_EQ(factory->getAdvancementRatio(),0.0);
+    EXPECT_EQ(factory->getInitialNode(), factory->getCurrentNode());
+    EXPECT_EQ(factory->getCompletionRatio(), 0.0);
+    EXPECT_EQ(factory->getAdvancementRatio(), 0.0);
 }
 
 int main(int argc, char** argv)

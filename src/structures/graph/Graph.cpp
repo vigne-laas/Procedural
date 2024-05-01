@@ -12,13 +12,13 @@ WordTable Graph::graph_table;
 Graph::Graph(const std::string& name, int64_t id, const std::string& type_str) : name_(name), id_(id),
                                                                                  type_str_(type_str)
 {
-    table_variables_.variables["self"] = std::make_shared<Variable_t>(getName(),type_str);
+    table_variables_.variables["self"] = std::make_shared<Variable_t>(type_str);
     type_id_ = graph_table.get(type_str_);
 }
 
 Graph* Graph::clone(int new_id)
 {
-    LOG_DEBUG << "Cloning graph: " + name_ + " with id: " + std::to_string(id_) + " to id: " + std::to_string(new_id);
+//    LOG_DEBUG << "Cloning graph: " + name_ + " with id: " + std::to_string(id_) + " to id: " + std::to_string(new_id);
     if (state_ < GraphState::Closed)
         return nullptr;
     auto new_graph = new Graph(name_, new_id, type_str_);
@@ -40,10 +40,21 @@ Graph* Graph::clone(int new_id)
 //                    std::to_string(new_id) + "T_" + std::to_string(transition->getId()) + ".dot");
         }
     }
+//    LOG_DEBUG << "Clone table vars: " << new_graph->table_variables_.toString();
 //    for (const auto& var: table_variables_.variables) {
 //        new_graph->table_variables_.variables[var.first] = std::make_shared<Variable_t>(*var.second);
 //    }
+//    if (name_ == "Pick_In")
+//        new_graph->saveDot(
+//                "/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/debug/clone_before_close" + name_ + "_" +
+//                std::to_string(new_id) + ".dot");
     new_graph->close();
+//    LOG_DEBUG << "Clone table vars after close: " << new_graph->table_variables_.toString();
+//    if (name_ == "Pick_In")
+//        new_graph->saveDot(
+//                "/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/debug/clone_after_close" + name_ + "_" +
+//                std::to_string(new_id) + ".dot");
+
     return new_graph;
 }
 
@@ -53,7 +64,7 @@ bool Graph::evolve(const Observation* observation)
         return false;
     auto res = current_node_->match(observation);
     if (res == 0) {
-        LOG_DEBUG << "No match found for observation: " + observation->toString();
+//        LOG_DEBUG << "No match found for observation: " + observation->toString();
         return false;
     }
     current_node_ = nodes_[res];
@@ -85,11 +96,16 @@ bool Graph::addTransition(std::shared_ptr<Transition> transition)
 bool Graph::close()
 {
     auto res = true;
+//    if (name_ == "Pick_In")
+//        LOG_DEBUG << "Var before link : \n" << table_variables_.toString();
     linkGraph();
+//    if (name_ == "Pick_In")
+//        LOG_DEBUG << "Var after link : \n" << table_variables_.toString();
     res |= processInitialNode();
     res |= processFinalNode();
     if (res)
         state_ = GraphState::Closed;
+
     return res;
 }
 
@@ -106,6 +122,9 @@ void Graph::linkGraph()
             transition->linkVariables(table_variables_.variables);
         }
     }
+    if (name_ == "Pick_In")
+        saveDot("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/debug/" + name_ + "_" +
+                std::to_string(id_) + "_link.dot");
 
 }
 
@@ -202,6 +221,9 @@ std::ostream& operator<<(std::ostream& os, const Graph& graph)
 
 void Graph::saveDot(const std::string& path)
 {
+    if (path.empty()) {
+        return;
+    }
     std::filesystem::path fs_path(path);
     std::string file_path = path;
 
@@ -228,9 +250,19 @@ void Graph::saveDot(const std::string& path)
 
 void Graph::completeRemap(const std::vector<std::shared_ptr<Action>>& actions)
 {
-    for (const auto& node : nodes_) {
+    for (const auto& node: nodes_) {
         node.second->completeRemap(actions);
     }
+
+}
+
+void Graph::addRemap(const std::map<std::string, std::string>& remap)
+{
+//    table_variables_.remap_ = remap;
+//    for (const auto& pair: remap) {
+//        LOG_DEBUG << "Add remap: " << pair.first << " -> " << pair.second << "\n";
+//        table_variables_.variables[pair.first]->
+//    }
 
 }
 

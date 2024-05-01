@@ -132,6 +132,8 @@ public:
 
     void completeRemap(const std::vector<std::shared_ptr<Action>>& actions);
 
+    void addRemap(const std::map<std::string,std::string>& remap);
+
 private:
 
     std::string name_;

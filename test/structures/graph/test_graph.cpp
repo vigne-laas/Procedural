@@ -12,7 +12,7 @@ TEST(GraphTest, addTransitionTest)
     // Create a table of variables
     procedural::VariableTable_t table;
     // Create a Variable instance
-    auto var = std::make_shared<procedural::Variable_t>("A");
+    auto var = std::make_shared<procedural::Variable_t>("A","var");
     // Add the variable to the table
     table.variables.insert(std::make_pair("A", var));
     table.agents.insert("agent1");
@@ -62,7 +62,7 @@ TEST(GraphTest, closeTest)
     // Create a table of variables
     procedural::VariableTable_t table;
     // Create a Variable instance
-    auto var = std::make_shared<procedural::Variable_t>("A");
+    auto var = std::make_shared<procedural::Variable_t>("A","var");
     // Add the variable to the table
     table.variables.insert(std::make_pair("A", var));
     table.agents.insert("agent1");
