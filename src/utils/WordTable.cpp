@@ -4,8 +4,14 @@
 
 namespace procedural {
 
-WordTable::WordTable() : table_({""})
-{}
+WordTable WordTable::actions_table;
+WordTable WordTable::properties_table;
+WordTable WordTable::individuals_table;
+WordTable WordTable::types_table;
+
+
+//WordTable::WordTable() : table_({""})
+//{}
 
 std::string WordTable::toString()
 {
