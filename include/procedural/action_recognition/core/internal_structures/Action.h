@@ -15,7 +15,7 @@ public:
 
     bool build(const ParsedSimpleAction_t& simple_action, const std::string& path = "");
 
-    bool build(const ParsedComposedAction_t& composed_action, const std::string& path = "");
+    bool build(const ParsedComposedAction_t& composed_action,const std::vector<Action*>& actions_build,const std::string& path = "");
 
     bool evolve(Observation* observation);
 
@@ -27,14 +27,16 @@ public:
     std::vector<Graph*> getFinishedGraphs() { return finished_graphs_; }
 
     void completeRemap(const std::vector<std::shared_ptr<Action>>& actions);
+    std::map<std::string, std::string> getArgs() { return args_; }
 
 //    void display() const;
 
-    static WordTable table_actions_;
+//    static WordTable table_actions_;
 
 private:
     static int graph_id;
     std::string name_;
+    std::map<std::string, std::string> args_;
     Graph factory_;
     std::vector<std::string> parameters_;
     std::vector<Graph*> active_graphs_;
