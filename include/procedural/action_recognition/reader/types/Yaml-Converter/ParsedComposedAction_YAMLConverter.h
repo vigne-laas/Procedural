@@ -33,6 +33,8 @@ struct convert<procedural::ParsedComposedAction_t>
                 new_composed_action.descriptions = iter_node.second.as<procedural::ParsedDescriptions_t>();
             if (key == "remap")
                 new_composed_action.addRemap(iter_node.second.as<procedural::ParsedRemaps_t>());
+            if (key == "args")
+                new_composed_action.args = iter_node.second.as<procedural::ParsedArgs_t>();
         }
 
         return true;

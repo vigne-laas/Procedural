@@ -6,6 +6,7 @@
 #include "procedural/action_recognition/reader/types/subtypes/ParsedParameters.h"
 #include "procedural/action_recognition/reader/types/subtypes/ParsedDescription.h"
 #include "procedural/action_recognition/reader/types/subtypes/ParsedRemap.h"
+#include "procedural/action_recognition/reader/types/subtypes/ParsedArgs.h"
 
 
 #include <iostream>
@@ -17,6 +18,7 @@ struct ParsedComposedAction_t
     ParsedComposedAction_t() : regex_type(R"(\s*([^_\s]*)_?([^\s]*)?\s*)"), max_level(0)
     {};
 
+
     std::regex regex_type;
     std::string type;
     std::string subtype;
@@ -24,6 +26,7 @@ struct ParsedComposedAction_t
     ParsedPattern_t pattern;
     ParsedDescriptions_t descriptions;
     ParsedRemaps_t remaps;
+    ParsedArgs_t args;
     int max_level;
 
     void linkRemapPattern()
@@ -64,9 +67,12 @@ struct ParsedComposedAction_t
     {
         os << "Composed Action : " << lhs.type;
         os << (lhs.subtype.empty() ? "\n" : "_" + lhs.subtype + "\n");
+        os << "Args : \n" << lhs.args;
         os << lhs.pattern;
         os << "Description : \n" << lhs.descriptions;
         os << ((lhs.parameters.empty()) ? "" : "Parameters : \n") << lhs.parameters;
+        os << "Remap : \n" << lhs.remaps;
+
 
         return os;
     }

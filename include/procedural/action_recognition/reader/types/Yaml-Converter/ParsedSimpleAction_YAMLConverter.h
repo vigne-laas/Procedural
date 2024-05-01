@@ -6,6 +6,7 @@
 #include "procedural/action_recognition/reader/types/Yaml-Converter/subtypes/ParsedParameters_YAMLConverter.h"
 #include "procedural/action_recognition/reader/types/Yaml-Converter/subtypes/ParsedDescription_YAMLConverter.h"
 #include "procedural/action_recognition/reader/types/Yaml-Converter/subtypes/ParsedFacts_YAMLConverter.h"
+#include "procedural/action_recognition/reader/types/Yaml-Converter/subtypes/ParsedArgs_YAMLConverter.h"
 
 
 namespace YAML {
@@ -33,6 +34,8 @@ struct convert<procedural::ParsedSimpleAction_t>
                 new_simple_action.facts = iter_node.second.as<procedural::ParsedFacts_t>();
             if (key == "description")
                 new_simple_action.descriptions = iter_node.second.as<procedural::ParsedDescriptions_t>();
+            if (key == "args")
+                new_simple_action.args = iter_node.second.as<procedural::ParsedArgs_t>();
             //TODO if invalid key error
 
         }
