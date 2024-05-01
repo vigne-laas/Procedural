@@ -31,6 +31,7 @@ public:
     virtual void linkVariables(std::map<std::string, std::shared_ptr<Variable_t>>& variables);
 
     virtual bool operator==(const Observation& other);
+    virtual bool operator!=(const Observation& other) { return !(*this == other); };
 
     int64_t getId() const { return id_; }
 
@@ -49,7 +50,7 @@ public:
 
 protected:
     int64_t id_;
-    std::map<std::string, std::string> remap_;
+//    std::map<std::string, std::string> remap_;
 
 };
 
