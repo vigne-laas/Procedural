@@ -75,7 +75,7 @@ struct Ordered_Action_t
     }
 
 };
-struct Subtask_t
+struct  Subtask_t
 {
     std::vector<Selection_t> selections;
     std::vector<Ordered_Action_t> actions_;
@@ -177,7 +177,7 @@ struct PrimitiveActionParsed_t
 };
 struct HTNParserd_t
 {
-    std::vector<Abstract_task_t> methods;
+    std::vector<Abstract_task_t> tasks;
     std::vector<PrimitiveActionParsed_t> actions;
 
     friend std::ostream& operator<<(std::ostream& os, const HTNParserd_t& lhs)
@@ -187,14 +187,14 @@ struct HTNParserd_t
         for (const auto& action: lhs.actions)
             os << action << "\n";
         os << "METHOD : ----------------------------------------" << "\n";
-        for (const auto& method: lhs.methods)
+        for (const auto& method: lhs.tasks)
             os << method << "\n";
         return os;
     }
 
     bool empty() const
     {
-        return methods.empty() && actions.empty();
+        return tasks.empty() && actions.empty();
     }
 
 };

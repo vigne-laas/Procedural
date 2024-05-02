@@ -1,0 +1,119 @@
+
+HTN {
+
+	action Pick(Agent A, Pickable O) {
+		preconditions {
+		    O.isOn != NULL;
+			A >> O.isVisible;
+			A >> O.isReachable;
+			A.hasInRightHand == NULL;
+		};
+		effects {
+			FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = O;
+			O.isOn = NULL;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action Place(Agent A, Pickable O, Object S) {
+		preconditions {
+			A.hasInRightHand == O;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			O.isOn = S;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+
+	action Give(Agent A1, Pickable O, Agent A2) {
+		preconditions {
+			A1.hasInRightHand == O;
+			A2.hasInRightHand == NULL;
+		};
+		effects {
+			A1.hasInRightHand = NULL;
+			A2.hasInRightHand = O;
+		};
+		cost{cost10()};
+		duration{duration1()};
+	}
+
+	// ----------------------------------------------
+
+	task Get(Agent A, Pickable O) {
+		goal{A.hasInRightHand == O;};
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A >> O.isReachable;
+				O.isOn != NULL;
+			};
+			subtasks {
+				1:Pick(A, O);
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A >> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				T = SELECT(Table, {O.isOn == T;});
+				1:Place(A, C2, T);
+				2:Pick(A, O)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				B = SELECT(Agent, {B >> O.isReachable;});
+				1:Get(B, O);
+				2:Give(B, O, A)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				B = SELECT(Agent, {B >> O.isReachable;});
+				T = SELECT(Table, {});
+				1:Place(A, C2, T);
+				2:Get(B, O);
+				3:Give(B, O, A)>1,>2;
+			};
+		}
+	}
+
+	task Place(Agent A, Pickable O, Table T) {
+		goal{O.isOn == T;};
+		{
+			preconditions {};
+			subtasks {
+				1:Get(A, O);
+				2:Place(A, O, T)>1;
+			};
+		}
+	}
+
+
+
+}
+
+// ----------------------------------------------
+
+timePart { priority = 0; }
+

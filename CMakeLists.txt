@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 )
 find_package(GTest REQUIRED)
-include_directories(/usr/src/gmock/gtest/include)
+#include_directories(/usr/src/gmock/gtest/include)
 
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -41,9 +41,9 @@ find_package(ANTLR REQUIRED)
 
 # Call macro to add lexer and grammar to your build dependencies.
 
-antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/old/reader/grammar/HATPLexer.g4 LEXER
+antlr_target(SampleGrammarLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/task_recognition/Reader/grammar/HATPLexer.g4 LEXER
         PACKAGE procedural)
-antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/old/reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
+antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/task_recognition/Reader/grammar/HATPParser.g4 PARSER VISITOR LISTENER
         PACKAGE procedural
         DEPENDS_ANTLR SampleGrammarLexer
         COMPILE_FLAGS -lib ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
@@ -204,6 +204,19 @@ target_link_libraries(${PROJECT_NAME}_action_recognition_lib
 )
 
 
+add_library(${PROJECT_NAME}_domain_reader_lib
+        src/task_recognition/Reader/DomainReader.cpp ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS}
+        ${ANTLR_SampleGrammarParser_CXX_OUTPUTS} src/task_recognition/Reader/HATPListener.cpp)
+target_link_libraries(${PROJECT_NAME}_domain_reader_lib
+        antlr4_shared
+)
+add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+
 
 
 ######## TEST section ########
@@ -246,6 +259,9 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS ActionRecognition ################
     catkin_add_gtest(ActionRecognition_test test/action_recognition/core/test_actionrecognition.cpp)
     target_link_libraries(ActionRecognition_test ${catkin_LIBRARIES} ${PROJECT_NAME}_action_recognition_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_structures_graph_lib ${PROJECT_NAME}_action_builder_lib)
+    ############### TESTS DomainReader ################
+    catkin_add_gtest(DomainReader_test test/task_recognition/Reader/test_domain_reader.cpp)
+    target_link_libraries(DomainReader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
 endif ()
 
 ########################### Brouillons ############################
