@@ -1,14 +1,20 @@
 #ifndef PROCEDURAL_LOGGER_H
 #define PROCEDURAL_LOGGER_H
 
+#include "procedural/utils/DualStream.h"
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "procedural/utils/DualStream.h"
 #include <chrono>
 #include <memory>
 #include <iomanip>
+#include <cstdio>
 
+
+
+
+namespace procedural {
 class Logger {
 public:
     enum Level {
@@ -103,4 +109,6 @@ private:
 #define LOG_ERROR Logger(Logger::ERROR, __PRETTY_FUNCTION__)
 
 #define SET_MIN_LEVEL(level) Logger::setMinLevel(level)
+
+} // procedural
 #endif //PROCEDURAL_LOGGER_H
