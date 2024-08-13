@@ -31,6 +31,23 @@ public:
 
     uint32_t operator[](const std::string& word);
 
+    std::vector<std::string>::iterator begin() {
+        return table_.begin();
+    }
+
+    std::vector<std::string>::const_iterator begin() const {
+        return table_.begin();
+    }
+
+    std::vector<std::string>::iterator end() {
+        return table_.end();
+    }
+
+    std::vector<std::string>::const_iterator end() const {
+        return table_.end();
+    }
+
+
     static WordTable actions_table;
     static WordTable properties_table;
     static WordTable individuals_table;

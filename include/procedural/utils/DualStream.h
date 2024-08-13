@@ -1,6 +1,18 @@
 #ifndef PROCEDURAL_DUALSTREAM_H
 #define PROCEDURAL_DUALSTREAM_H
 
+#include <cstdio>
+#include <iostream>
+#include <fstream>
+#include <streambuf>
+#include <string>
+
+#ifndef EOF
+#define EOF (-1) // EOF is not defined maybe due to antlr4
+#endif
+
+
+namespace procedural {
 class DualStream : public std::ostream {
 public:
     DualStream(std::ostream& stream1, std::ostream& stream2) : std::ostream(&buffer), buffer(stream1, stream2) {}
@@ -37,5 +49,5 @@ private:
 
     Buffer buffer;
 };
-
+}; // procedural
 #endif //PROCEDURAL_DUALSTREAM_H

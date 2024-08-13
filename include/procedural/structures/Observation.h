@@ -8,6 +8,7 @@
 #include <map>
 #include <unordered_set>
 #include <ontologenius/clients/ontologyClients/ObjectPropertyClient.h>
+#include "procedural/task_recognition/Reader/domainTypes/ParsedHTN.h"
 
 namespace procedural {
 class Action;
@@ -19,6 +20,8 @@ public:
     Observation(int64_t id, VariableTable_t& table_variables) : id_(id), table_variables_(table_variables) {}
 
     Observation(const Observation& other);
+
+    Observation(const Ordered_Action_t& action);
 
     virtual ~Observation() {}
 
@@ -48,8 +51,13 @@ public:
 
     virtual void completeVar(const std::vector<std::shared_ptr<Action>>& actions);
 
+    std::set<int> getConstraints() { return constraints_; };
+    int getHTNId() { return htn_id_; };
+
 protected:
     int64_t id_;
+    std::set<int> constraints_;
+    int htn_id_;
 //    std::map<std::string, std::string> remap_;
 
 };

@@ -60,7 +60,7 @@ struct Ordered_Action_t
     std::string name;
     std::vector<std::string> arguments;
     std::vector<int> after_id;
-    std::vector<int> link_to;
+//    std::vector<int> link_to;
     friend std::ostream& operator<<(std::ostream& os, const Ordered_Action_t& lhs)
     {
         os << lhs.id << " " << lhs.name;
@@ -79,6 +79,7 @@ struct Subtask_t
 {
     std::vector<Selection_t> selections;
     std::vector<Ordered_Action_t> actions_;
+    std::unordered_map<int, Ordered_Action_t> map_actions;
     friend std::ostream& operator<<(std::ostream& os, const Subtask_t& lhs)
     {
         os << "subtask : \n";
@@ -88,19 +89,19 @@ struct Subtask_t
             os << "\t" << action << "\n";
         return os;
     }
-    void linkActions()
-    {
-        std::cout << "Call to link Actions " << std::endl;
-        for (auto& action: actions_)
-        {
-            for (auto& after_id: action.after_id)
-            {
-                for (auto& action_to_link: actions_)
-                    if (action_to_link.id == after_id)
-                        action_to_link.link_to.push_back(action.id);
-            }
-        }
-    }
+//    void linkActions()
+//    {
+//        std::cout << "Call to link Actions " << std::endl;
+//        for (auto& action: actions_)
+//        {
+//            for (auto& after_id: action.after_id)
+//            {
+//                for (auto& action_to_link: actions_)
+//                    if (action_to_link.id == after_id)
+//                        action_to_link.link_to.push_back(action.id);
+//            }
+//        }
+//    }
 };
 
 struct Method_t

@@ -72,7 +72,7 @@ struct VariableTable_t {
     {
 //        LOG_DEBUG << "Compare VariableTable";
         if (variables.size() != other.variables.size()) {
-            LOG_DEBUG << "Variables size are different";
+//            LOG_DEBUG << "Variables size are different";
             return false;
         }
         for (const auto& variable: variables) {

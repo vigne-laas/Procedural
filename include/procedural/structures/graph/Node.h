@@ -26,14 +26,11 @@ public:
 
     int getDepth() const { return depth_; }
 
-    std::string toString() const { return getFullName(); }
+    std::string toString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const Node& node) { return os << node.toString(); }
 
-    void addTransition(std::shared_ptr<Transition> transition)
-    {
-        transitions_.push_back(transition);
-    }
+    bool addTransition(std::shared_ptr<Transition> transition);
 
     void addParent(uint64_t id_parent) { parents_.push_back(id_parent); }
 
@@ -43,6 +40,12 @@ public:
 
     void completeRemap(const std::vector<std::shared_ptr<Action>>& actions);
 
+    void addSatisfyConstraint(int id);
+    void addSatisfyConstraint(const std::set<int>& ids);
+    const std::set<int>& getSatisfyConstraint() const { return set_satisfy_constraint_; }
+
+    bool satisfyTransitionConstraint(std::shared_ptr<Transition> Transition) const;
+
 
 
 private:
@@ -51,6 +54,7 @@ private:
     int depth_;
     std::vector<std::shared_ptr<Transition>> transitions_;
     std::vector<uint64_t> parents_;
+    std::set<int> set_satisfy_constraint_;
 
 };
 

@@ -62,6 +62,9 @@ struct Variable_t {
 
     std::string getType() const { return type_; }
 
+    void setType(const std::string& type) { type_ = type; }
+
+
     std::unordered_set<std::string> getExtendedTypes() const { return extended_types_; }
 
     std::string toString(const std::string& literal = "") const

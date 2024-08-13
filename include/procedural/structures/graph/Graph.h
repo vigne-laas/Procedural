@@ -24,26 +24,7 @@ enum class GraphState {
 
 };
 
-std::string GraphStateToString(GraphState state) {
-    switch (state) {
-        case GraphState::UnClosed:
-            return "UnClosed";
-        case GraphState::Closed:
-            return "Closed";
-        case GraphState::Factory:
-            return "Factory";
-        case GraphState::Active:
-            return "Active";
-        case GraphState::Hypothesis:
-            return "Hypothesis";
-        case GraphState::Finished:
-            return "Finished";
-        case GraphState::Completed:
-            return "Completed";
-        default:
-            return "Unknown GraphState";
-    }
-}
+std::string GraphStateToString(GraphState state);
 
 struct GraphException : public std::exception {
     std::string msg_;
@@ -95,17 +76,19 @@ public:
     Graph(const Graph& other) = delete;
 
 
-    Graph* clone(int new_id);
+    virtual Graph* clone(int new_id);
 
-    bool evolve(const Observation* observation);
+    virtual bool evolve(const Observation* observation);
 
 
-    bool addTransition(std::shared_ptr<Transition> transition);
+    virtual bool addTransition(std::shared_ptr<Transition> transition);
 
 //    bool addDescription(Description* description);
     bool close();
 
     std::string getName() const { return name_; }
+
+    uint64_t getId() const { return id_; }
 
     GraphState getState() const { return state_; }
 
@@ -119,7 +102,9 @@ public:
     std::map<uint64_t, std::shared_ptr<Node>>& getNodes() { return nodes_; }
 
     std::shared_ptr<Node> getInitialNode() { return initial_node_; }
+
     std::shared_ptr<Node> getFinalNode() { return final_node_; }
+
     std::shared_ptr<Node> getCurrentNode() { return current_node_; }
 
     void saveDot(const std::string& path);
@@ -132,11 +117,14 @@ public:
 
     void completeRemap(const std::vector<std::shared_ptr<Action>>& actions);
 
-    void addRemap(const std::map<std::string,std::string>& remap);
+    void addRemap(const std::map<std::string, std::string>& remap);
+
+    uint64_t getMaxIdAtDepth(int depth) const;
+
+    std::unordered_set<uint64_t> getIdsAtDepth(int depth) const;
 
 private:
 
-    std::string name_;
     std::string type_str_;
     int64_t id_;
     uint32_t type_id_;
@@ -145,11 +133,6 @@ private:
     std::shared_ptr<Node> initial_node_;
     std::shared_ptr<Node> final_node_;
     std::shared_ptr<Node> current_node_;
-    std::map<uint64_t, std::shared_ptr<Node>> nodes_;
-
-    GraphState state_ = GraphState::UnClosed;
-    VariableTable_t table_variables_;
-
 
 
     void linkGraph();
@@ -158,7 +141,19 @@ private:
 
     bool processFinalNode();
 
+protected:
+    std::map<uint64_t, std::shared_ptr<Node>> nodes_;
+    GraphState state_ = GraphState::UnClosed;
+
     void addNode(uint64_t id);
+
+    VariableTable_t table_variables_;
+
+
+    std::string name_;
+
+    int getIdAtDepthThatSatisfyConstraint(int depth, std::shared_ptr<Transition> Transition,
+                                               const std::set<int>& const_source_node) const;
 };
 
 } // procedural

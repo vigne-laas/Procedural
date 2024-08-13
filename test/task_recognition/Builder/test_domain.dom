@@ -46,7 +46,13 @@ HTN {
 	}
 
 	// ----------------------------------------------
-//
+
+	task Pick(Agent A,Pickable O)
+	{
+	    goal{A.}
+	}
+
+
 	task Get(Agent A, Pickable O) {
 		goal{A.hasInRightHand == O;};
 		{

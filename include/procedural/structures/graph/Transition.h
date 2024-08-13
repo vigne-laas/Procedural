@@ -32,6 +32,7 @@ public:
     uint64_t getTargetId() const { return target_id_; }
     Observation* getObservation() const { return observation_; }
     VariableTable_t getTableVariables() const { return observation_->table_variables_; }
+    int getHtnId() const { return observation_->getHTNId(); }
 
     std::string toDot() const;
     std::string toString() const;
@@ -45,6 +46,7 @@ private:
     uint64_t id_;
     uint64_t source_id_;
     uint64_t target_id_;
+
 
 };
 

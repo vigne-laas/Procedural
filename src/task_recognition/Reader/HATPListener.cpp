@@ -1,5 +1,5 @@
-#include "procedural/old/reader/HATPListener.h"
-
+#include "procedural/task_recognition/Reader/HATPListener.h"
+#include "procedural/utils/Logger.h"
 namespace procedural {
 void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
 {
@@ -9,6 +9,7 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
     {
         PrimitiveActionParsed_t action_;
         action_.name = action->action_name()->getText();
+        std::cout << "Action name: " << action->action_name()->getText() << std::endl;
         for (auto arg: action->arguments())
             action_.arguments.emplace_back(arg->type()->getText(), arg->varname()->getText());
         for (auto precondition: action->preconditions())
@@ -69,12 +70,13 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                 for (const auto& name: action->function()->varname())
                     action_.arguments.push_back(name->getText());
                 for (const auto& order: action->order())
-                    action_.after_id.push_back(std::stoi(order->NUMBER()->getText()));
-                decomposition_.subtask.actions_.push_back(action_);
+                    action_.after_id.insert(std::stoi(order->NUMBER()->getText()));
+                decomposition_.subtask.map_actions[action_.id] = action_;
             }
+//            LOG_INFO << "Decomposition: " << decomposition_;
             method_.methods_.push_back(decomposition_);
         }
-        htn_.methods.push_back(method_);
+        htn_.tasks.push_back(method_);
 
 
     }

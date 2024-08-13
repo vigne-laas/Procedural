@@ -214,10 +214,26 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
         -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 
+add_library(${PROJECT_NAME}_task_structure_lib
+        src/task_recognition/Structures/Task.cpp
+        src/task_recognition/Structures/Method.cpp
+)
+target_link_libraries(${PROJECT_NAME}_task_structure_lib
+        ${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_structures_lib
+        ${PROJECT_NAME}_logger_lib
+)
 
+add_library(${PROJECT_NAME}_htn_builder_lib
+        src/task_recognition/Builder/HTNBuilder.cpp
+)
+target_link_libraries(${PROJECT_NAME}_htn_builder_lib
+       ${PROJECT_NAME}_task_structure_lib
+)
 
 ######## TEST section ########
 
@@ -226,7 +242,6 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
 #catkin_add_gtest(state_test test/action_recognition/core/state_test.cpp)
 #target_link_libraries(state_test ${catkin_LIBRARIES} ${PROJECT_NAME}_state_machine_lib)
 #
-
 
 
 if (CATKIN_ENABLE_TESTING)
@@ -262,6 +277,9 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS DomainReader ################
     catkin_add_gtest(DomainReader_test test/task_recognition/Reader/test_domain_reader.cpp)
     target_link_libraries(DomainReader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
+    ############### TESTS TaskBuilder ################
+    catkin_add_gtest(TaskBuilder_test test/task_recognition/Builder/test_builder_htn.cpp)
+    target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib)
 endif ()
 
 ########################### Brouillons ############################

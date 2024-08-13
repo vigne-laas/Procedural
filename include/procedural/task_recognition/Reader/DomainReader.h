@@ -20,6 +20,7 @@ public:
     bool read(const std::string& path);
     std::vector<Abstract_task_t>& getTasks() { return htn_.tasks; }
     std::vector<PrimitiveActionParsed_t> getActions() { return htn_.actions; }
+    HTNParserd_t getHTN() { return htn_; }
 private:
     HTNParserd_t htn_;
     antlr4::tree::ParseTree* tree{};

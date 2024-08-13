@@ -1,8 +1,21 @@
 #include "procedural/structures/Observation.h"
 #include "procedural/structures/ObservationFact.h"
 #include "procedural/action_recognition/core/internal_structures/Action.h"
-
+#include "procedural/task_recognition/Reader/domainTypes/ParsedHTN.h"
+#include "procedural/utils/WordTable.h"
 namespace procedural {
+
+Observation::Observation(const Ordered_Action_t& action)
+{
+    id_ = WordTable::actions_table.get(action.name);
+    htn_id_ = action.id;
+    for (const auto& var: action.arguments) {
+        table_variables_.variables[var] = std::make_shared<Variable_t>("unset");
+    }
+    constraints_ = action.after_id;
+
+
+}
 
 void Observation::linkVariables(std::map<std::string, std::shared_ptr<Variable_t>>& variables)
 {
@@ -67,6 +80,7 @@ Observation::Observation(const Observation& other)
     for (auto& agent: other.table_variables_.agents) {
         table_variables_.agents.insert(agent);
     }
+    this->htn_id_ = other.htn_id_;
 //    LOG_DEBUG << "new table_variables_ after copy: " << table_variables_.toString();
 
 
@@ -84,6 +98,14 @@ std::string Observation::toString() const
     result += WordTable::actions_table[id_];
     if (!table_variables_.variables.empty())
         result += "\n" + table_variables_.toString();
+    if (!constraints_.empty()) {
+        result += "\tConstraints:\n";
+        for (auto& constraint: constraints_) {
+            result += "\t" + std::to_string(constraint) + "\n";
+        }
+    }
+    if(htn_id_ != -1)
+        result += "\tHTN ID: " + std::to_string(htn_id_) + "\n";
 //    if (!remap_.empty()) {
 //        result += "\t Remap:\n";
 //        for (auto& remap: remap_) {
@@ -122,7 +144,12 @@ void Observation::completeVar(const std::vector<std::shared_ptr<Action>>& action
     }
 
 
+
+
 }
 
 
+
+
 } // procedural
+
