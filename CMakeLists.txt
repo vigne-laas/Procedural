@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 )
 find_package(GTest REQUIRED)
+find_package(procedural_interfaces REQUIRED)
 #include_directories(/usr/src/gmock/gtest/include)
 
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -48,9 +49,23 @@ antlr_target(SampleGrammarParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/
         DEPENDS_ANTLR SampleGrammarLexer
         COMPILE_FLAGS -lib ${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
 
+
+antlr_target(ProceduralLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/memory/grammar/RobotActionLexer.g4 LEXER
+        PACKAGE procedural)
+antlr_target(ProceduralParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/memory/grammar/RobotActionParser.g4 PARSER VISITOR LISTENER
+        PACKAGE procedural
+        DEPENDS_ANTLR ProceduralLexer
+        COMPILE_FLAGS -lib ${ANTLR_ProceduralLexer_OUTPUT_DIR})
+
 message("output : ${ANTLR_SampleGrammarLexer_OUTPUT_DIR}")
 include_directories(${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
 include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
+
+
+message("output : ${ANTLR_ProceduralLexer_OUTPUT_DIR}")
+include_directories(${ANTLR_ProceduralLexer_OUTPUT_DIR})
+include_directories(${ANTLR_ProceduralParser_OUTPUT_DIR})
+
 
 
 # Call macro to add lexer and grammar to your build dependencies.
@@ -111,7 +126,7 @@ find_package(ontologenius 0.3.0 REQUIRED)
 catkin_package(
         # INCLUDE_DIRS include
         # LIBRARIES procedural_lib
-        CATKIN_DEPENDS roscpp rospy std_msgs ontologenius mementar
+        CATKIN_DEPENDS roscpp rospy std_msgs ontologenius mementar procedural_interfaces
         #  DEPENDS system_lib
 )
 
@@ -129,6 +144,7 @@ include_directories(
         ${ontologenius_INCLUDE_DIRS}
         ${MEMENTAR_INCLUDE_DIRS}
         ${GTEST_INCLUDE_DIRS}
+        ${procedural_interfaces_INCLUDE_DIRS}
 
 )
 ###################
@@ -235,6 +251,39 @@ target_link_libraries(${PROJECT_NAME}_htn_builder_lib
        ${PROJECT_NAME}_task_structure_lib
 )
 
+add_library(${PROJECT_NAME}_procedural_parser_lib
+        src/memory/ProceduralParser.cpp
+        src/memory/ProceduralReader.cpp ${ANTLR_ProceduralLexer_CXX_OUTPUTS}
+        ${ANTLR_ProceduralParser_CXX_OUTPUTS})
+target_link_libraries(${PROJECT_NAME}_procedural_parser_lib antlr4_shared)
+add_custom_command(TARGET ${PROJECT_NAME}_procedural_parser_lib
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(${PROJECT_NAME}_memory_lib
+        src/memory/ProceduralMemory.cpp
+)
+target_link_libraries(${PROJECT_NAME}_memory_lib ${PROJECT_NAME}_procedural_parser_lib)
+
+add_library(${PROJECT_NAME}_ros_interface_memory_lib
+        src/memory/ROS_Interfaces/MemoryRosInterface.cpp)
+add_dependencies(${PROJECT_NAME}_ros_interface_memory_lib ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_ros_interface_memory_lib ${PROJECT_NAME}_memory_lib )
+
+add_executable(${PROJECT_NAME}_memory_node src/nodes/memory_node.cpp)
+add_dependencies(${PROJECT_NAME}_memory_node ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(${PROJECT_NAME}_memory_node ${PROJECT_NAME}_memory_lib ${PROJECT_NAME}_ros_interface_memory_lib ${catkin_LIBRARIES})
+
+
+
+
+
+
+
+
+
 ######## TEST section ########
 
 
@@ -279,7 +328,7 @@ if (CATKIN_ENABLE_TESTING)
     target_link_libraries(DomainReader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
     ############### TESTS TaskBuilder ################
     catkin_add_gtest(TaskBuilder_test test/task_recognition/Builder/test_builder_htn.cpp)
-    target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib)
+    target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib ${PROJECT_NAME}_action_reader_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_action_builder_lib)
 endif ()
 
 ########################### Brouillons ############################

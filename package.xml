@@ -31,5 +31,6 @@
   <exec_depend>yaml-cpp</exec_depend>
   <exec_depend>ontologenius</exec_depend>
   <exec_depend>mementar</exec_depend>
+  <depend>procedural_interfaces</depend>
 
 </package>
