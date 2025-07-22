@@ -1,6 +1,8 @@
 #include <ros/package.h>
 
 #include "gtest/gtest.h"
+#include "procedural/action_recognition/builder/ActionBuilder.h"
+#include "procedural/action_recognition/reader/YamlReader.h"
 #include "procedural/task_recognition/Builder/HTNBuilder.h"
 #include "procedural/task_recognition/Reader/DomainReader.h"
 
@@ -34,18 +36,22 @@ namespace procedural {
   protected:
     DomainReader reader;
     HTNBuilder builder;
+    YamlReader action_reader;
+    ActionBuilder action_builder;
 
     void SetUp() override
     {
       //       Initialisez le reader avec le fichier de données
       std::string package_path = ros::package::getPath("procedural");
-      std::string file_path = package_path + "/test/task_recognition/Reader/test_domain.dom";
-      //      std::string file_path = package_path + "src/old/tests/kitchen_domain/task.dom";
-
-      bool readResult = reader.read(file_path);
-      assert(readResult);
-      //            std::string file_action_path = package_path + "/test/task_recognition/Reader/test_action.yaml";
-      //            bool readActionResult = reader.readActions(file_action_path);
+//      std::string domain_file_path = package_path + "/test/task_recognition/Builder/test_domain.dom";
+            std::string domain_file_path = package_path + "/src/old/tests/kitchen_domain/task.dom";
+      std::string file_action_path = package_path + "/test/task_recognition/Builder/test_action.yaml";
+      bool TaskreadResult = reader.read(domain_file_path);
+      bool readActionResult = action_reader.read(file_action_path);
+      assert(TaskreadResult);
+      assert(readActionResult);
+      bool action_build = action_builder.build(action_reader.getSimpleActions(), action_reader.getComposedActions(),"/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/kitchen");
+      assert(action_build);
     }
 
     void TearDown() override
@@ -123,6 +129,11 @@ namespace procedural {
     ASSERT_EQ(finished_methods.size(), 1);
   }
 
+  TEST_F(HTNBuilderTest, TestLinkToActions)
+  {
+    builder.build(reader.getHTN(),action_builder.getActions());
+    auto tasks = builder.getTasks();
+  }
 } // namespace procedural
 
 int main(int argc, char** argv)

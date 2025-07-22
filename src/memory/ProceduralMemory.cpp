@@ -1,4 +1,4 @@
-#include "procedural/memory/MemoryNode.h"
+#include "procedural/memory/ProceduralMemory.h"
 namespace procedural {
 
 } // procedural

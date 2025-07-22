@@ -1,12 +1,12 @@
-#ifndef MEMORYNODE_H
-#define MEMORYNODE_H
+#ifndef PROCEDURAL_PROCEDURAL_MEMORY_H
+#define PROCEDURAL_PROCEDURAL_MEMORY_H
 
 namespace procedural {
 
-class MemoryNode {
+class ProceduralMemory {
 
 };
 
 } // procedural
 
-#endif //MEMORYNODE_H
+#endif //PROCEDURAL_PROCEDURAL_MEMORY_H

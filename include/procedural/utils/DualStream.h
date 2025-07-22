@@ -7,9 +7,9 @@
 #include <streambuf>
 #include <string>
 
-#ifndef EOF
-#define EOF (-1) // EOF is not defined maybe due to antlr4
-#endif
+// #ifndef EOF
+//  #define EOF (-1) // EOF is not defined maybe due to antlr4
+// #endif
 
 
 namespace procedural {
@@ -24,12 +24,12 @@ private:
 
         virtual int overflow(int c)
         {
-            if (c != EOF) {
-                if (stream1_->sputc(c) == EOF)
-                    return EOF;
-                if (stream2_->sputc(c) == EOF)
-                    return EOF;
-            }
+            // if (c != EOF) {
+            //     if (stream1_->sputc(c) == EOF)
+            //         return EOF;
+            //     if (stream2_->sputc(c) == EOF)
+            //         return EOF;
+            // }
             return c;
         }
 

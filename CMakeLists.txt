@@ -57,16 +57,28 @@ antlr_target(ProceduralParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/mem
         DEPENDS_ANTLR ProceduralLexer
         COMPILE_FLAGS -lib ${ANTLR_ProceduralLexer_OUTPUT_DIR})
 
+
+antlr_target(FullProceduralLexer ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/memory/grammar/ExtentedHATPLexer.g4 LEXER
+        PACKAGE procedural)
+antlr_target(FullProceduralParser ${CMAKE_CURRENT_SOURCE_DIR}/include/procedural/memory/grammar/ExtentedHATPParser.g4 PARSER VISITOR LISTENER
+        PACKAGE procedural
+        DEPENDS_ANTLR FullProceduralLexer
+        COMPILE_FLAGS -lib ${ANTLR_FullProceduralLexer_OUTPUT_DIR})
+
+
+
 message("output : ${ANTLR_SampleGrammarLexer_OUTPUT_DIR}")
 include_directories(${ANTLR_SampleGrammarLexer_OUTPUT_DIR})
 include_directories(${ANTLR_SampleGrammarParser_OUTPUT_DIR})
-
 
 message("output : ${ANTLR_ProceduralLexer_OUTPUT_DIR}")
 include_directories(${ANTLR_ProceduralLexer_OUTPUT_DIR})
 include_directories(${ANTLR_ProceduralParser_OUTPUT_DIR})
 
 
+message("output : ${ANTLR_FullProceduralLexer_OUTPUT_DIR}")
+include_directories(${ANTLR_FullProceduralLexer_OUTPUT_DIR})
+include_directories(${ANTLR_FullProceduralParser_OUTPUT_DIR})
 
 # Call macro to add lexer and grammar to your build dependencies.
 # NOTE: Here, we define "antlrcpptest" as our project's namespace
@@ -232,6 +244,7 @@ add_custom_command(TARGET ${PROJECT_NAME}_domain_reader_lib
         -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+#add_dependencies(${PROJECT_NAME}_domain_reader_lib antlr4_shared ${ANTLR_SampleGrammarLexer_CXX_OUTPUTS} ${ANTLR_SampleGrammarParser_CXX_OUTPUTS})
 
 
 add_library(${PROJECT_NAME}_task_structure_lib
@@ -262,10 +275,24 @@ add_custom_command(TARGET ${PROJECT_NAME}_procedural_parser_lib
         -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+
+add_library(${PROJECT_NAME}_full_procedural_parser_lib
+        src/memory/ProceduralFullReader.cpp
+        src/memory/FullParser.cpp
+        ${ANTLR_FullProceduralLexer_CXX_OUTPUTS}
+        ${ANTLR_FullProceduralParser_CXX_OUTPUTS})
+
+target_link_libraries(${PROJECT_NAME}_full_procedural_parser_lib antlr4_shared)
+add_custom_command(TARGET ${PROJECT_NAME}_full_procedural_parser_lib
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy ${ANTLR4_RUNTIME_LIBRARIES} .
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 add_library(${PROJECT_NAME}_memory_lib
         src/memory/ProceduralMemory.cpp
 )
-target_link_libraries(${PROJECT_NAME}_memory_lib ${PROJECT_NAME}_procedural_parser_lib)
+target_link_libraries(${PROJECT_NAME}_memory_lib ${PROJECT_NAME}_procedural_parser_lib ${PROJECT_NAME}_full_procedural_parser_lib)
 
 add_library(${PROJECT_NAME}_ros_interface_memory_lib
         src/memory/ROS_Interfaces/MemoryRosInterface.cpp)

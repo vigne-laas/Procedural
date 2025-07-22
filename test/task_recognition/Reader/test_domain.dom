@@ -1,8 +1,6 @@
-
 HTN {
-
 	action Pick(Agent A, Pickable O) {
-		preconditions {
+		preconditions {move_base
 		    O.isOn != NULL;
 			A >> O.isVisible;
 			A >> O.isReachable;
@@ -58,7 +56,7 @@ HTN {
 			subtasks {
 				1:Pick(A, O);
 			};
-		}
+		},
 		{
 			preconditions{
 				A.hasInRightHand != NULL;
@@ -109,6 +107,17 @@ HTN {
 		}
 
 	}
+
+	task InstallerClients(Client C,RestaurantTable T) {
+        goal{C.isSitting == T;};
+        {
+            preconditions {};
+            subtasks {
+                T = SELECT(RestaurantTable, {T.hasStatus free_table; T.capacity >= C.nombre;});
+                1:Sit(C, T);
+            };
+        }
+    }
 
 
 
