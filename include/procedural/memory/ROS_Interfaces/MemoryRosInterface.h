@@ -7,6 +7,7 @@
 #include "procedural_interfaces/getRobotActions.h"
 #include "procedural_interfaces/getPractices.h"
 #include "procedural_interfaces/getPracticeFrames.h"
+#include "procedural_interfaces/getRoles.h"
 
 
 
@@ -29,6 +30,10 @@ public :
 
     bool getPracticeFrames(procedural_interfaces::getPracticeFrames::Request &req,
                            procedural_interfaces::getPracticeFrames::Response &res);
+    bool getRoles(procedural_interfaces::getRoles::Request &req,
+                  procedural_interfaces::getRoles::Response &res);
+
+
 
 
 
@@ -38,7 +43,6 @@ public :
 
 
 private:
-
     void init_ros();
     void getRobotActions();
 
@@ -46,6 +50,7 @@ private:
     ros::ServiceServer getRobotActions_service_;
     ros::ServiceServer getPractices_service_;
     ros::ServiceServer getPracticeFrames_service_;
+    ros::ServiceServer getRoles_service_;
     ProceduralFullReader parser_;
     bool run_;
 

@@ -54,6 +54,17 @@ void FullParser::enterRoot(ExtentedHATPParser::RootContext* ctx)
             // actions_.actions.push_back(parseAction(practice_action->action()));
         }
     }
+
+    for (auto* const attentes_bloc: ctx->attentes_bloc())
+    {
+        std::cout << "Parsing attentes_bloc" << std::endl;
+        for (auto* const role: attentes_bloc->role())
+        {
+            std::cout << "Parsing role: " << role->getText() << std::endl;
+            roles_.push_back(parseRole(role));
+        }
+    }
+
     std::cout << "Finished parsing root context." << std::endl;
     linkPracticesToFrames();
 
@@ -114,6 +125,19 @@ void FullParser::displayResult()
         }
         std::cout <<"\n\n\n" <<std::endl;
     }
+    std::cout << "Total roles parsed: " << roles_.size() << std::endl;
+    for (const auto& role: roles_)
+    {
+        std::cout << "Role: " << role->role_name << std::endl;
+        std::cout << "Intents: " << role->attentes.size() << std::endl;
+        for (const auto& attente: role->attentes)
+        {
+            std::cout << " - Intent: " << attente.name << std::endl;
+        }
+    }
+
+
+
 }
 void FullParser::linkPracticesToFrames()
 {
@@ -214,6 +238,10 @@ PracticeFrame* FullParser::parsePracticeFrame(ExtentedHATPParser::Practice_frame
     PracticeFrame* new_frame = new PracticeFrame();
     new_frame->name = frame->name()->getText();
     new_frame->description = parseDescriptionPracticeBloc(frame->description_practice());
+    for (auto* const conditions: frame->conditions_practices())
+    {
+        new_frame->activation_conditions = conditions->query()->getText();
+    }
     for (auto* const practice_ctx: frame->practices_list())
     {
         for (auto* const practice: practice_ctx->practice_name())
@@ -395,5 +423,35 @@ TripletVariable_t FullParser::parseVariable(ExtentedHATPParser::ObjectContext* c
     // std::cout << "[Object] new_variable : " << new_variable << std::endl;
 
     return new_variable;
+}
+Attente& FullParser::parseAttente(ExtentedHATPParser::AttenteContext* attente)
+{
+    const auto res = new Attente();
+    res->name = attente->name()->getText();
+    const auto condition = attente->conditions();
+    for (auto* const query : condition->query())
+    {
+        res->query = query->getText();
+    }
+    for (auto* const triplet: condition->triplet())
+    {
+        Triplet_t new_triplet = parseTriplet(triplet);
+        res->triplets.push_back(new_triplet.toRosMsg());
+    }
+
+
+    return *res;
+}
+Role* FullParser::parseRole(ExtentedHATPParser::RoleContext* ctx)
+{
+    const auto res = new Role();
+    res->role_name = ctx->name()->getText();
+    for (auto* const attente: ctx->attente())
+    {
+        auto new_intent = parseAttente(attente);
+        res->attentes.push_back(new_intent);
+    }
+    return res;
+
 }
 } // procedural

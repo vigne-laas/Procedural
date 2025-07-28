@@ -17,7 +17,7 @@ actions_bloc: ACTIONS OpenCurly action* CloseCurly SEMICOLON;
 action: ACTION name OpenPar arguments* (Comma arguments)* ClosePar OpenCurly preconditions_bloc? effects_bloc? (recognition_bloc|execution_bloc|description_bloc|cost_bloc|duration_bloc)+ CloseCurly SEMICOLON;
 
 preconditions_bloc: PRECONDITIONS OpenCurly (query | triplet)* CloseCurly SEMICOLON;
-query: SELECT (variable|TIMES) (Comma variable)* WHERE OpenCurly triplet_query* CloseCurly SEMICOLON;
+query: SELECT (variable|TIMES|MINUS) (Comma variable)* WHERE OpenCurly triplet_query* CloseCurly;
 
 triplet_query: (NOT)? subject source COLON predicate object  SEMICOLON;
 source: IDENTIFIER;
@@ -68,7 +68,7 @@ priority: PRIORITY name OpenCurly (event|priority_level|objectifs)* CloseCurly S
 
 
 pratices_frames_bloc: PRACTICE_FRAMES OpenCurly practice_frame* CloseCurly SEMICOLON;
-practice_frame: PRACTICE_FRAME name OpenCurly (description_practice|practices_list|roles_list|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
+practice_frame: PRACTICE_FRAME name OpenCurly (description_practice|conditions_practices|practices_list|roles_list|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
 practices_list: PRACTICES_LIST OpenCurly practice_name* CloseCurly SEMICOLON;
 roles_list: ROLES OpenCurly role_name* CloseCurly SEMICOLON;
 role_name: MINUS name SEMICOLON;

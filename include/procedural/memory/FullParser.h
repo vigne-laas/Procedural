@@ -5,6 +5,7 @@
 
 #include "procedural_interfaces/Practice.h"
 #include "procedural_interfaces/PracticeFrame.h"
+#include "procedural_interfaces/Role.h"
 using namespace procedural_interfaces;
 namespace procedural {
 
@@ -20,6 +21,7 @@ public:
         }
         return practices;
     }
+    std::vector<Role*> getRoles() const { return roles_; };
 private:
 
     void displayResult();
@@ -40,10 +42,14 @@ private:
     Triplet_t parseTriplet(ExtentedHATPParser::TripletContext* ctx);
     TripletVariable_t parseVariable(ExtentedHATPParser::SubjectContext* ctx);
     TripletVariable_t parseVariable(ExtentedHATPParser::ObjectContext* ctx);
+    Attente& parseAttente(ExtentedHATPParser::AttenteContext* attente);
+    Role* parseRole(ExtentedHATPParser::RoleContext* ctx);
+
 
     Actions_t actions_;
     std::vector<PracticeFrame*> practice_frames_;
     std::map<std::string, Practice*> practices_;
+    std::vector<Role*> roles_;
 
 };
 

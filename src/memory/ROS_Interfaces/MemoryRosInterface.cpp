@@ -84,6 +84,21 @@ bool MemoryROSInterface::getPracticeFrames(procedural_interfaces::getPracticeFra
     }
     return true;
 }
+bool MemoryROSInterface::getRoles(procedural_interfaces::getRoles::Request& req,
+    procedural_interfaces::getRoles::Response& res)
+{
+    auto roles_ptrs = parser_.getRoles();
+    res.roles.clear();
+    res.roles.reserve(roles_ptrs.size());
+    for (const auto* role_ptr : roles_ptrs)
+    {
+        if (role_ptr != nullptr)
+        {
+            res.roles.push_back(*role_ptr);
+        }
+    }
+    return true;
+}
 
 void MemoryROSInterface::init_ros()
 {
@@ -93,6 +108,8 @@ void MemoryROSInterface::init_ros()
     std::cout << "Service getPractices started" << std::endl;
     getPracticeFrames_service_ = node_->advertiseService("/getPracticeFrames", &MemoryROSInterface::getPracticeFrames, this);
     std::cout << "Service getPracticeFrames started" << std::endl;
+    getRoles_service_ = node_->advertiseService("/getRoles", &MemoryROSInterface::getRoles, this);
+    std::cout << "Service getRoles started" << std::endl;
     std::cout << "ROS interface initialized" << std::endl;
 }
 
