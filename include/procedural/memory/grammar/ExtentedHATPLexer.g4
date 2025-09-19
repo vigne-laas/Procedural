@@ -37,6 +37,7 @@ PRIORITY:  'Priority' | 'PRIORITY';
 EVENT:  'Event' | 'EVENT';
 OBJECTIVES: 'Objectives' | 'OBJECTIVES';
 PRIORITY_LEVEL:  'Priority_level' | 'PRIORITY_LEVEL';
+STATE: 'STATE';
 
 ROLES: 'ROLES';
 PRACTICE_FRAMES: 'PRACTICE_FRAMES';
@@ -47,6 +48,11 @@ PRACTICES_LIST: 'PRACTICES_LIST';
 OBJECTS: 'OBJECTS';
 RULES: 'RULES';
 COMPETENCES: 'COMPETENCES';
+CAPACITES: 'CAPACITES';
+CAPACITE: 'CAPACITE';
+CAN_SATISFY_EXPECTATIONS: 'CAN_SATISFY_EXPECTATIONS';
+EXPECTS_FROM: 'EXPECTS_FROM';
+TYPE_KW: 'TYPE';
 
 
 
@@ -85,6 +91,8 @@ OpenClosePar: '()';
 OpenCurly: '{' ;
 CloseCurly: '}';
 OpenCloseCurly: '{}';
+OpenSquare: '[';
+CloseSquare: ']';
 Comma: ',';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;

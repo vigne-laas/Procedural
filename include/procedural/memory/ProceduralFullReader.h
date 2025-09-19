@@ -17,6 +17,8 @@ public:
     std::vector<PracticeFrame*> getPracticeFrames() { return parser_.getPracticeFrames(); }
     std::vector<Practice*> getPractices() { return parser_.getPractices(); }
     std::vector<Role*> getRoles() { return parser_.getRoles(); }
+    std::vector<Priority*> getPriorities() { return parser_.getPriorities(); }
+    std::vector<Abstract_task_t> getTasks() { return parser_.getTasks(); }
 
 private:
     antlr4::tree::ParseTree* tree{};

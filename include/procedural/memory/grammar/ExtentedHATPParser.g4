@@ -17,7 +17,17 @@ actions_bloc: ACTIONS OpenCurly action* CloseCurly SEMICOLON;
 action: ACTION name OpenPar arguments* (Comma arguments)* ClosePar OpenCurly preconditions_bloc? effects_bloc? (recognition_bloc|execution_bloc|description_bloc|cost_bloc|duration_bloc)+ CloseCurly SEMICOLON;
 
 preconditions_bloc: PRECONDITIONS OpenCurly (query | triplet)* CloseCurly SEMICOLON;
-query: SELECT (variable|TIMES|MINUS) (Comma variable)* WHERE OpenCurly triplet_query* CloseCurly;
+query: SELECT (variable|TIMES|MINUS) (Comma variable)* WHERE OpenCurly where_clause CloseCurly;
+
+where_clause: where_statement+;
+
+where_statement: NOT OpenCurly triplet_with_dot+ CloseCurly POINT
+               | triplet_with_dot;
+
+triplet_with_dot: triplet_pattern POINT SPACE*;
+
+
+triplet_pattern: subject source COLON predicate object;
 
 triplet_query: (NOT)? subject source COLON predicate object  SEMICOLON;
 source: IDENTIFIER;
@@ -46,9 +56,9 @@ parameter: name OpenPar value ClosePar SEMICOLON;
 
 
 attentes_bloc: ATTENTES OpenCurly role* CloseCurly SEMICOLON;
-role: ROLE name OpenCurly attente* CloseCurly SEMICOLON;
+role: ROLE name OpenCurly conditions attente* CloseCurly SEMICOLON;
 attente: ATTENTE name OpenCurly conditions CloseCurly SEMICOLON;
-conditions: CONDITIONS OpenCurly (triplet|query)* CloseCurly SEMICOLON;
+conditions: CONDITIONS OpenCurly (query|triplet)* CloseCurly SEMICOLON;
 
 
 tasks_bloc: TASKS OpenCurly task* CloseCurly SEMICOLON;
@@ -62,13 +72,17 @@ subtask_line: id COLON name OpenPar arg* (Comma arg)* ClosePar (operator id)*  S
 
 event: EVENT OpenCurly query* CloseCurly SEMICOLON;
 priority_level: PRIORITY_LEVEL OpenCurly numeric_value SEMICOLON CloseCurly SEMICOLON;
-objectifs: OBJECTIVES OpenCurly (triplet|query)* CloseCurly SEMICOLON;
+objectifs: OBJECTIVES OpenCurly objectives_content* CloseCurly SEMICOLON;
+objectives_content: state_bloc | task_bloc | query | triplet;
+state_bloc: STATE OpenCurly (query|triplet)* CloseCurly SEMICOLON;
+task_bloc: TASK COLON name OpenPar task_arg* (Comma task_arg)* ClosePar SEMICOLON;
+task_arg: variable | name;
 priorities_bloc: PRIORITIES OpenCurly priority* CloseCurly SEMICOLON;
 priority: PRIORITY name OpenCurly (event|priority_level|objectifs)* CloseCurly SEMICOLON;
 
 
 pratices_frames_bloc: PRACTICE_FRAMES OpenCurly practice_frame* CloseCurly SEMICOLON;
-practice_frame: PRACTICE_FRAME name OpenCurly (description_practice|conditions_practices|practices_list|roles_list|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
+practice_frame: PRACTICE_FRAME name OpenCurly (description_practice|conditions_practices|practices_list|roles_with_conditions|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
 practices_list: PRACTICES_LIST OpenCurly practice_name* CloseCurly SEMICOLON;
 roles_list: ROLES OpenCurly role_name* CloseCurly SEMICOLON;
 role_name: MINUS name SEMICOLON;
@@ -79,9 +93,31 @@ object_item: MINUS object SEMICOLON;
 rules_bloc: RULES OpenCurly rule_item+ CloseCurly SEMICOLON;
 rule_item: MINUS STRING sentence STRING;
 
+// New rules for roles with conditions (at frame level)
+roles_with_conditions: ROLES OpenCurly role_with_condition* CloseCurly SEMICOLON;
+role_with_condition: MINUS name (OpenCurly conditions capacites_list? attentes_list? CloseCurly)? SEMICOLON;
+
+// New rules for roles with attentes (at practice level)
+roles_with_attentes: ROLES OpenCurly role_with_attente* CloseCurly SEMICOLON;
+role_with_attente: MINUS name (OpenCurly capacites_list? attentes_list? CloseCurly)? SEMICOLON;
+attentes_list: ATTENTES COLON OpenCurly attente_extended* CloseCurly;
+
+// New rules for capacites
+capacites_list: CAPACITES COLON OpenCurly capacite* CloseCurly SEMICOLON;
+capacite: CAPACITE name OpenCurly (can_satisfy_expectations|description_capacite|conditions)* CloseCurly SEMICOLON;
+can_satisfy_expectations: CAN_SATISFY_EXPECTATIONS COLON OpenSquare expectation_type_list CloseSquare SEMICOLON;
+expectation_type_list: name (Comma name)*;
+description_capacite: DESCRIPTION COLON STRING sentence STRING SEMICOLON;
+
+// Enhanced attente with new fields
+attente_extended: ATTENTE name OpenCurly (attente_type|expects_from|description_attente|conditions)* CloseCurly SEMICOLON;
+attente_type: TYPE_KW COLON name SEMICOLON;
+expects_from: EXPECTS_FROM COLON OpenSquare role_list CloseSquare SEMICOLON;
+role_list: name (Comma name)*;
+description_attente: DESCRIPTION COLON STRING sentence STRING SEMICOLON;
 
 practices_bloc: PRACTICES OpenCurly practice* CloseCurly SEMICOLON;
-practice: PRACTICE name OpenCurly (description_practice|conditions_practices|roles_list|competences|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
+practice: PRACTICE name OpenCurly (description_practice|conditions_practices|roles_with_attentes|competences|objects_bloc|rules_bloc)* CloseCurly SEMICOLON;
 conditions_practices: CONDITIONS OpenCurly query CloseCurly SEMICOLON;
 competences: COMPETENCES OpenCurly competence* CloseCurly SEMICOLON;
 competence: MINUS STRING sentence STRING;

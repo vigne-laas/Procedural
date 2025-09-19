@@ -6,6 +6,11 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include "procedural_interfaces/Task.h"
+#include "procedural_interfaces/Method.h"
+#include "procedural_interfaces/TaskArgument.h"
+#include "procedural_interfaces/TaskPrecondition.h"
+#include "procedural_interfaces/TaskEffect.h"
 
 namespace procedural {
 struct Expression_t {
@@ -18,6 +23,7 @@ struct Expression_t {
     std::string subject;
     std::string property;
     std::string object;
+    bool add = true;
 
     friend std::ostream& operator<<(std::ostream& os, const Expression_t& lhs)
     {
@@ -28,9 +34,11 @@ struct Expression_t {
 
 
 struct Arguments_t {
-    Arguments_t(const std::string& type, const std::string& varname) : type(type), varname(varname) {};
+    Arguments_t() = default;
+    Arguments_t(const std::string& type, const std::string& varname) : type(type), varname(varname), name(varname) {};
     std::string type;
     std::string varname;
+    std::string name;
 
     friend std::ostream& operator<<(std::ostream& os, const Arguments_t& lhs)
     {
@@ -165,6 +173,57 @@ struct Abstract_task_t {
         return os;
     }
 
+    procedural_interfaces::Task toRosMsg() const
+    {
+        procedural_interfaces::Task msg;
+        msg.task_name = name;
+
+        // Convert arguments
+        for (const auto& arg : arguments)
+        {
+            procedural_interfaces::TaskArgument task_arg;
+            task_arg.name = arg.name;
+            task_arg.type = arg.type;
+            task_arg.value = "";  // No value in parsed structure
+            msg.arguments.push_back(task_arg);
+        }
+
+        // Convert methods - simplified conversion
+        for (const auto& method : methods_)
+        {
+            procedural_interfaces::Method method_msg;
+            method_msg.method_name = "method_" + std::to_string(&method - &methods_[0]);
+
+            // Convert preconditions
+            for (const auto& precond : method.preconditions)
+            {
+                procedural_interfaces::TaskPrecondition precond_msg;
+                precond_msg.subject = precond.subject;
+                precond_msg.predicate = precond.property;
+                precond_msg.object = precond.object;
+                precond_msg.is_negative = !precond.add;
+                method_msg.preconditions.push_back(precond_msg);
+            }
+
+            msg.methods.push_back(method_msg);
+        }
+
+        // Convert goals to effects
+        for (const auto& goal : goals)
+        {
+            procedural_interfaces::TaskEffect effect_msg;
+            effect_msg.subject = goal.subject;
+            effect_msg.predicate = goal.property;
+            effect_msg.object = goal.object;
+            effect_msg.is_add = goal.add;
+            msg.effects.push_back(effect_msg);
+        }
+
+        msg.is_primitive = methods_.empty();
+        msg.description = "";
+
+        return msg;
+    }
 
 };
 
