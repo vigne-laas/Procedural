@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<launch>
+    <!--
+    Complete Multi-Agent Action Recognition System
+
+    This launch file starts the complete multi-agent action recognition system
+    including all required dependencies:
+    - Ontologenius (multi-agent mode)
+    - Mementar (multi-agent mode)
+    - Overworld (agent management)
+    - Procedural Memory (domain storage)
+    - Multi-agent Action Recognition
+
+    Prerequisites:
+    - Domain file loaded in procedural_memory
+    - Agents registered in overworld
+    -->
+
+    <!-- Ontologenius and Mementar configuration -->
+    <arg name="onto_files" default="
+        $(find common_ground_ontology)/CG_root.owl
+        $(find common_ground_ontology)/ris_agents.owl
+        $(find overworld)/ontologies/adream_building.owl
+        $(find dt_resources)/ontologies/dt_objects.owl
+        $(find procedural)/ontologies/recognition.owl"/>
+    <arg name="mementar_config_file" default="$(find procedural)/configs/mementar.yaml"/>
+    <arg name="onto_config_file" default="$(find procedural)/configs/ontologenius.yaml"/>
+    <arg name="onto_display" default="false"/>
+
+    <!-- Action Recognition parameters -->
+    <arg name="memory_service_namespace" default="procedural_memory"/>
+    <arg name="action_filter" default=""/>
+    <arg name="fact_time_to_live" default="25.0"/>
+    <arg name="buffer_max_size" default="500"/>
+    <arg name="debug_mode" default="false"/>
+
+    <!-- Start Ontologenius and Mementar in multi-agent mode -->
+    <include file="$(find procedural)/launch/ontologenius_mementar_multi.launch">
+        <arg name="onto_files" value="$(arg onto_files)"/>
+        <arg name="mementar_config_file" value="$(arg mementar_config_file)"/>
+        <arg name="onto_config_file" value="$(arg onto_config_file)"/>
+        <arg name="onto_display" value="$(arg onto_display)"/>
+    </include>
+
+    <!-- Start Overworld (agent management system) -->
+    <!-- Note: Uncomment if overworld is not already running -->
+    <!-- <include file="$(find overworld)/launch/overworld.launch"/> -->
+
+    <!-- Start Procedural Memory (domain storage) -->
+    <!-- Note: Uncomment if procedural_memory is not already running -->
+    <!-- <node name="procedural_memory" pkg="procedural" type="procedural_memory_node" output="screen"/> -->
+
+    <!-- Start Multi-agent Action Recognition -->
+    <include file="$(find procedural)/launch/action_recognition_multi.launch">
+        <arg name="memory_service_namespace" value="$(arg memory_service_namespace)"/>
+        <arg name="action_filter" value="$(arg action_filter)"/>
+        <arg name="fact_time_to_live" value="$(arg fact_time_to_live)"/>
+        <arg name="buffer_max_size" value="$(arg buffer_max_size)"/>
+        <arg name="debug_mode" value="$(arg debug_mode)"/>
+    </include>
+
+</launch>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Memory service namespace -->
+  <arg name="memory_service_namespace" default="procedural_memory" />
+
+  <!-- Action recognition parameters -->
+  <arg name="action_filter" default="" />
+  <arg name="fact_ttl" default="10.0" />
+  <arg name="buffer_max_size" default="1000" />
+
+  <!-- Task recognition parameters -->
+  <arg name="task_filter" default="" />
+
+  <!-- Debug parameters -->
+  <arg name="debug_output_path" default="/tmp/procedural_debug" />
+
+  <!-- Launch action recognition node -->
+  <node name="action_recognition_node" pkg="procedural" type="action_recognition_node" output="screen">
+    <param name="memory_service_namespace" value="$(arg memory_service_namespace)" />
+    <param name="action_filter" value="$(arg action_filter)" />
+    <param name="fact_time_to_live" value="$(arg fact_ttl)" />
+    <param name="buffer_max_size" value="$(arg buffer_max_size)" />
+  </node>
+
+  <!-- Launch task recognition node -->
+  <!-- <node name="task_recognition_node" pkg="procedural" type="task_recognition_node" output="screen">
+    <param name="memory_service_namespace" value="$(arg memory_service_namespace)" />
+    <param name="task_filter" value="$(arg task_filter)" />
+  </node> -->
+
+</launch>

@@ -26,6 +26,9 @@ public:
     std::vector<Graph*> getHypothesisGraphs() { return hypothesis_graphs_; }
     std::vector<Graph*> getFinishedGraphs() { return finished_graphs_; }
 
+    void clearFinishedGraphs() { finished_graphs_.clear(); }
+    ParsedDescriptions_t getDescriptions() const { return descriptions_; }
+
     void completeRemap(const std::vector<std::shared_ptr<Action>>& actions);
     std::map<std::string, std::string> getArgs() { return args_; }
 
@@ -37,6 +40,7 @@ private:
     static int graph_id;
     std::string name_;
     std::map<std::string, std::string> args_;
+    ParsedDescriptions_t descriptions_;
     Graph factory_;
     std::vector<std::string> parameters_;
     std::vector<Graph*> active_graphs_;

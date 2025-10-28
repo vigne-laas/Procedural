@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="test" default="false" doc="Launch test fact publisher"/>
+  <arg name="test_mode" default="simple" doc="Test mode: simple, complex, or interactive"/>
+  <arg name="monitor" default="true" doc="Echo recognition events for debugging"/>
+  <arg name="debug" default="false" doc="Enable debug mode in action recognition"/>
+  <arg name="validate" default="false" doc="Run memory service validation before starting"/>
+  <arg name="domain_file" default="$(find restaurant_resources)/domaines/v2/domain3.dom" doc="Domain file for memory"/>
+
+  <!-- Memory service -->
+  <group ns="procedural_memory">
+    <node name="procedural_memory_node" pkg="procedural" type="procedural_memory_node"
+          output="screen" args="-f $(arg domain_file)">
+      <remap from="~output" to="/procedural_memory/output"/>
+    </node>
+  </group>
+
+  <!-- Wait for memory service to be available -->
+  <node name="wait_for_memory" pkg="rostopic" type="rostopic"
+        args="echo /getTasks -n 1" output="log"/>
+
+  <!-- Action recognition node (wait for memory service) -->
+  <node name="action_recognition" pkg="procedural" type="action_recognition_node"
+        output="screen" respawn="false" launch-prefix="bash -c 'sleep 5; $0 $@' ">
+    <param name="memory_service_namespace" value=""/>  <!-- Empty = use global services -->
+    <param name="fact_topic" value="/facts"/>
+    <param name="action_filter" value=""/>
+    <param name="fact_time_to_live" value="10.0"/>
+    <param name="buffer_max_size" value="1000"/>
+    <param name="debug_mode" value="$(arg debug)"/>
+  </node>
+
+  <!-- Monitoring nodes (optional) -->
+  <group if="$(arg monitor)">
+    <node name="state_monitor" pkg="rostopic" type="rostopic"
+          args="echo /recognition/state_changes"
+          output="screen" prefix="[STATE_MONITOR] "/>
+
+    <node name="action_monitor" pkg="rostopic" type="rostopic"
+          args="echo /recognition/actions"
+          output="screen" prefix="[ACTION_MONITOR] "/>
+
+    <node name="library_monitor" pkg="rostopic" type="rostopic"
+          args="echo /recognition/library -n 1"
+          output="screen" prefix="[LIBRARY_MONITOR] "/>
+  </group>
+
+  <!-- Memory validation (optional) -->
+  <node name="memory_validator" pkg="procedural" type="validate_memory_connection.py"
+        if="$(arg validate)" output="screen"
+        launch-prefix="bash -c 'sleep 2; $0 $@' "/>
+
+  <!-- Test fact publisher (optional) -->
+  <node name="fact_publisher" pkg="procedural" type="test_fact_publisher_with_monitor.py"
+        args="$(arg test_mode)" if="$(arg test)" output="screen"
+        launch-prefix="bash -c 'sleep 8; $0 $@' "/>
+
+  <!-- Additional debugging tools (optional) -->
+  <group if="$(arg debug)">
+    <!-- Service list for verification -->
+    <node name="service_list" pkg="rosservice" type="rosservice"
+          args="list" output="log" launch-prefix="bash -c 'sleep 2; $0 $@' "/>
+
+    <!-- Topic list for verification -->
+    <node name="topic_list" pkg="rostopic" type="rostopic"
+          args="list" output="log" launch-prefix="bash -c 'sleep 2; $0 $@' "/>
+  </group>
+
+  <!-- RViz for visualization (optional) -->
+  <!--
+  <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find procedural)/config/action_recognition.rviz"
+        if="$(arg visualize)"/>
+  -->
+</launch>

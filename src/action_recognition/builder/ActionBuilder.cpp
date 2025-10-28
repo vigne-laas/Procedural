@@ -1,4 +1,5 @@
 #include "procedural/action_recognition/builder/ActionBuilder.h"
+#include "procedural/utils/Logger.h"
 
 namespace procedural {
 
@@ -29,24 +30,38 @@ ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_act
 bool ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_actions,
                           std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
 {
+    LOG_INFO << "ActionBuilder::build starting with " << simple_actions.size()
+             << " simple actions and " << composed_actions.size() << " composed actions";
+
     if (not checkAction(simple_actions, composed_actions)) {
+        LOG_ERROR << "Action validation failed";
         return false;
     }
+
+    LOG_INFO << "Building simple actions...";
     buildSimpleAction(simple_actions, path);
-    if (buildComposedAction(composed_actions, path))
+
+    LOG_INFO << "Building composed actions...";
+    if (buildComposedAction(composed_actions, path)) {
+        LOG_INFO << "ActionBuilder::build completed successfully. Built " << actions_.size() << " actions total";
         return true;
+    }
     LOG_ERROR << "Failed to build composed actions";
     throw ActionBuilderException("Failed to build composed actions");
 }
 
 void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions, const std::string& path)
 {
+    LOG_INFO << "Building " << simple_actions.size() << " simple actions";
     for (const auto& simple_action: simple_actions) {
+        LOG_INFO << "  Building simple action: " << simple_action.getName() << " (type: " << simple_action.type << ")";
         auto action = new Action(simple_action.type);
         if (action->build(simple_action, path)) {
             actions_.push_back(action);
             action_build.push_back(action->getName());
+            LOG_INFO << "  ✓ Successfully built action: " << action->getName();
         } else {
+            LOG_ERROR << "  ✗ Failed to build simple action: " << simple_action.type;
             throw ActionBuilderException("Failed to build simple action : " + simple_action.type);
         }
 
@@ -112,31 +127,39 @@ bool ActionBuilder::checkAction(const std::vector<ParsedSimpleAction_t>& simple_
                                 const std::vector<ParsedComposedAction_t>& composed_actions)
 {
     std::set<std::string> action_types;
+
+    // Check simple actions for empty recognition facts
     for (const auto& simple_action: simple_actions) {
         action_types.insert(simple_action.type);
+
+        if (simple_action.facts.facts_.empty()) {
+            LOG_WARNING << "Simple action '" << simple_action.getName() << "' has no recognition facts";
+            LOG_WARNING << "This action should have been filtered during conversion";
+        }
     }
+
     for (const auto& composed_action: composed_actions) {
         action_types.insert(composed_action.getName());
     }
+
     std::set<std::string> action_needed_by_composed_action_types;
     for (const auto& composed_action: composed_actions) {
-        if (composed_action.pattern.facts.empty()) {
-            LOG_WARNING << "Composed action " << composed_action.type << " has no facts";
-            LOG_WARNING << "This action can be represented by a task instead of an action\n";
+        // Check if composed action has neither facts nor sub-state machines
+        if (composed_action.pattern.facts.empty() && composed_action.pattern.sub_state_machines.empty()) {
+            LOG_WARNING << "Composed action '" << composed_action.getName() << "' has no facts and no sub-state machines";
+            LOG_WARNING << "This action can be represented by a task instead of an action";
+        } else if (composed_action.pattern.facts.empty()) {
+            LOG_DEBUG << "Composed action '" << composed_action.getName() << "' has no facts (relies on sub-state machines)";
         }
+
         for (const auto& sub_machine: composed_action.pattern.sub_state_machines) {
             action_needed_by_composed_action_types.insert(sub_machine.type);
         }
     }
 
-//    LOG_DEBUG << "actions needed by composed actions: ";
-//    for (const auto& action: action_needed_by_composed_action_types) {
-//        LOG_DEBUG << action << " ";
-//    }
-//    LOG_DEBUG << "\n";
     for (const auto& action: action_needed_by_composed_action_types) {
         if (action_types.find(action) == action_types.end()) {
-            LOG_ERROR << "action " << action << " needed by composed action not found";
+            LOG_ERROR << "Action '" << action << "' needed by composed action not found";
             return false;
         }
     }

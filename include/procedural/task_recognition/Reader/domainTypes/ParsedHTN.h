@@ -122,11 +122,13 @@ struct Subtask_t {
 };
 
 struct Method_t {
+    std::string name;
     std::vector<Expression_t> preconditions;
     Subtask_t subtask;
 
     friend std::ostream& operator<<(std::ostream& os, const Method_t& lhs)
     {
+        os << "Method: " << lhs.name << "\n";
         os << "Decomposition  : \n";
         for (const auto& precondition: lhs.preconditions)
             os << "\t\t" << precondition << "\n";
@@ -188,11 +190,13 @@ struct Abstract_task_t {
             msg.arguments.push_back(task_arg);
         }
 
-        // Convert methods - simplified conversion
+        // Convert methods - full conversion with decomposition
         for (const auto& method : methods_)
         {
             procedural_interfaces::Method method_msg;
-            method_msg.method_name = "method_" + std::to_string(&method - &methods_[0]);
+            method_msg.method_name = method.name.empty() ?
+                ("method_" + std::to_string(&method - &methods_[0])) :
+                method.name;
 
             // Convert preconditions
             for (const auto& precond : method.preconditions)
@@ -203,6 +207,13 @@ struct Abstract_task_t {
                 precond_msg.object = precond.object;
                 precond_msg.is_negative = !precond.add;
                 method_msg.preconditions.push_back(precond_msg);
+            }
+
+            // Convert subtasks to decomposition array
+            for (const auto& subtask_pair : method.subtask.map_actions)
+            {
+                std::string formatted_subtask = formatSubtask(subtask_pair.second);
+                method_msg.decomposition.push_back(formatted_subtask);
             }
 
             msg.methods.push_back(method_msg);
@@ -223,6 +234,19 @@ struct Abstract_task_t {
         msg.description = "";
 
         return msg;
+    }
+
+private:
+    std::string formatSubtask(const Ordered_Action_t& subtask) const
+    {
+        std::string formatted = subtask.name + "(";
+        for (size_t i = 0; i < subtask.arguments.size(); ++i)
+        {
+            if (i > 0) formatted += ", ";
+            formatted += subtask.arguments[i];
+        }
+        formatted += ")";
+        return formatted;
     }
 
 };

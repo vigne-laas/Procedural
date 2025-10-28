@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+    <!--
+    Multi-Agent Action Recognition Launch File
+
+    This launch file starts the multi-agent action recognition system.
+    It automatically creates a dedicated ActionRecognitionNode for each agent
+    detected via the /overworld/getAgents service.
+
+    Each agent gets:
+    - Dedicated ontology instance (via OntologiesManipulator)
+    - Dedicated timeline (via TimelinesManipulator)
+    - Subscription to /mementar/echo/{agent_name}
+
+    Centralized publication on:
+    - /recognition/state_changes       (all timeline state updates)
+    - /recognition/actions             (recognized actions from all timelines)
+    - /recognition/descriptions        (action descriptions)
+    - /recognition/descriptions_str    (string format descriptions)
+    - /recognition/active_graphs_state (aggregated state from all timelines)
+    -->
+
+    <!-- Parameters -->
+    <arg name="memory_service_namespace" default="procedural_memory"/>
+    <arg name="action_filter" default=""/>
+    <arg name="fact_time_to_live" default="25.0"/>
+    <arg name="buffer_max_size" default="500"/>
+    <arg name="debug_mode" default="false"/>
+
+    <!-- Multi-agent action recognition node -->
+    <node name="action_recognition_multi" pkg="procedural" type="action_recognition_multi_node" output="screen">
+        <param name="memory_service_namespace" value="$(arg memory_service_namespace)"/>
+        <param name="action_filter" value="$(arg action_filter)"/>
+        <param name="fact_time_to_live" value="$(arg fact_time_to_live)"/>
+        <param name="buffer_max_size" value="$(arg buffer_max_size)"/>
+        <param name="debug_mode" value="$(arg debug_mode)"/>
+    </node>
+
+</launch>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Domain configuration -->
+  <arg name="domain_file" default="$(find restaurant_resources)/domaines/v2/domain3.dom" />
+
+  <!-- Memory service configuration -->
+  <arg name="memory_service_namespace" default="procedural_memory" />
+
+  <!-- Action and task filters -->
+  <arg name="action_filter" default="" />
+  <arg name="task_filter" default="" />
+
+  <!-- Launch the procedural memory node first -->
+  <include file="$(find restaurant_resources)/launch/procedural/procedural_memory_node.launch">
+    <arg name="configuration_file" value="$(arg domain_file)" />
+  </include>
+
+  <!-- Wait a bit for memory service to start -->
+  <node name="wait_for_memory" pkg="rostopic" type="rostopic"
+        args="echo /procedural_memory/get_actions -n 1" output="screen" />
+
+  <!-- Launch the recognition system -->
+  <include file="$(find procedural)/launch/recognition_system.launch">
+    <arg name="memory_service_namespace" value="$(arg memory_service_namespace)" />
+    <arg name="action_filter" value="$(arg action_filter)" />
+    <arg name="task_filter" value="$(arg task_filter)" />
+  </include>
+
+</launch>

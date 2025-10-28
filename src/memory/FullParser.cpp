@@ -1,9 +1,11 @@
     #include "procedural/memory/FullParser.h"
 
 #include <ExtentedHATPParser.h>
+#include <ExtentedHATPLexer.h>
 #include <procedural_interfaces/action_t.h>
 #include <algorithm>
 #include <cctype>
+#include <fstream>
 
 
 
@@ -20,49 +22,71 @@ std::string trim(const std::string& str) {
 void FullParser::enterRoot(ExtentedHATPParser::RootContext* ctx)
 {
     std::cout << "Entering root context" << std::endl;
+
+    // Phase 1: Traitement des inclusions
+    std::cout << "=== PHASE 1: PROCESSING INCLUDES ===" << std::endl;
+    std::set<std::string> processing_stack;
+
     for (auto* const inclusion: ctx->include_bloc())
     {
-        std::cout << "Parsing include_bloc" << std::endl;
-        for (auto* const include: inclusion->inclusion())
-        {
-            if (include->link() != nullptr)
-            {
-                std::cout << "Link: " << include->link()->getText() << std::endl;
-            }
-            if (include->package_link() != nullptr)
-            {
-                std::cout << "Package Link: " << include->package_link()->link()->getText() << std::endl;
-
-            }
-        }
-
-        // actions_.actions.push_back(parseAction(action));
+        std::cout << "Processing include_bloc" << std::endl;
+        processIncludes(inclusion);
     }
+
+    // Traiter tous les fichiers dans la queue
+    while (!files_to_process_.empty()) {
+        FileContext file_context = files_to_process_.front();
+        files_to_process_.pop();
+
+        try {
+            std::string resolved_path = resolveFilePath(file_context.filepath, file_context.package, file_context.base_directory);
+            processIncludeFileRecursively(resolved_path, processing_stack);
+        } catch (const std::exception& e) {
+            std::cerr << "Error processing include file: " << e.what() << std::endl;
+        }
+    }
+
+    // Phase 2: Parser le contenu du fichier courant et l'ajouter aux maps temporaires
+    std::cout << "=== PHASE 2: PARSING CURRENT FILE CONTENT ===" << std::endl;
+
+    // Parser les actions du fichier courant
     for (auto* const action_bloc: ctx->actions_bloc())
     {
-        std::cout << "Parsing actions_bloc" << std::endl;
+        std::cout << "Parsing actions_bloc (current file)" << std::endl;
+        Actions_t temp_actions = actions_; // Sauvegarder l'état actuel
+        actions_.actions.clear(); // Vider temporairement
+
         parseActionBloc(action_bloc);
+
+        // Ajouter aux maps temporaires
+        for (const auto& action : actions_.actions) {
+            std::string signature = getActionSignature(action);
+            pending_actions_[signature].push_back(action);
+        }
+
+        actions_ = temp_actions; // Restaurer l'état
     }
 
+    // Parser les frames du fichier courant
     for (auto* const frames: ctx->pratices_frames_bloc())
     {
-        std::cout << "Parsing pratices_frames_bloc" << std::endl;
+        std::cout << "Parsing pratices_frames_bloc (current file)" << std::endl;
         for (auto* const frame: frames->practice_frame())
         {
-            // std::cout << "Parsing frame_action: " << frame->getText() << std::endl;
-            practice_frames_.push_back(parsePracticeFrame(frame));
+            PracticeFrame* parsed_frame = parsePracticeFrame(frame);
+            pending_frames_[parsed_frame->name].push_back(parsed_frame);
         }
     }
 
+    // Parser les practices du fichier courant
     for (auto* const practices: ctx->practices_bloc())
     {
-        std::cout << "Parsing practices_bloc" << std::endl;
+        std::cout << "Parsing practices_bloc (current file)" << std::endl;
         for (auto* const practice_item: practices->practice())
         {
             std::cout << "Parsing practice_action: " << practice_item->getText() << std::endl;
-            practices_.insert(
-                {practice_item->name()->getText(), parsePractice(practice_item)});
-            // actions_.actions.push_back(parseAction(practice_action->action()));
+            Practice* parsed_practice = parsePractice(practice_item);
+            pending_practices_[parsed_practice->name].push_back(parsed_practice);
         }
     }
 
@@ -78,20 +102,34 @@ void FullParser::enterRoot(ExtentedHATPParser::RootContext* ctx)
     //     }
     // }
 
+    // Parser les priorities du fichier courant
     for (auto* const priorities_bloc: ctx->priorities_bloc())
     {
-        std::cout << "Parsing priorities_bloc" << std::endl;
+        std::cout << "Parsing priorities_bloc (current file)" << std::endl;
         for (auto* const priority: priorities_bloc->priority())
         {
             std::cout << "Parsing priority: " << priority->name()->getText() << std::endl;
-            priorities_.insert(std::make_pair(priority->name()->getText(), parsePriority(priority)));
+            Priority* parsed_priority = parsePriority(priority);
+            pending_priorities_[parsed_priority->name].push_back(parsed_priority);
         }
     }
 
+    // Parser les tasks du fichier courant
     for (auto* const tasks_bloc: ctx->tasks_bloc())
     {
-        std::cout << "Parsing tasks_bloc" << std::endl;
+        std::cout << "Parsing tasks_bloc (current file)" << std::endl;
+        std::map<std::string, Abstract_task_t> temp_tasks = tasks_; // Sauvegarder l'état actuel
+        tasks_.clear(); // Vider temporairement
+
         parseTasksBloc(tasks_bloc);
+
+        // Ajouter aux maps temporaires
+        for (const auto& [name, task] : tasks_) {
+            std::string signature = getTaskSignature(task);
+            pending_tasks_[signature].push_back(task);
+        }
+
+        tasks_ = temp_tasks; // Restaurer l'état
     }
 
     std::cout << "Finished parsing root context." << std::endl;
@@ -110,13 +148,15 @@ void FullParser::enterRoot(ExtentedHATPParser::RootContext* ctx)
     // std::cout << "\n=================================================================" << std::endl;
     // std::cout << "PHASE 3: CONTINUING WITH OTHER LINKING" << std::endl;
     // std::cout << "=================================================================" << std::endl;
+    // Phase 3: Fusionner les éléments (après parsing du fichier courant)
+    std::cout << "=== PHASE 3: MERGING ELEMENTS ===" << std::endl;
+    mergeElements();
+
+    // Phase 4: Liens et finalisation
+    std::cout << "=== PHASE 4: LINKING ===" << std::endl;
+    linkRolesToPractices();
     linkRolesToFrames();
     linkPracticesToFrames();
-    
-    // std::cout << "\n=================================================================" << std::endl;
-    // std::cout << "PHASE 4: ALL LINKING COMPLETE" << std::endl;
-    // std::cout << "=================================================================" << std::endl;
-    // debugPrintRolesState("FINAL_STATE");
 
     std::cout << "\n=================================================================" << std::endl;
     std::cout << "PARSING SUMMARY" << std::endl;
@@ -683,6 +723,12 @@ Action_t FullParser::parseAction(ExtentedHATPParser::ActionContext* action)
         new_action.duration = parseActionDurationBloc(duration_blocs[0]);  // Take first one
     }
 
+    // Parse recognition bloc (optional, single)
+    for (auto* recognition_bloc : action->recognition_bloc())
+    {
+        new_action.recognition = parseRecognitionBloc(recognition_bloc);
+    }
+
     return new_action;
 }
 
@@ -778,7 +824,7 @@ TripletVariable_t FullParser::parseVariable(ExtentedHATPParser::SubjectContext* 
         new_variable.isVariable = true;
         if (ctx->my_self_var() != nullptr)
         {
-            new_variable.literal = "action_id";
+            new_variable.literal = "??";
         } else
         {
             new_variable.literal = ctx->variable()->getText();
@@ -800,7 +846,7 @@ TripletVariable_t FullParser::parseVariable(ExtentedHATPParser::ObjectContext* c
         new_variable.isVariable = true;
         if (ctx->my_self_var() != nullptr)
         {
-            new_variable.literal = "action_id";
+            new_variable.literal = "??";
         } else
         {
             new_variable.literal = ctx->variable()->getText();
@@ -1083,6 +1129,56 @@ double FullParser::parseActionDurationBloc(ExtentedHATPParser::Duration_blocCont
     return 0.0;
 }
 
+Recognition_t FullParser::parseRecognitionBloc(ExtentedHATPParser::Recognition_blocContext* ctx)
+{
+    Recognition_t recognition;
+
+    if (ctx == nullptr) return recognition;
+
+    // Parse sequence bloc
+    auto* sequence_bloc = ctx->sequence_bloc();
+    if (sequence_bloc != nullptr)
+    {
+        for (auto* sequence : sequence_bloc->sequence())
+        {
+            RecognitionSequenceStep_t step;
+
+            // Parse subject, predicate, object
+            step.subject = trim(sequence->subject()->getText());
+            step.predicate = trim(sequence->predicate()->getText());
+            step.object = trim(sequence->object()->getText());
+
+            // Check for NOT modifier
+            step.is_negative = (sequence->NOT() != nullptr);
+
+            // Check for REQUIRED modifier
+            step.is_required = (sequence->REQUIRED() != nullptr);
+
+            recognition.sequence.push_back(step);
+        }
+    }
+
+    // Parse parameters bloc (optional)
+    auto* parameters_bloc = ctx->parameters_bloc();
+    if (parameters_bloc != nullptr)
+    {
+        for (auto* parameter : parameters_bloc->parameter())
+        {
+            std::string param_name = parameter->name()->getText();
+            if (param_name == "ttl")
+            {
+                auto* value = parameter->value();
+                if (value != nullptr)
+                {
+                    recognition.parameters.ttl = std::stod(value->getText());
+                }
+            }
+        }
+    }
+
+    return recognition;
+}
+
 void FullParser::parseTasksBloc(ExtentedHATPParser::Tasks_blocContext* ctx)
 {
     for (auto* const task_ctx: ctx->task())
@@ -1142,6 +1238,13 @@ Method_t FullParser::parseMethod(ExtentedHATPParser::MethodContext* ctx)
 {
     Method_t method;
 
+    // Parse method name/ID
+    auto method_id_ctx = ctx->id_method();
+    if (method_id_ctx != nullptr)
+    {
+        method.name = method_id_ctx->getText();
+    }
+
     // Parse preconditions (multiple possible)
     auto precond_blocs = ctx->preconditions_bloc();
     for (size_t i = 0; i < precond_blocs.size(); ++i)
@@ -1182,6 +1285,556 @@ Method_t FullParser::parseMethod(ExtentedHATPParser::MethodContext* ctx)
     }
 
     return method;
+}
+
+// ===============================
+// Système d'inclusion de fichiers
+// ===============================
+
+void FullParser::parseFileWithInclusions(const std::string& filepath) {
+    std::cout << "=== STARTING INCLUSION-AWARE PARSING ===" << std::endl;
+
+    // Phase 1: Initialisation
+    current_directory_ = std::filesystem::path(filepath).parent_path();
+    processed_files_.clear();
+    parsed_files_.clear();
+    pending_actions_.clear();
+    pending_practices_.clear();
+    pending_tasks_.clear();
+    pending_frames_.clear();
+    pending_roles_.clear();
+    pending_priorities_.clear();
+
+    std::cout << "Base directory: " << current_directory_ << std::endl;
+
+    // Phase 2: Parser le fichier principal et tous les inclus récursivement
+    std::set<std::string> processing_stack;
+    processIncludeFileRecursively(filepath, processing_stack);
+
+    // Phase 3: Fusionner tous les éléments
+    mergeElements();
+
+    // Phase 4: Appliquer les liaisons comme avant
+    linkRolesToPractices();
+    linkRolesToFrames();
+    linkPracticesToFrames();
+
+    std::cout << "=== INCLUSION-AWARE PARSING COMPLETE ===" << std::endl;
+    displayResult();
+}
+
+void FullParser::processIncludeFileRecursively(const std::string& filepath, std::set<std::string>& processing_stack) {
+    std::string resolved_path = std::filesystem::absolute(filepath);
+
+    std::cout << "Processing file: " << resolved_path << std::endl;
+
+    // Vérifier les dépendances circulaires
+    if (processing_stack.find(resolved_path) != processing_stack.end()) {
+        throw std::runtime_error("Circular dependency detected: " + resolved_path);
+    }
+
+    // Éviter de parser le même fichier plusieurs fois
+    if (processed_files_.find(resolved_path) != processed_files_.end()) {
+        std::cout << "File already processed, skipping: " << resolved_path << std::endl;
+        return;
+    }
+
+    processing_stack.insert(resolved_path);
+    processed_files_.insert(resolved_path);
+
+    // Parser le fichier
+    ParsedFileContent file_content = parseFile(resolved_path);
+
+    // Stocker le contenu parsé dans les maps temporaires
+    for (const auto& action : file_content.actions) {
+        std::string signature = getActionSignature(action);
+        pending_actions_[signature].push_back(action);
+    }
+
+    for (const auto& practice : file_content.practices) {
+        pending_practices_[practice->name].push_back(practice);
+    }
+
+    for (const auto& task : file_content.tasks) {
+        std::string signature = getTaskSignature(task);
+        pending_tasks_[signature].push_back(task);
+    }
+
+    for (const auto& frame : file_content.frames) {
+        pending_frames_[frame->name].push_back(frame);
+    }
+
+    for (const auto& role : file_content.roles) {
+        pending_roles_[role->role_name].push_back(role);
+    }
+
+    for (const auto& priority : file_content.priorities) {
+        pending_priorities_[priority->name].push_back(priority);
+    }
+
+    // Traiter les inclusions de ce fichier
+    // (Ceci nécessiterait de parser le fichier pour extraire les includes)
+    // Pour l'instant, nous allons implémenter une version simplifiée
+
+    processing_stack.erase(resolved_path);
+}
+
+ParsedFileContent FullParser::parseFile(const std::string& filepath) {
+    ParsedFileContent content(filepath);
+
+    std::cout << "Parsing individual file: " << filepath << std::endl;
+
+    // Créer un parser ANTLR pour ce fichier spécifique
+    try {
+        std::ifstream stream(filepath);
+        if (!stream.is_open()) {
+            throw std::runtime_error("Cannot open file: " + filepath);
+        }
+
+        antlr4::ANTLRInputStream input(stream);
+        ExtentedHATPLexer lexer(&input);
+        antlr4::CommonTokenStream tokens(&lexer);
+        ExtentedHATPParser parser(&tokens);
+
+        // Parser le fichier
+        ExtentedHATPParser::RootContext* tree = parser.root();
+
+        // Sauvegarder l'état actuel des variables membres
+        Actions_t temp_actions = actions_;
+        std::map<std::string, Practice*> temp_practices = practices_;
+        std::map<std::string, Abstract_task_t> temp_tasks = tasks_;
+        std::map<std::string, Priority*> temp_priorities = priorities_;
+        std::vector<PracticeFrame*> temp_frames = practice_frames_;
+
+        // Vider temporairement les variables membres
+        actions_.actions.clear();
+        practices_.clear();
+        tasks_.clear();
+        priorities_.clear();
+        practice_frames_.clear();
+
+        // D'abord traiter les includes de ce fichier
+        std::string file_dir = std::filesystem::path(filepath).parent_path();
+        std::set<std::string> local_processing_stack;
+
+        for (auto* const include_bloc: tree->include_bloc()) {
+            std::cout << "Processing include_bloc with " << include_bloc->inclusion().size() << " inclusions" << std::endl;
+            for (auto* const inclusion_item: include_bloc->inclusion()) {
+                std::cout << "Processing inclusion with " << inclusion_item->STRING().size() << " strings" << std::endl;
+                for (auto* const string_node: inclusion_item->STRING()) {
+                    std::string include_path = string_node->getText();
+                    std::cout << "Raw include path: '" << include_path << "'" << std::endl;
+
+                    // Enlever les guillemets si présents
+                    if (include_path.length() >= 2 && include_path.front() == '"' && include_path.back() == '"') {
+                        include_path = include_path.substr(1, include_path.length() - 2);
+                    }
+
+                    std::cout << "Cleaned include path: '" << include_path << "'" << std::endl;
+
+                    if (!include_path.empty()) {
+                        std::string resolved_include_path = resolveFilePath(include_path, "", file_dir);
+                        std::cout << "Found include: " << resolved_include_path << std::endl;
+
+                        // Parser récursivement le fichier inclus
+                        processIncludeFileRecursively(resolved_include_path, local_processing_stack);
+                    } else {
+                        std::cout << "Warning: Empty include path found" << std::endl;
+                    }
+                }
+            }
+        }
+
+        // Parser les différents blocs du fichier
+        for (auto* const action_bloc: tree->actions_bloc()) {
+            parseActionBloc(action_bloc);
+            for (const auto& action : actions_.actions) {
+                content.actions.push_back(action);
+            }
+            actions_.actions.clear();
+        }
+
+        for (auto* const frames: tree->pratices_frames_bloc()) {
+            for (auto* const frame: frames->practice_frame()) {
+                PracticeFrame* parsed_frame = parsePracticeFrame(frame);
+                content.frames.push_back(parsed_frame);
+            }
+        }
+
+        for (auto* const practices: tree->practices_bloc()) {
+            for (auto* const practice_item: practices->practice()) {
+                Practice* parsed_practice = parsePractice(practice_item);
+                content.practices.push_back(parsed_practice);
+            }
+        }
+
+        for (auto* const priorities_bloc: tree->priorities_bloc()) {
+            for (auto* const priority: priorities_bloc->priority()) {
+                Priority* parsed_priority = parsePriority(priority);
+                content.priorities.push_back(parsed_priority);
+            }
+        }
+
+        for (auto* const tasks_bloc: tree->tasks_bloc()) {
+            parseTasksBloc(tasks_bloc);
+            for (const auto& task_pair : tasks_) {
+                content.tasks.push_back(task_pair.second);
+            }
+            tasks_.clear();
+        }
+
+        // Restaurer l'état original
+        actions_ = temp_actions;
+        practices_ = temp_practices;
+        tasks_ = temp_tasks;
+        priorities_ = temp_priorities;
+        practice_frames_ = temp_frames;
+
+        std::cout << "File parsing complete. Found: "
+                  << content.actions.size() << " actions, "
+                  << content.practices.size() << " practices, "
+                  << content.tasks.size() << " tasks, "
+                  << content.priorities.size() << " priorities, "
+                  << content.frames.size() << " frames" << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error parsing file " << filepath << ": " << e.what() << std::endl;
+        throw;
+    }
+
+    return content;
+}
+
+std::string FullParser::resolveFilePath(const std::string& path, const std::string& package, const std::string& base_dir) {
+    std::cout << "Resolving path: " << path << " (package: " << package << ", base: " << base_dir << ")" << std::endl;
+
+    if (!package.empty()) {
+        // Résolution via package ROS
+        std::string pkg_path = getPackagePath(package);
+        if (!pkg_path.empty()) {
+            return std::filesystem::absolute(pkg_path + "/" + path);
+        } else {
+            throw std::runtime_error("Package not found: " + package);
+        }
+    }
+
+    // Chemin absolu
+    if (std::filesystem::path(path).is_absolute()) {
+        return std::filesystem::absolute(path);
+    }
+
+    // Chemin relatif
+    std::string base = base_dir.empty() ? current_directory_ : base_dir;
+    return std::filesystem::absolute(base + "/" + path);
+}
+
+std::string FullParser::getPackagePath(const std::string& package_name) {
+    std::cout << "Getting package path for: " << package_name << std::endl;
+
+    // Utiliser rospack pour trouver le chemin du package
+    std::string command = "rospack find " + package_name + " 2>/dev/null";
+
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        std::cerr << "Failed to execute rospack command" << std::endl;
+        return "";
+    }
+
+    char buffer[256];
+    std::string result;
+
+    if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        result = buffer;
+        // Enlever le newline final
+        if (!result.empty() && result.back() == '\n') {
+            result.pop_back();
+        }
+    }
+
+    pclose(pipe);
+
+    std::cout << "Package path: " << result << std::endl;
+    return result;
+}
+
+void FullParser::mergeElements() {
+    std::cout << "=== MERGING ELEMENTS ===" << std::endl;
+
+    // Fusionner les actions
+    for (const auto& [signature, action_list] : pending_actions_) {
+        if (action_list.size() == 1) {
+            actions_.actions.push_back(action_list[0]);
+            std::cout << "Added single action: " << signature << std::endl;
+        } else {
+            Action_t merged = mergeActionDefinitions(action_list);
+            actions_.actions.push_back(merged);
+            std::cout << "Merged " << action_list.size() << " action definitions: " << signature << std::endl;
+        }
+    }
+
+    // Fusionner les practices
+    for (const auto& [name, practice_list] : pending_practices_) {
+        if (practice_list.size() == 1) {
+            practices_[name] = practice_list[0];
+            std::cout << "Added single practice: " << name << std::endl;
+        } else {
+            Practice* merged = mergePracticeDefinitions(practice_list);
+            practices_[name] = merged;
+            std::cout << "Merged " << practice_list.size() << " practice definitions: " << name << std::endl;
+        }
+    }
+
+    // Fusionner les tasks
+    for (const auto& [signature, task_list] : pending_tasks_) {
+        if (task_list.size() == 1) {
+            tasks_[task_list[0].name] = task_list[0];
+            std::cout << "Added single task: " << signature << std::endl;
+        } else {
+            Abstract_task_t merged = mergeTaskDefinitions(task_list);
+            tasks_[merged.name] = merged;
+            std::cout << "Merged " << task_list.size() << " task definitions: " << signature << std::endl;
+        }
+    }
+
+    // Fusionner les frames
+    for (const auto& [name, frame_list] : pending_frames_) {
+        if (frame_list.size() == 1) {
+            practice_frames_.push_back(frame_list[0]);
+            std::cout << "Added single frame: " << name << std::endl;
+        } else {
+            PracticeFrame* merged = mergePracticeFrameDefinitions(frame_list);
+            practice_frames_.push_back(merged);
+            std::cout << "Merged " << frame_list.size() << " frame definitions: " << name << std::endl;
+        }
+    }
+
+    // Fusionner les roles
+    for (const auto& [name, role_list] : pending_roles_) {
+        if (role_list.size() == 1) {
+            roles_[name] = role_list[0];
+            std::cout << "Added single role: " << name << std::endl;
+        } else {
+            // Pour l'instant, prendre le premier rôle (TODO: implémenter fusion des rôles)
+            roles_[name] = role_list[0];
+            std::cout << "Using first role definition (merge not implemented): " << name << std::endl;
+        }
+    }
+
+    // Fusionner les priorities
+    for (const auto& [name, priority_list] : pending_priorities_) {
+        if (priority_list.size() == 1) {
+            priorities_[name] = priority_list[0];
+            std::cout << "Added single priority: " << name << std::endl;
+        } else {
+            // Pour l'instant, prendre la première priorité (TODO: implémenter fusion des priorités)
+            priorities_[name] = priority_list[0];
+            std::cout << "Using first priority definition (merge not implemented): " << name << std::endl;
+        }
+    }
+
+    std::cout << "=== MERGING COMPLETE ===" << std::endl;
+}
+
+Action_t FullParser::mergeActionDefinitions(const std::vector<Action_t>& actions) {
+    if (actions.empty()) {
+        throw std::runtime_error("Cannot merge empty action list");
+    }
+
+    Action_t merged = actions[0];
+    std::cout << "Merging " << actions.size() << " actions for: " << merged.name << std::endl;
+
+    for (size_t i = 1; i < actions.size(); i++) {
+        const Action_t& current = actions[i];
+
+        // Fusionner les préconditions
+        merged.preconditions.insert(merged.preconditions.end(),
+                                   current.preconditions.begin(),
+                                   current.preconditions.end());
+
+        // Fusionner les effets
+        merged.effects.insert(merged.effects.end(),
+                             current.effects.begin(),
+                             current.effects.end());
+
+        // Fusionner l'exécution (prendre la première non-vide)
+        if (merged.executions_bloc.empty() && !current.executions_bloc.empty()) {
+            merged.executions_bloc = current.executions_bloc;
+        }
+
+        // Fusionner la description (prendre la première non-vide)
+        if (merged.description.description.empty() && !current.description.description.empty()) {
+            merged.description = current.description;
+        }
+
+        // Prendre la durée si non définie
+        if (merged.duration == 0 && current.duration > 0) {
+            merged.duration = current.duration;
+        }
+    }
+
+    return merged;
+}
+
+Practice* FullParser::mergePracticeDefinitions(const std::vector<Practice*>& practices) {
+    if (practices.empty()) {
+        throw std::runtime_error("Cannot merge empty practice list");
+    }
+
+    Practice* merged = new Practice(*practices[0]);
+    std::cout << "Merging " << practices.size() << " practices for: " << merged->name << std::endl;
+
+    for (size_t i = 1; i < practices.size(); i++) {
+        const Practice* current = practices[i];
+
+        // Fusionner les compétences
+        merged->competences.insert(merged->competences.end(),
+                                  current->competences.begin(),
+                                  current->competences.end());
+
+        // Fusionner les objets
+        merged->objects.insert(merged->objects.end(),
+                              current->objects.begin(),
+                              current->objects.end());
+
+        // Fusionner les conditions d'activation
+        merged->activation_conditions.insert(merged->activation_conditions.end(),
+                                            current->activation_conditions.begin(),
+                                            current->activation_conditions.end());
+
+        // Fusionner les rôles
+        merged->roles.insert(merged->roles.end(),
+                            current->roles.begin(),
+                            current->roles.end());
+
+        // Fusionner les règles
+        merged->rules.insert(merged->rules.end(),
+                            current->rules.begin(),
+                            current->rules.end());
+
+        // Prendre la description si vide
+        if (merged->description.empty() && !current->description.empty()) {
+            merged->description = current->description;
+        }
+    }
+
+    return merged;
+}
+
+Abstract_task_t FullParser::mergeTaskDefinitions(const std::vector<Abstract_task_t>& tasks) {
+    if (tasks.empty()) {
+        throw std::runtime_error("Cannot merge empty task list");
+    }
+
+    Abstract_task_t merged = tasks[0];
+    std::cout << "Merging " << tasks.size() << " tasks for: " << merged.name << std::endl;
+
+    for (size_t i = 1; i < tasks.size(); i++) {
+        const Abstract_task_t& current = tasks[i];
+
+        // Fusionner les méthodes
+        merged.methods_.insert(merged.methods_.end(),
+                              current.methods_.begin(),
+                              current.methods_.end());
+    }
+
+    return merged;
+}
+
+PracticeFrame* FullParser::mergePracticeFrameDefinitions(const std::vector<PracticeFrame*>& frames) {
+    if (frames.empty()) {
+        throw std::runtime_error("Cannot merge empty frame list");
+    }
+
+    PracticeFrame* merged = new PracticeFrame(*frames[0]);
+    std::cout << "Merging " << frames.size() << " frames for: " << merged->name << std::endl;
+
+    for (size_t i = 1; i < frames.size(); i++) {
+        const PracticeFrame* current = frames[i];
+
+        // Fusionner les practices
+        merged->practices.insert(merged->practices.end(),
+                                current->practices.begin(),
+                                current->practices.end());
+
+        // Prendre la description si vide
+        if (merged->description.empty() && !current->description.empty()) {
+            merged->description = current->description;
+        }
+    }
+
+    return merged;
+}
+
+std::string FullParser::getActionSignature(const Action_t& action) {
+    std::string signature = action.name + "(";
+    for (size_t i = 0; i < action.arguments.size(); i++) {
+        if (i > 0) signature += ",";
+        signature += action.arguments[i].type + " " + action.arguments[i].literal;
+    }
+    signature += ")";
+    return signature;
+}
+
+std::string FullParser::getTaskSignature(const Abstract_task_t& task) {
+    std::string signature = task.name + "(";
+    for (size_t i = 0; i < task.arguments.size(); i++) {
+        if (i > 0) signature += ",";
+        signature += task.arguments[i].type + " " + task.arguments[i].name;
+    }
+    signature += ")";
+    return signature;
+}
+
+void FullParser::processIncludes(ExtentedHATPParser::Include_blocContext* include_bloc) {
+    std::cout << "Processing includes from include_bloc" << std::endl;
+
+    for (auto* const include: include_bloc->inclusion()) {
+        std::string filepath;
+        std::string package;
+
+        // Extraire le nom du fichier
+        if (include->STRING().size() >= 2) {
+            std::string first_string = include->STRING(0)->getText();
+            std::string second_string = include->STRING(1)->getText();
+
+            // Enlever les guillemets
+            if (first_string.length() >= 2 && first_string.front() == '"' && first_string.back() == '"') {
+                first_string = first_string.substr(1, first_string.length() - 2);
+            }
+            if (second_string.length() >= 2 && second_string.front() == '"' && second_string.back() == '"') {
+                second_string = second_string.substr(1, second_string.length() - 2);
+            }
+
+            filepath = second_string; // Le fichier est généralement le deuxième string
+        }
+
+        // Vérifier s'il y a un package link
+        if (include->package_link() != nullptr) {
+            if (include->package_link()->link() != nullptr) {
+                package = include->package_link()->link()->getText();
+                std::cout << "Package Link detected: " << package << std::endl;
+            }
+        }
+        // Vérifier s'il y a un link simple
+        else if (include->link() != nullptr) {
+            std::string link_text = include->link()->getText();
+            std::cout << "Direct Link detected: " << link_text << std::endl;
+            filepath = link_text;
+        }
+
+        if (!filepath.empty()) {
+            std::cout << "Adding file to processing queue: " << filepath;
+            if (!package.empty()) {
+                std::cout << " (package: " << package << ")";
+            }
+            std::cout << std::endl;
+
+            FileContext file_context(filepath, package, current_directory_);
+            files_to_process_.push(file_context);
+        } else {
+            std::cerr << "Warning: Could not extract filepath from inclusion" << std::endl;
+        }
+    }
 }
 
 } // procedural

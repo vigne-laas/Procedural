@@ -1,0 +1,58 @@
+&lt;mxlibrary&gt;[
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"fact-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Fact&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- add_: bool&lt;br&gt;- subject_: pair&amp;lt;string, Variable_t*&amp;gt;&lt;br&gt;- object_: pair&amp;lt;string, Variable_t*&amp;gt;&lt;br&gt;- id_: uint32_t&lt;br&gt;- id_property_: uint32_t&lt;br&gt;- timestamp_: TimeStamp_t&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getLiteralSubject(): string&lt;br&gt;+ getLiteralObject(): string&lt;br&gt;+ getStrProperty(): string&lt;br&gt;+ match(Fact&amp;amp;): bool&lt;br&gt;+ toString(): string&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1f5fe;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"260\" height=\"200\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 260,
+    "h": 200,
+    "aspect": "fixed",
+    "title": "Fact Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"variable-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Variable_t&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- value_: uint32_t&lt;br&gt;- is_set_: bool&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ isSet(): bool&lt;br&gt;+ getValue(): uint32_t&lt;br&gt;+ setValue(uint32_t): void&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f3e5f5;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"160\" height=\"120\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 160,
+    "h": 120,
+    "aspect": "fixed",
+    "title": "Variable_t Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"observation-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Observation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id_: int64_t&lt;br&gt;+ table_variables_: VariableTable_t&lt;br&gt;- constraints_: set&amp;lt;int&amp;gt;&lt;br&gt;- htn_id_: int&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getData(): pair&amp;lt;int64_t, VariableTable_t&amp;gt;&lt;br&gt;+ linkVariables(): void&lt;br&gt;+ toString(): string&lt;br&gt;+ expandProperty(): void&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fff3e0;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"320\" height=\"180\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 320,
+    "h": 180,
+    "aspect": "fixed",
+    "title": "Observation Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"graph-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Graph&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- nodes_: map&amp;lt;uint64_t, Node*&amp;gt;&lt;br&gt;- initial_node_: uint64_t&lt;br&gt;- name_: string&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ addNode(Node*): bool&lt;br&gt;+ getNode(uint64_t): Node*&lt;br&gt;+ getInitialNode(): Node*&lt;br&gt;+ toDot(): string&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e8f5e8;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"280\" height=\"160\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 280,
+    "h": 160,
+    "aspect": "fixed",
+    "title": "Graph Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"node-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Node&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id_: uint64_t&lt;br&gt;- name_: string&lt;br&gt;- depth_: int&lt;br&gt;- transitions_: vector&amp;lt;Transition*&amp;gt;&lt;br&gt;- parents_: vector&amp;lt;uint64_t&amp;gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getId(): uint64_t&lt;br&gt;+ isFinal(): bool&lt;br&gt;+ addTransition(): bool&lt;br&gt;+ match(): uint64_t&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fce4ec;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"280\" height=\"180\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 280,
+    "h": 180,
+    "aspect": "fixed",
+    "title": "Node Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"action-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Action&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- name_: string&lt;br&gt;- type_: ActionType&lt;br&gt;- state_machine_: StateMachine&lt;br&gt;- parameters_: map&amp;lt;string, Variable_t*&amp;gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getName(): string&lt;br&gt;+ getType(): ActionType&lt;br&gt;+ evolve(): EvolveResult&lt;br&gt;+ isFinished(): bool&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffecb3;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"280\" height=\"160\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 280,
+    "h": 160,
+    "aspect": "fixed", 
+    "title": "Action Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"state-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;State&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id_: uint32_t&lt;br&gt;- name_: string&lt;br&gt;- is_final_: bool&lt;br&gt;- transitions_: vector&amp;lt;ActionTransition*&amp;gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getId(): uint32_t&lt;br&gt;+ isFinal(): bool&lt;br&gt;+ addTransition(): void&lt;br&gt;+ evolve(): StateEvolveResult&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e0f2f1;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"300\" height=\"160\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 300,
+    "h": 160,
+    "aspect": "fixed",
+    "title": "State Class"
+  },
+  {
+    "xml": "&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;mxCell id=\"transition-shape\" value=\"&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Transition&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- observation_: Observation*&lt;br&gt;- next_node_id_: uint64_t&lt;br&gt;- constraints_: set&amp;lt;int&amp;gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getObservation(): Observation*&lt;br&gt;+ getNextNodeId(): uint64_t&lt;br&gt;+ toString(): string&lt;/p&gt;\" style=\"verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f9fbe7;\" vertex=\"1\" parent=\"1\"&gt;&lt;mxGeometry x=\"0\" y=\"0\" width=\"280\" height=\"140\" as=\"geometry\"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;",
+    "w": 280,
+    "h": 140,
+    "aspect": "fixed",
+    "title": "Transition Class"
+  }
+]&lt;/mxlibrary&gt;

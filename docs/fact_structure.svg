@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .class-box { fill: #e1f5fe; stroke: #01579b; stroke-width: 1; }
+      .variable-box { fill: #f3e5f5; stroke: #4a148c; stroke-width: 1; }
+      .timestamp-box { fill: #fff3e0; stroke: #e65100; stroke-width: 1; }
+      .text-title { font-family: Arial; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .text-content { font-family: Arial; font-size: 11px; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Fact Class -->
+  <g>
+    <rect class="class-box" x="40" y="40" width="260" height="200" rx="5"/>
+    <text class="text-title" x="170" y="60">Fact</text>
+    <line x1="50" y1="70" x2="290" y2="70" stroke="#01579b"/>
+    <text class="text-content" x="50" y="90">- add_: bool</text>
+    <text class="text-content" x="50" y="105">- subject_: pair&lt;string, Variable_t*&gt;</text>
+    <text class="text-content" x="50" y="120">- object_: pair&lt;string, Variable_t*&gt;</text>
+    <text class="text-content" x="50" y="135">- id_: uint32_t</text>
+    <text class="text-content" x="50" y="150">- id_property_: uint32_t</text>
+    <text class="text-content" x="50" y="165">- timestamp_: TimeStamp_t</text>
+    <line x1="50" y1="175" x2="290" y2="175" stroke="#01579b"/>
+    <text class="text-content" x="50" y="195">+ getLiteralSubject(): string</text>
+    <text class="text-content" x="50" y="210">+ getLiteralObject(): string</text>
+    <text class="text-content" x="50" y="225">+ getStrProperty(): string</text>
+  </g>
+  
+  <!-- Variable_t Class -->
+  <g>
+    <rect class="variable-box" x="400" y="40" width="160" height="120" rx="5"/>
+    <text class="text-title" x="480" y="60">Variable_t</text>
+    <line x1="410" y1="70" x2="550" y2="70" stroke="#4a148c"/>
+    <text class="text-content" x="410" y="90">- value_: uint32_t</text>
+    <text class="text-content" x="410" y="105">- is_set_: bool</text>
+    <line x1="410" y1="115" x2="550" y2="115" stroke="#4a148c"/>
+    <text class="text-content" x="410" y="135">+ isSet(): bool</text>
+    <text class="text-content" x="410" y="150">+ getValue(): uint32_t</text>
+  </g>
+  
+  <!-- TimeStamp_t Class -->
+  <g>
+    <rect class="timestamp-box" x="400" y="200" width="160" height="100" rx="5"/>
+    <text class="text-title" x="480" y="220">TimeStamp_t</text>
+    <line x1="410" y1="230" x2="550" y2="230" stroke="#e65100"/>
+    <text class="text-content" x="410" y="250">- secs_: int32_t</text>
+    <text class="text-content" x="410" y="265">- nsecs_: int32_t</text>
+    <line x1="410" y1="275" x2="550" y2="275" stroke="#e65100"/>
+    <text class="text-content" x="410" y="295">+ getSecs(): int32_t</text>
+  </g>
+  
+  <!-- Arrows -->
+  <line class="arrow" x1="300" y1="100" x2="400" y2="100"/>
+  <line class="arrow" x1="300" y1="180" x2="400" y2="250"/>
+  
+  <text x="170" y="30" class="text-title" style="font-size: 16px;">Fact Structure Diagram</text>
+</svg>

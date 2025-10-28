@@ -1,0 +1,256 @@
+&lt;mxfile host="app.diagrams.net" agent="5.0" version="24.7.17"&gt;
+  &lt;diagram name="Procedural I/O Schema" id="procedural-io"&gt;
+    &lt;mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0"&gt;
+      &lt;root&gt;
+        &lt;mxCell id="0" /&gt;
+        &lt;mxCell id="1_af89115f" parent="0" /&gt;
+        
+        &lt;!-- Central System --&gt;
+        &lt;mxCell id="procedural-system" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Procedural System&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;b&gt;Components:&lt;/b&gt;&lt;br&gt;• Action Recognition&lt;br&gt;• Task Recognition&lt;br&gt;• Procedural Memory&lt;br&gt;• HTN Planning&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;strokeWidth=2;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="500" y="350" width="200" height="120" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Input Sources --&gt;
+        &lt;mxCell id="yaml-files" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;YAML Files&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• action definitions&lt;br&gt;• parameters&lt;br&gt;• state machines&lt;br&gt;• preconditions/effects&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="50" y="100" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="domain-files" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Domain Files&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• .dom HTN domains&lt;br&gt;• HATP grammar&lt;br&gt;• task hierarchies&lt;br&gt;• method definitions&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="250" y="100" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="owl-ontologies" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;OWL Ontologies&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• recognition.owl&lt;br&gt;• agents.owl&lt;br&gt;• kitchen_onto.owl&lt;br&gt;• semantic relations&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e8f5e8;strokeColor=#2e7d32;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="450" y="100" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="config-files" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Config Files&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• mementar.yaml&lt;br&gt;• ontologenius.yaml&lt;br&gt;• overworld.yaml&lt;br&gt;• system parameters&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fce4ec;strokeColor=#c2185b;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="650" y="100" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Runtime Inputs --&gt;
+        &lt;mxCell id="observations" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Observations&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;b&gt;Type:&lt;/b&gt; ROS Topics&lt;br&gt;• sensor data&lt;br&gt;• robot states&lt;br&gt;• environment facts&lt;br&gt;• temporal events&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffecb3;strokeColor=#ff8f00;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="50" y="350" width="150" height="120" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="ros-params" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;ROS Parameters&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• robot name&lt;br&gt;• file paths&lt;br&gt;• buffer sizes&lt;br&gt;• TTL settings&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e0f2f1;strokeColor=#00695c;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="250" y="350" width="150" height="120" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- External Systems --&gt;
+        &lt;mxCell id="ontologenius" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Ontologenius&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;b&gt;I/O:&lt;/b&gt; Bidirectional&lt;br&gt;• semantic queries&lt;br&gt;• property expansion&lt;br&gt;• reasoning results&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f9fbe7;strokeColor=#689f38;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="100" y="600" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="mementar" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Mementar&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;b&gt;I/O:&lt;/b&gt; Bidirectional&lt;br&gt;• episodic storage&lt;br&gt;• temporal queries&lt;br&gt;• memory retrieval&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="300" y="600" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Outputs --&gt;
+        &lt;mxCell id="ros-services" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;ROS Services&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• /getRobotActions&lt;br&gt;• /getPractices&lt;br&gt;• /getRoles&lt;br&gt;• /getPracticeFrames&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="800" y="250" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="recognition-results" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Recognition Results&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&lt;b&gt;Type:&lt;/b&gt; ROS Topics&lt;br&gt;• recognized actions&lt;br&gt;• task progress&lt;br&gt;• state transitions&lt;br&gt;• confidence scores&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="800" y="400" width="150" height="120" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="dot-graphs" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;DOT Graphs&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• state machine graphs&lt;br&gt;• HTN hierarchies&lt;br&gt;• execution traces&lt;br&gt;• debug visualizations&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e8f5e8;strokeColor=#2e7d32;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="800" y="550" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Log Outputs --&gt;
+        &lt;mxCell id="log-outputs" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Log Outputs&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;• recognition logs&lt;br&gt;• debug information&lt;br&gt;• performance metrics&lt;br&gt;• error messages&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#fce4ec;strokeColor=#c2185b;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="950" y="350" width="150" height="100" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Arrows - Inputs --&gt;
+        &lt;mxCell id="yaml-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#e65100;" edge="1" parent="1" source="yaml-files" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="200" y="200" as="sourcePoint" /&gt;
+            &lt;mxPoint x="450" y="350" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="125" y="300" /&gt;
+              &lt;mxPoint x="450" y="300" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="yaml-label" value="Action Definitions" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="yaml-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="20" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="domain-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#4a148c;" edge="1" parent="1" source="domain-files" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="325" y="200" as="sourcePoint" /&gt;
+            &lt;mxPoint x="500" y="350" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="325" y="280" /&gt;
+              &lt;mxPoint x="480" y="280" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="domain-label" value="HTN Domains" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="domain-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="owl-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#2e7d32;" edge="1" parent="1" source="owl-ontologies" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="525" y="200" as="sourcePoint" /&gt;
+            &lt;mxPoint x="600" y="350" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="525" y="260" /&gt;
+              &lt;mxPoint x="560" y="260" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="owl-label" value="Ontologies" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="owl-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="config-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#c2185b;" edge="1" parent="1" source="config-files" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="725" y="200" as="sourcePoint" /&gt;
+            &lt;mxPoint x="650" y="350" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="725" y="280" /&gt;
+              &lt;mxPoint x="640" y="280" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="config-label" value="Configuration" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="config-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="-10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Runtime inputs --&gt;
+        &lt;mxCell id="obs-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff8f00;" edge="1" parent="1" source="observations" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="200" y="410" as="sourcePoint" /&gt;
+            &lt;mxPoint x="500" y="410" as="targetPoint" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="obs-label" value="Runtime Data" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="obs-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="params-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#00695c;" edge="1" parent="1" source="ros-params" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="400" y="410" as="sourcePoint" /&gt;
+            &lt;mxPoint x="500" y="410" as="targetPoint" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="params-label" value="Parameters" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="params-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- External systems --&gt;
+        &lt;mxCell id="onto-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#689f38;startArrow=classic;startFill=1;" edge="1" parent="1" source="ontologenius" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="175" y="600" as="sourcePoint" /&gt;
+            &lt;mxPoint x="500" y="470" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="175" y="530" /&gt;
+              &lt;mxPoint x="450" y="530" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="onto-label" value="Semantic Queries" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="onto-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="mem-to-system" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#01579b;startArrow=classic;startFill=1;" edge="1" parent="1" source="mementar" target="procedural-system"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="375" y="600" as="sourcePoint" /&gt;
+            &lt;mxPoint x="550" y="470" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="375" y="550" /&gt;
+              &lt;mxPoint x="550" y="550" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="mem-label" value="Memory I/O" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="mem-to-system"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Outputs --&gt;
+        &lt;mxCell id="system-to-services" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#e65100;" edge="1" parent="1" source="procedural-system" target="ros-services"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="700" y="360" as="sourcePoint" /&gt;
+            &lt;mxPoint x="800" y="300" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="750" y="380" /&gt;
+              &lt;mxPoint x="750" y="300" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="services-label" value="Query Interface" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="system-to-services"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="system-to-recognition" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#4a148c;" edge="1" parent="1" source="procedural-system" target="recognition-results"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="700" y="410" as="sourcePoint" /&gt;
+            &lt;mxPoint x="800" y="460" as="targetPoint" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="recognition-label" value="Real-time Results" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="system-to-recognition"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="system-to-dot" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#2e7d32;" edge="1" parent="1" source="procedural-system" target="dot-graphs"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="700" y="470" as="sourcePoint" /&gt;
+            &lt;mxPoint x="800" y="600" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="770" y="450" /&gt;
+              &lt;mxPoint x="770" y="600" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="dot-label" value="Visualizations" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="system-to-dot"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="10" y="-10" as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;mxCell id="system-to-logs" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#c2185b;" edge="1" parent="1" source="procedural-system" target="log-outputs"&gt;
+          &lt;mxGeometry width="50" height="50" relative="1" as="geometry"&gt;
+            &lt;mxPoint x="700" y="400" as="sourcePoint" /&gt;
+            &lt;mxPoint x="950" y="400" as="targetPoint" /&gt;
+            &lt;Array as="points"&gt;
+              &lt;mxPoint x="800" y="400" /&gt;
+            &lt;/Array&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id="logs-label" value="Debug Info" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="system-to-logs"&gt;
+          &lt;mxGeometry x="-0.1" y="-1" relative="1" as="geometry"&gt;
+            &lt;mxPoint as="offset" /&gt;
+          &lt;/mxGeometry&gt;
+        &lt;/mxCell&gt;
+        
+        &lt;!-- Title --&gt;
+        &lt;mxCell id="title" value="Procedural System - Input/Output Schema" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" vertex="1" parent="1"&gt;
+          &lt;mxGeometry x="450" y="30" width="300" height="30" as="geometry" /&gt;
+        &lt;/mxCell&gt;
+      &lt;/root&gt;
+    &lt;/mxGraphModel&gt;
+  &lt;/diagram&gt;
+&lt;/mxfile&gt;

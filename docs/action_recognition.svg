@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="750" height="500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .action-box { fill: #ffecb3; stroke: #ff8f00; stroke-width: 1; }
+      .state-box { fill: #e0f2f1; stroke: #00695c; stroke-width: 1; }
+      .transition-box { fill: #fff3e0; stroke: #ef6c00; stroke-width: 1; }
+      .recognition-box { fill: #e3f2fd; stroke: #1565c0; stroke-width: 1; }
+      .text-title { font-family: Arial; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .text-content { font-family: Arial; font-size: 11px; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .cardinality { font-family: Arial; font-size: 10px; fill: #666; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Action Class -->
+  <g>
+    <rect class="action-box" x="40" y="40" width="280" height="160" rx="5"/>
+    <text class="text-title" x="180" y="60">Action</text>
+    <line x1="50" y1="70" x2="310" y2="70" stroke="#ff8f00"/>
+    <text class="text-content" x="50" y="90">- name_: string</text>
+    <text class="text-content" x="50" y="105">- type_: ActionType</text>
+    <text class="text-content" x="50" y="120">- state_machine_: StateMachine</text>
+    <text class="text-content" x="50" y="135">- parameters_: map&lt;string, Variable_t*&gt;</text>
+    <line x1="50" y1="145" x2="310" y2="145" stroke="#ff8f00"/>
+    <text class="text-content" x="50" y="165">+ getName(): string</text>
+    <text class="text-content" x="50" y="180">+ getType(): ActionType</text>
+    <text class="text-content" x="50" y="195">+ evolve(Observation*): EvolveResult</text>
+  </g>
+  
+  <!-- State Class -->
+  <g>
+    <rect class="state-box" x="400" y="40" width="300" height="160" rx="5"/>
+    <text class="text-title" x="550" y="60">State</text>
+    <line x1="410" y1="70" x2="690" y2="70" stroke="#00695c"/>
+    <text class="text-content" x="410" y="90">- id_: uint32_t</text>
+    <text class="text-content" x="410" y="105">- name_: string</text>
+    <text class="text-content" x="410" y="120">- is_final_: bool</text>
+    <text class="text-content" x="410" y="135">- transitions_: vector&lt;ActionTransition*&gt;</text>
+    <line x1="410" y1="145" x2="690" y2="145" stroke="#00695c"/>
+    <text class="text-content" x="410" y="165">+ getId(): uint32_t</text>
+    <text class="text-content" x="410" y="180">+ isFinal(): bool</text>
+    <text class="text-content" x="410" y="195">+ evolve(ActionObservation*): StateEvolveResult</text>
+  </g>
+  
+  <!-- ActionTransition Class -->
+  <g>
+    <rect class="transition-box" x="400" y="280" width="300" height="140" rx="5"/>
+    <text class="text-title" x="550" y="300">ActionTransition</text>
+    <line x1="410" y1="310" x2="690" y2="310" stroke="#ef6c00"/>
+    <text class="text-content" x="410" y="330">- pattern_: vector&lt;Fact*&gt;</text>
+    <text class="text-content" x="410" y="345">- next_state_id_: uint32_t</text>
+    <text class="text-content" x="410" y="360">- remap_: map&lt;string, string&gt;</text>
+    <line x1="410" y1="370" x2="690" y2="370" stroke="#ef6c00"/>
+    <text class="text-content" x="410" y="390">+ match(ActionObservation*): bool</text>
+    <text class="text-content" x="410" y="405">+ getNextStateId(): uint32_t</text>
+  </g>
+  
+  <!-- ActionRecognition Class -->
+  <g>
+    <rect class="recognition-box" x="40" y="280" width="280" height="140" rx="5"/>
+    <text class="text-title" x="180" y="300">ActionRecognition</text>
+    <line x1="50" y1="310" x2="310" y2="310" stroke="#1565c0"/>
+    <text class="text-content" x="50" y="330">- actions_: vector&lt;Action*&gt;</text>
+    <text class="text-content" x="50" y="345">- current_states_: map&lt;Action*, State*&gt;</text>
+    <line x1="50" y1="355" x2="310" y2="355" stroke="#1565c0"/>
+    <text class="text-content" x="50" y="375">+ addAction(Action*): void</text>
+    <text class="text-content" x="50" y="390">+ feedObservation(Observation*): vector&lt;Action*&gt;</text>
+    <text class="text-content" x="50" y="405">+ getRecognizedActions(): vector&lt;Action*&gt;</text>
+  </g>
+  
+  <!-- Arrows and Cardinality -->
+  <line class="arrow" x1="320" y1="120" x2="400" y2="120"/>
+  <text class="cardinality" x="350" y="115">1..*</text>
+  
+  <line class="arrow" x1="550" y1="200" x2="550" y2="280"/>
+  <text class="cardinality" x="560" y="240">0..*</text>
+  
+  <line class="arrow" x1="180" y1="280" x2="180" y2="200"/>
+  <text class="cardinality" x="190" y="240">1..*</text>
+  
+  <text x="375" y="30" class="text-title" style="font-size: 16px;">Action Recognition Architecture</text>
+</svg>

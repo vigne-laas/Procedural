@@ -110,18 +110,26 @@ namespace procedural {
   bool Graph::addTransition(std::shared_ptr<Transition> transition)
   {
     if(state_ != GraphState::UnClosed)
+    {
+      LOG_WARNING << "[Graph::addTransition] Cannot add transition - graph is not in UnClosed state (current: " << GraphStateToString(state_) << ")";
       return false;
+    }
+    LOG_DEBUG << "[Graph::addTransition] Adding transition: " << transition->getSourceId() << " -> " << transition->getTargetId()
+              << " (graph: " << name_ << ")";
     if(nodes_.find(transition->getSourceId()) == nodes_.end())
     {
+      LOG_DEBUG << "[Graph::addTransition]   Creating source node: " << transition->getSourceId();
       addNode(transition->getSourceId());
     }
     if(nodes_.find(transition->getTargetId()) == nodes_.end())
     {
+      LOG_DEBUG << "[Graph::addTransition]   Creating target node: " << transition->getTargetId();
       addNode(transition->getTargetId());
     }
     nodes_[transition->getSourceId()]->addTransition(transition);
     nodes_[transition->getTargetId()]->addParent(transition->getSourceId());
     table_variables_.set(transition->getTableVariables());
+    LOG_DEBUG << "[Graph::addTransition] Transition added successfully. Graph now has " << nodes_.size() << " nodes";
     return true;
   }
 
@@ -155,40 +163,56 @@ namespace procedural {
 
   bool Graph::processInitialNode()
   {
+    LOG_DEBUG << "[Graph::processInitialNode] Processing initial node for graph: " << name_ << " (id: " << id_ << ")";
+    LOG_DEBUG << "[Graph::processInitialNode] Total nodes in graph: " << nodes_.size();
+
     std::unordered_set<uint64_t> id_next_nodes;
     std::unordered_set<uint64_t> id_nodes;
     for(const auto& node : nodes_)
     {
+      LOG_DEBUG << "[Graph::processInitialNode]   Node " << node.first << " has " << node.second->getTransitions().size() << " transitions";
       for(const auto& transition : node.second->getTransitions())
       {
+        LOG_DEBUG << "[Graph::processInitialNode]     Transition: " << transition->getSourceId() << " -> " << transition->getTargetId();
         id_next_nodes.insert(transition->getTargetId());
       }
       id_nodes.insert(node.first);
     }
 
+    LOG_DEBUG << "[Graph::processInitialNode] Total node IDs: " << id_nodes.size();
+    LOG_DEBUG << "[Graph::processInitialNode] Node IDs that are targets of transitions: " << id_next_nodes.size();
+
     std::unordered_set<uint64_t> diff;
     std::set_difference(id_nodes.begin(), id_nodes.end(), id_next_nodes.begin(),
                         id_next_nodes.end(), std::inserter(diff, diff.begin()));
+
+    LOG_DEBUG << "[Graph::processInitialNode] Candidate initial nodes (nodes with no incoming transitions): " << diff.size();
+    for(const auto& id : diff)
+    {
+      LOG_DEBUG << "[Graph::processInitialNode]   Candidate initial node: " << id;
+    }
 
     if(diff.size() == 1)
     {
       initial_node_ = nodes_[*diff.begin()];
       current_node_ = initial_node_;
+      LOG_INFO << "[Graph::processInitialNode] Initial node found: " << *diff.begin();
       return true;
     }
     if(diff.size() > 1)
     {
-      LOG_ERROR << "Multiple initial nodes found\n";
+      LOG_ERROR << "[Graph::processInitialNode] Multiple initial nodes found";
       std::unordered_set<std::shared_ptr<Node>> invalid_nodes;
       for(const auto& id : diff)
       {
+        LOG_ERROR << "[Graph::processInitialNode]   Invalid initial node: " << id;
         invalid_nodes.insert(nodes_[id]);
       }
       throw MultiInitialNodeGraphException(invalid_nodes);
     }
     if(diff.empty())
     {
-      LOG_ERROR << "No initial node found \n";
+      LOG_ERROR << "[Graph::processInitialNode] No initial node found - graph has no nodes or all nodes have incoming transitions";
       throw NoInitialNodeGraphException();
     }
     return false;

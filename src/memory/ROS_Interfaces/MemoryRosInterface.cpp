@@ -17,37 +17,7 @@ bool MemoryROSInterface::getRobotActions(procedural_interfaces::getRobotActions:
 {
     for (const auto& action: parser_.getActions().actions)
     {
-        procedural_interfaces::Action action_msg;
-        action_msg.actionName = action.name;
-        for (const auto& [type, varname,value]: action.arguments)
-        {
-            procedural_interfaces::Argument arg_msg;
-            arg_msg.type = type;
-            arg_msg.value = varname;
-            action_msg.arguments.push_back(arg_msg);
-        }
-        for (const auto& exec_action: action.executions_bloc)
-        {
-            procedural_interfaces::ExecutionAction exec_action_msg;
-            exec_action_msg.name = exec_action.name;
-            for (const auto& exec_arg: exec_action.arguments)
-            {
-                procedural_interfaces::ExecutionArgument exec_arg_msg;
-                exec_arg_msg.name = exec_arg.type;
-                exec_arg_msg.value = exec_arg.value;
-                for (const auto& [key, value]: exec_arg.json)
-                {
-                    procedural_interfaces::JsonPair json_pair;
-                    json_pair.key = key;
-                    json_pair.value = value;
-                    exec_arg_msg.json.push_back(json_pair);
-                }
-                exec_action_msg.arguments.push_back(exec_arg_msg);
-            }
-            action_msg.executionActions.push_back(exec_action_msg);
-        }
-
-
+        // Utilise directement toRosMsg() qui gère correctement les champs literal/value
         res.actions.push_back(action.toRosMsg());
     }
     return true;

@@ -92,21 +92,32 @@ struct Variable_t {
 //        LOG_DEBUG << "Compare Variable_t\n";
 //        LOG_DEBUG << toString() << " =? " << other.toString() << "\n";
         if (type_ != other.type_) {
+            // Si les deux ont des valeurs (individus fixes), on compare juste les valeurs, pas les types
+            if (isSet() && other.isSet()) {
+                // Les deux sont des individus avec valeurs -> comparer seulement les valeurs
+                return value_ == other.value_;
+            }
+
             if (other.type_.empty() or type_.empty()) {
                 LOG_ERROR << "type_ or other.type_ empty\n";
                 return false;
             }
+            // Allow "unknown" type to match with any type
+            if (type_ == "unknown" || other.type_ == "unknown") {
+                // "unknown" is compatible with any type
+            } else {
 //            LOG_DEBUG << "type_ != other.type_\n";
-            std::unordered_set<std::string> intersection;
-            std::set_intersection(extended_types_.begin(), extended_types_.end(),
-                                  other.extended_types_.begin(), other.extended_types_.end(),
-                                  std::inserter(intersection, intersection.begin()));
-            for (const auto& type: intersection) {
+                std::unordered_set<std::string> intersection;
+                std::set_intersection(extended_types_.begin(), extended_types_.end(),
+                                      other.extended_types_.begin(), other.extended_types_.end(),
+                                      std::inserter(intersection, intersection.begin()));
+                for (const auto& type: intersection) {
 //                LOG_DEBUG << "intersection : " << type << "\n";
-            }
-            if (intersection.empty()) {
+                }
+                if (intersection.empty()) {
 //                LOG_DEBUG << "intersection empty\n";
-                return false;
+                    return false;
+                }
             }
         }
 //        LOG_DEBUG << "type_ == other.type_\n";

@@ -17,6 +17,7 @@
   <build_depend>yaml-cpp</build_depend>
   <build_depend>ontologenius</build_depend>
   <build_depend>mementar</build_depend>
+  <build_depend>overworld</build_depend>
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
@@ -24,6 +25,7 @@
   <build_export_depend>yaml-cpp</build_export_depend>
   <build_export_depend>ontologenius</build_export_depend>
   <build_export_depend>mementar</build_export_depend>
+  <build_export_depend>overworld</build_export_depend>
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -31,6 +33,7 @@
   <exec_depend>yaml-cpp</exec_depend>
   <exec_depend>ontologenius</exec_depend>
   <exec_depend>mementar</exec_depend>
+  <exec_depend>overworld</exec_depend>
   <depend>procedural_interfaces</depend>
 
 </package>

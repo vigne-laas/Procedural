@@ -18,8 +18,9 @@ uint64_t Transition::match(const Observation* observation) const
 
 std::string Transition::toDot() const
 {
+    std::string label = "T" + std::to_string(id_) + ": " + observation_->toString();
     return "\"" + std::to_string(source_id_) + "\" -> \"" + std::to_string(target_id_) + "\" [label=\"" +
-           observation_->toString() + "\"];\n";
+           label + "\", fontsize=10];\n";
 }
 
 std::string Transition::toString() const

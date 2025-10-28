@@ -1,5 +1,6 @@
 #include <set>
 #include "procedural/utils/BufferFacts.h"
+#include "procedural/utils/Logger.h"
 #include <algorithm>
 #include <iostream>
 
@@ -29,15 +30,24 @@ std::vector<Fact *> BufferFacts::getFacts(TimeStamp_t current_time)
 
     if (read_queue->empty() == false)
     {
+        LOG_INFO << "[BufferFacts] Swapped queues - read_queue has " << read_queue->size() << " facts";
         history_queue.insert(history_queue.end(), read_queue->begin(), read_queue->end());
         read_queue->clear();
+        LOG_INFO << "[BufferFacts] Before cleanOldFacts: history_queue size = " << history_queue.size();
+        LOG_INFO << "[BufferFacts] current_time = " << current_time << ", ttl_ = " << ttl_;
+        for (const auto& fact : history_queue) {
+            double age = current_time - fact->getTimeStamp();
+            LOG_INFO << "[BufferFacts] Fact " << fact->getId() << " timestamp=" << fact->getTimeStamp()
+                     << ", age=" << age << ", will_be_removed=" << (age > ttl_);
+        }
         cleanOldFacts(current_time);
+        LOG_INFO << "[BufferFacts] After cleanOldFacts: history_queue size = " << history_queue.size();
         std::sort(history_queue.begin(), history_queue.end(), customSort);
     }
 
     if (history_queue.size() > max_size_)
         history_queue.resize(max_size_);
-    
+
     return history_queue;
 }
 

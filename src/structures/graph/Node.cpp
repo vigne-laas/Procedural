@@ -18,17 +18,23 @@ namespace procedural {
   std::string Node::toDot(int current_node_id) const
   {
     std::string shape;
+    std::string fillcolor = "";
+    std::string style = "";
+
     if(id_ == current_node_id)
     {
       shape = "box";
+      fillcolor = ", fillcolor=lightblue, style=filled";
     }
     else if(id_ == 0)
     { // initial node
       shape = "ellipse";
+      fillcolor = ", fillcolor=lightgreen, style=filled";
     }
     else if(isFinal())
     {
       shape = "doublecircle";
+      fillcolor = ", fillcolor=lightcoral, style=filled";
     }
     else
     {
@@ -46,8 +52,13 @@ namespace procedural {
       satisfiedConstraints.pop_back();
     }
 
-    std::string result = "\"" + std::to_string(id_) + "\" [shape=" + shape + ", label=\"" + getFullName() +
-                         "\\nSatisfied Constraints: " + satisfiedConstraints + "\"];\n";
+    std::string label = getFullName() + "\\nDepth: " + std::to_string(depth_);
+    if(!satisfiedConstraints.empty())
+    {
+      label += "\\nConstraints: " + satisfiedConstraints;
+    }
+
+    std::string result = "\"" + std::to_string(id_) + "\" [shape=" + shape + fillcolor + ", label=\"" + label + "\"];\n";
 
     for(const auto& transition : transitions_)
     {

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .module-box { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
+      .action-module { fill: #ffecb3; stroke: #ff8f00; stroke-width: 2; }
+      .task-module { fill: #e8f5e8; stroke: #2e7d32; stroke-width: 2; }
+      .memory-module { fill: #f3e5f5; stroke: #4a148c; stroke-width: 2; }
+      .structures-module { fill: #fce4ec; stroke: #c2185b; stroke-width: 2; }
+      .interface-module { fill: #fff3e0; stroke: #e65100; stroke-width: 2; }
+      .text-title { font-family: Arial; font-size: 16px; font-weight: bold; text-anchor: middle; fill: #333; }
+      .text-subtitle { font-family: Arial; font-size: 12px; font-weight: bold; text-anchor: middle; fill: #555; }
+      .text-content { font-family: Arial; font-size: 10px; fill: #666; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .data-flow { stroke: #666; stroke-width: 1; stroke-dasharray: 5,5; fill: none; marker-end: url(#dashedarrow); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+    <marker id="dashedarrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="400" y="30" class="text-title" style="font-size: 20px;">Procedural System Architecture</text>
+  
+  <!-- Action Recognition Module -->
+  <g>
+    <rect class="action-module" x="50" y="80" width="200" height="120" rx="8"/>
+    <text class="text-subtitle" x="150" y="105">Action Recognition</text>
+    <text class="text-content" x="60" y="125">• ActionRecognition</text>
+    <text class="text-content" x="60" y="140">• ActionBuilder</text>
+    <text class="text-content" x="60" y="155">• YamlReader</text>
+    <text class="text-content" x="60" y="170">• State Machines</text>
+    <text class="text-content" x="60" y="185">• Pattern Matching</text>
+  </g>
+  
+  <!-- Task Recognition Module -->
+  <g>
+    <rect class="task-module" x="300" y="80" width="200" height="120" rx="8"/>
+    <text class="text-subtitle" x="400" y="105">Task Recognition</text>
+    <text class="text-content" x="310" y="125">• HTNBuilder</text>
+    <text class="text-content" x="310" y="140">• DomainReader</text>
+    <text class="text-content" x="310" y="155">• HATPListener</text>
+    <text class="text-content" x="310" y="170">• ANTLR Parsing</text>
+    <text class="text-content" x="310" y="185">• HTN Planning</text>
+  </g>
+  
+  <!-- Memory Module -->
+  <g>
+    <rect class="memory-module" x="550" y="80" width="200" height="120" rx="8"/>
+    <text class="text-subtitle" x="650" y="105">Procedural Memory</text>
+    <text class="text-content" x="560" y="125">• ProceduralMemory</text>
+    <text class="text-content" x="560" y="140">• MemoryRosInterface</text>
+    <text class="text-content" x="560" y="155">• FullParser</text>
+    <text class="text-content" x="560" y="170">• Knowledge Storage</text>
+    <text class="text-content" x="560" y="185">• Query Processing</text>
+  </g>
+  
+  <!-- Core Structures -->
+  <g>
+    <rect class="structures-module" x="175" y="280" width="200" height="120" rx="8"/>
+    <text class="text-subtitle" x="275" y="305">Core Structures</text>
+    <text class="text-content" x="185" y="325">• Fact</text>
+    <text class="text-content" x="185" y="340">• Observation</text>
+    <text class="text-content" x="185" y="355">• Variable_t</text>
+    <text class="text-content" x="185" y="370">• VariablesTable</text>
+    <text class="text-content" x="185" y="385">• Graph/Node/Transition</text>
+  </g>
+  
+  <!-- ROS Interface -->
+  <g>
+    <rect class="interface-module" x="425" y="280" width="200" height="120" rx="8"/>
+    <text class="text-subtitle" x="525" y="305">ROS Integration</text>
+    <text class="text-content" x="435" y="325">• procedural_interfaces</text>
+    <text class="text-content" x="435" y="340">• Action Messages</text>
+    <text class="text-content" x="435" y="355">• Practice Messages</text>
+    <text class="text-content" x="435" y="370">• ROS Services</text>
+    <text class="text-content" x="435" y="385">• Node Integration</text>
+  </g>
+  
+  <!-- External Systems -->
+  <g>
+    <rect class="module-box" x="50" y="460" width="150" height="100" rx="8"/>
+    <text class="text-subtitle" x="125" y="485">Ontologenius</text>
+    <text class="text-content" x="60" y="505">• Semantic Queries</text>
+    <text class="text-content" x="60" y="520">• Property Expansion</text>
+    <text class="text-content" x="60" y="535">• OWL Reasoning</text>
+  </g>
+  
+  <g>
+    <rect class="module-box" x="250" y="460" width="150" height="100" rx="8"/>
+    <text class="text-subtitle" x="325" y="485">Mementar</text>
+    <text class="text-content" x="260" y="505">• Episodic Storage</text>
+    <text class="text-content" x="260" y="520">• Temporal Queries</text>
+    <text class="text-content" x="260" y="535">• Action Timeline</text>
+  </g>
+  
+  <g>
+    <rect class="module-box" x="450" y="460" width="150" height="100" rx="8"/>
+    <text class="text-subtitle" x="525" y="485">Robot Sensors</text>
+    <text class="text-content" x="460" y="505">• Observation Data</text>
+    <text class="text-content" x="460" y="520">• State Changes</text>
+    <text class="text-content" x="460" y="535">• Context Info</text>
+  </g>
+  
+  <g>
+    <rect class="module-box" x="600" y="460" width="150" height="100" rx="8"/>
+    <text class="text-subtitle" x="675" y="485">Task Planners</text>
+    <text class="text-content" x="610" y="505">• HTN Execution</text>
+    <text class="text-content" x="610" y="520">• Goal Management</text>
+    <text class="text-content" x="610" y="535">• Plan Validation</text>
+  </g>
+  
+  <!-- Connections -->
+  <!-- Between main modules -->
+  <line class="arrow" x1="250" y1="140" x2="300" y2="140"/>
+  <line class="arrow" x1="500" y1="140" x2="550" y2="140"/>
+  
+  <!-- To core structures -->
+  <line class="data-flow" x1="150" y1="200" x2="225" y2="280"/>
+  <line class="data-flow" x1="400" y1="200" x2="325" y2="280"/>
+  <line class="data-flow" x1="650" y1="200" x2="375" y2="280"/>
+  
+  <!-- To ROS interface -->
+  <line class="data-flow" x1="525" y1="280" x2="525" y2="200"/>
+  
+  <!-- External connections -->
+  <line class="data-flow" x1="125" y1="460" x2="150" y2="400"/>
+  <line class="data-flow" x1="325" y1="460" x2="275" y2="400"/>
+  <line class="data-flow" x1="525" y1="460" x2="475" y2="400"/>
+  <line class="data-flow" x1="675" y1="460" x2="575" y2="400"/>
+  
+  <!-- Legend -->
+  <g transform="translate(620, 30)">
+    <text x="0" y="0" class="text-content" style="font-weight: bold;">Legend:</text>
+    <line x1="0" y1="10" x2="20" y2="10" class="arrow"/>
+    <text x="25" y="15" class="text-content">Control Flow</text>
+    <line x1="0" y1="25" x2="20" y2="25" class="data-flow"/>
+    <text x="25" y="30" class="text-content">Data Flow</text>
+  </g>
+</svg>

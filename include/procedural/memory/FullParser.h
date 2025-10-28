@@ -9,9 +9,37 @@
 #include "procedural_interfaces/Priority.h"
 #include "procedural_interfaces/task_t.h"
 #include "procedural/task_recognition/Reader/domainTypes/ParsedHTN.h"
+#include <set>
+#include <queue>
+#include <filesystem>
 using namespace procedural_interfaces;
 
 namespace procedural {
+
+// Structure pour gérer les contextes de fichiers inclus
+struct FileContext {
+    std::string filepath;
+    std::string package;
+    std::string base_directory;
+    bool is_processed;
+
+    FileContext(const std::string& path, const std::string& pkg = "", const std::string& base_dir = "")
+        : filepath(path), package(pkg), base_directory(base_dir), is_processed(false) {}
+};
+
+// Structure pour stocker le contenu parsé d'un fichier
+struct ParsedFileContent {
+    std::vector<Action_t> actions;
+    std::vector<Practice*> practices;
+    std::vector<Abstract_task_t> tasks;
+    std::vector<PracticeFrame*> frames;
+    std::vector<Role*> roles;
+    std::vector<Priority*> priorities;
+    std::string source_file;
+
+    ParsedFileContent(const std::string& file = "") : source_file(file) {}
+};
+
 class FullParser : public ExtentedHATPParserBaseListener
 {
 public:
@@ -55,6 +83,12 @@ public:
         return tasks;
     }
 
+    // Nouvelle interface pour parser un fichier avec inclusions
+    void parseFileWithInclusions(const std::string& filepath);
+
+    // Méthodes pour le système d'inclusion
+    void setCurrentDirectory(const std::string& directory) { current_directory_ = directory; }
+
 private:
     void displayResult();
     void linkPracticesToFrames();
@@ -89,6 +123,22 @@ private:
     std::vector<ActionPrecondition_t> parseActionPreconditionsBloc(ExtentedHATPParser::Preconditions_blocContext* ctx);
     std::vector<ActionEffect_t> parseActionEffectsBloc(ExtentedHATPParser::Effects_blocContext* ctx);
     double parseActionDurationBloc(ExtentedHATPParser::Duration_blocContext* ctx);
+    Recognition_t parseRecognitionBloc(ExtentedHATPParser::Recognition_blocContext* ctx);
+
+    // Nouvelles méthodes pour le système d'inclusion
+    void processIncludes(ExtentedHATPParser::Include_blocContext* include_bloc);
+    void processIncludeFile(const FileContext& file_context);
+    ParsedFileContent parseFile(const std::string& filepath);
+    std::string resolveFilePath(const std::string& path, const std::string& package = "", const std::string& base_dir = "");
+    void mergeElements();
+    Action_t mergeActionDefinitions(const std::vector<Action_t>& actions);
+    Practice* mergePracticeDefinitions(const std::vector<Practice*>& practices);
+    Abstract_task_t mergeTaskDefinitions(const std::vector<Abstract_task_t>& tasks);
+    PracticeFrame* mergePracticeFrameDefinitions(const std::vector<PracticeFrame*>& frames);
+    std::string getPackagePath(const std::string& package_name);
+    std::string getActionSignature(const Action_t& action);
+    std::string getTaskSignature(const Abstract_task_t& task);
+    void processIncludeFileRecursively(const std::string& filepath, std::set<std::string>& processing_stack);
 
 
     Actions_t actions_;
@@ -97,6 +147,20 @@ private:
     std::map<std::string, Role*> roles_;
     std::map<std::string, Priority*> priorities_;
     std::map<std::string, Abstract_task_t> tasks_;
+
+    // Variables pour le système d'inclusion
+    std::string current_directory_;
+    std::set<std::string> processed_files_;
+    std::queue<FileContext> files_to_process_;
+    std::vector<ParsedFileContent> parsed_files_;
+
+    // Maps temporaires pour la fusion d'éléments
+    std::map<std::string, std::vector<Action_t>> pending_actions_;
+    std::map<std::string, std::vector<Practice*>> pending_practices_;
+    std::map<std::string, std::vector<Abstract_task_t>> pending_tasks_;
+    std::map<std::string, std::vector<PracticeFrame*>> pending_frames_;
+    std::map<std::string, std::vector<Role*>> pending_roles_;
+    std::map<std::string, std::vector<Priority*>> pending_priorities_;
 };
 } // procedural
 

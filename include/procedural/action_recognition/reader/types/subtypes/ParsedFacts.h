@@ -10,10 +10,12 @@ namespace procedural {
 struct ParsedFact_t {
     ParsedFact_t()
             : subject(), property(), object(), insertion(false), required(false), level(0),
+              subject_is_variable(false), object_is_variable(false),
               regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)") {}
 
     ParsedFact_t(const std::string& str_value, uint32_t level)
             : subject(), property(), object(), insertion(false), required(false), level(level),
+              subject_is_variable(false), object_is_variable(false),
               regex_facts_(R"(\s*(NOT)?\s*\?([^\s]*)\s+([^\s]*)\s+\?([^\s]*)\s*(REQUIRED)?)")
     {
         parse(str_value);
@@ -28,6 +30,9 @@ struct ParsedFact_t {
         property = results[3];
         object = results[4];
         required = results[5].str() == "REQUIRED";
+        // La regex exige un '?' devant le sujet et l'objet, donc ce sont toujours des variables
+        subject_is_variable = true;
+        object_is_variable = true;
     }
 
     void complete(onto::OntologyManipulator& ontology_manip)
@@ -61,6 +66,8 @@ struct ParsedFact_t {
     bool insertion;
     bool required;
     int level;
+    bool subject_is_variable;
+    bool object_is_variable;
 
     std::string toString() const
     {

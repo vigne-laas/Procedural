@@ -11,10 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         ontologenius
         mementar
-
+        procedural_interfaces
+        overworld
 )
 find_package(GTest REQUIRED)
-find_package(procedural_interfaces REQUIRED)
 #include_directories(/usr/src/gmock/gtest/include)
 
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -138,7 +138,7 @@ find_package(ontologenius 0.3.0 REQUIRED)
 catkin_package(
         # INCLUDE_DIRS include
         # LIBRARIES procedural_lib
-        CATKIN_DEPENDS roscpp rospy std_msgs ontologenius mementar procedural_interfaces
+        CATKIN_DEPENDS roscpp rospy std_msgs ontologenius mementar procedural_interfaces overworld
         #  DEPENDS system_lib
 )
 
@@ -299,9 +299,85 @@ add_library(${PROJECT_NAME}_ros_interface_memory_lib
 add_dependencies(${PROJECT_NAME}_ros_interface_memory_lib ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_ros_interface_memory_lib ${PROJECT_NAME}_memory_lib )
 
+# Memory client libraries
+add_library(${PROJECT_NAME}_memory_client_lib
+        src/memory_client/MemoryServiceClient.cpp
+        src/memory_client/RosToInternalConverter.cpp
+)
+add_dependencies(${PROJECT_NAME}_memory_client_lib ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_memory_client_lib
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}_logger_lib
+)
+
+# Memory-based readers
+add_library(${PROJECT_NAME}_memory_action_reader_lib
+        src/action_recognition/reader/MemoryActionReader.cpp
+)
+add_dependencies(${PROJECT_NAME}_memory_action_reader_lib ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+)
+
+add_library(${PROJECT_NAME}_memory_domain_reader_lib
+        src/task_recognition/Reader/MemoryDomainReader.cpp
+)
+add_dependencies(${PROJECT_NAME}_memory_domain_reader_lib ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+)
+
 add_executable(${PROJECT_NAME}_memory_node src/nodes/memory_node.cpp)
 add_dependencies(${PROJECT_NAME}_memory_node ${catkin_EXPORTED_TARGETS} )
 target_link_libraries(${PROJECT_NAME}_memory_node ${PROJECT_NAME}_memory_lib ${PROJECT_NAME}_ros_interface_memory_lib ${catkin_LIBRARIES})
+
+# Action Recognition Node library (for multi-agent architecture)
+add_library(${PROJECT_NAME}_action_recognition_node_lib
+        src/ActionRecognitionNode.cpp
+)
+add_dependencies(${PROJECT_NAME}_action_recognition_node_lib ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_action_recognition_node_lib
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_action_recognition_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+        ${ontologenius_LIBRARIES}
+)
+
+# Recognition node executables
+add_executable(action_recognition_node src/nodes/action_recognition_node.cpp)
+add_dependencies(action_recognition_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(action_recognition_node
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_action_recognition_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+)
+
+# Multi-agent action recognition node
+add_executable(action_recognition_multi_node src/nodes/action_recognition_multi_node.cpp)
+add_dependencies(action_recognition_multi_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(action_recognition_multi_node
+        ${PROJECT_NAME}_action_recognition_node_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+        ${ontologenius_LIBRARIES}
+)
+
+add_executable(task_recognition_node src/nodes/task_recognition_node.cpp)
+add_dependencies(task_recognition_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(task_recognition_node
+        ${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_htn_builder_lib
+        ${PROJECT_NAME}_logger_lib
+        ${catkin_LIBRARIES}
+)
 
 
 
@@ -356,6 +432,105 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS TaskBuilder ################
     catkin_add_gtest(TaskBuilder_test test/task_recognition/Builder/test_builder_htn.cpp)
     target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib ${PROJECT_NAME}_action_reader_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_action_builder_lib)
+
+    ############### TESTS Parser Inclusion System ################
+    catkin_add_gtest(ParserInclusion_test test/test_parser_inclusion.cpp)
+    target_link_libraries(ParserInclusion_test
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}_memory_lib
+        ${PROJECT_NAME}_full_procedural_parser_lib
+        ${PROJECT_NAME}_logger_lib
+        ${ANTLR4_RUNTIME_LIBRARIES}
+    )
+
+    ############### TESTS Memory Integration ################
+    catkin_add_gtest(MemoryIntegration_test src/tests/test_memory_integration.cpp)
+    target_link_libraries(MemoryIntegration_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS Memory Action Reader ################
+    catkin_add_gtest(MemoryActionReader_test test/action_recognition/reader/test_memory_action_reader.cpp)
+    target_link_libraries(MemoryActionReader_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS Memory Domain Reader ################
+    catkin_add_gtest(MemoryDomainReader_test test/task_recognition/Reader/test_memory_domain_reader.cpp)
+    target_link_libraries(MemoryDomainReader_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS ActionBuilder with Memory ################
+    catkin_add_gtest(ActionBuilderMemory_test test/action_recognition/action_builder/test_action_builder_with_memory.cpp)
+    target_link_libraries(ActionBuilderMemory_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS HTNBuilder with Memory ################
+    catkin_add_gtest(HTNBuilderMemory_test test/task_recognition/Builder/test_htn_builder_with_memory.cpp)
+    target_link_libraries(HTNBuilderMemory_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_htn_builder_lib
+        ${PROJECT_NAME}_task_structure_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS Recognition Nodes ################
+    catkin_add_gtest(ActionRecognitionNode_test test/nodes/test_action_recognition_node.cpp)
+    target_link_libraries(ActionRecognitionNode_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    catkin_add_gtest(TaskRecognitionNode_test test/nodes/test_task_recognition_node.cpp)
+    target_link_libraries(TaskRecognitionNode_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    ############### TESTS Full System Integration ################
+    catkin_add_gtest(FullSystemIntegration_test test/integration/test_full_system_integration.cpp)
+    target_link_libraries(FullSystemIntegration_test
+        ${catkin_LIBRARIES}
+        ${GTEST_LIBRARIES}
+        ${PROJECT_NAME}_memory_client_lib
+        ${PROJECT_NAME}_memory_action_reader_lib
+        ${PROJECT_NAME}_memory_domain_reader_lib
+        ${PROJECT_NAME}_action_builder_lib
+        ${PROJECT_NAME}_htn_builder_lib
+        ${PROJECT_NAME}_task_structure_lib
+        ${PROJECT_NAME}_action_lib
+        ${PROJECT_NAME}_structures_graph_lib
+        ${PROJECT_NAME}_logger_lib
+    )
+
+    # Copy test data files
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test/data
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/test/)
 endif ()
 
 ########################### Brouillons ############################
@@ -458,7 +633,9 @@ endif ()
 ##################################
 
 
-catkin_install_python(PROGRAMS scripts/testPublisher.py
+catkin_install_python(PROGRAMS
+        scripts/testPublisher.py
+        scripts/test_fact_publisher_with_monitor.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

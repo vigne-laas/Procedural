@@ -59,6 +59,8 @@ public:
 
     bool getAdd() const { return add_; }
 
+    bool isRequired() const { return required_; }
+
     TimeStamp_t getTimeStamp() const { return timestamp_; }
 
     uint32_t getId() const { return id_; }
@@ -80,6 +82,7 @@ public:
 
 private:
     bool add_;
+    bool required_;
     std::pair<std::string, std::shared_ptr<Variable_t>> subject_;
     std::pair<std::string, std::shared_ptr<Variable_t>> object_;
 

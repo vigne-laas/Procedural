@@ -21,6 +21,10 @@ public:
 
     void setCallback(const std::function<void(const std::vector<Graph*>&)>& callback) { callback_output_ = callback; }
 
+    void setActiveGraphsCallback(const std::function<void(const std::vector<Graph*>&)>& callback) {
+        callback_active_graphs_update_ = callback;
+    }
+
     void linkToTaskRecognition(const std::function<void(
             const std::vector<Observation>&)>& task_recognition) { task_recognition_ = task_recognition; }
 
@@ -31,6 +35,7 @@ private:
     static void defaultTaskRecognition(const std::vector<Observation>& observations);
 
     std::function<void(const std::vector<Graph*>&)> callback_output_;
+    std::function<void(const std::vector<Graph*>&)> callback_active_graphs_update_;
     std::function<void(const std::vector<Observation>&)> task_recognition_;
     BufferFacts* buffer_{};
     std::vector<Action*> actions_;

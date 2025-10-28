@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .system-box { fill: #e3f2fd; stroke: #1565c0; stroke-width: 2; }
+      .input-config { fill: #fff3e0; stroke: #e65100; stroke-width: 1; }
+      .input-domain { fill: #f3e5f5; stroke: #4a148c; stroke-width: 1; }
+      .input-owl { fill: #e8f5e8; stroke: #2e7d32; stroke-width: 1; }
+      .input-params { fill: #fce4ec; stroke: #c2185b; stroke-width: 1; }
+      .runtime-input { fill: #ffecb3; stroke: #ff8f00; stroke-width: 1; }
+      .ros-input { fill: #e0f2f1; stroke: #00695c; stroke-width: 1; }
+      .external-onto { fill: #f9fbe7; stroke: #689f38; stroke-width: 1; }
+      .external-mem { fill: #e1f5fe; stroke: #01579b; stroke-width: 1; }
+      .output-services { fill: #fff3e0; stroke: #e65100; stroke-width: 1; }
+      .output-recognition { fill: #f3e5f5; stroke: #4a148c; stroke-width: 1; }
+      .output-visualization { fill: #e8f5e8; stroke: #2e7d32; stroke-width: 1; }
+      .output-logs { fill: #fce4ec; stroke: #c2185b; stroke-width: 1; }
+      .text-title { font-family: Arial; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .text-subtitle { font-family: Arial; font-size: 12px; font-weight: bold; }
+      .text-content { font-family: Arial; font-size: 10px; }
+      .arrow { stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .arrow-bidir { stroke-width: 2; fill: none; marker-end: url(#arrowhead); marker-start: url(#arrowstart); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+    <marker id="arrowstart" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
+      <polygon points="10 0, 0 3.5, 10 7" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="600" y="40" class="text-title" style="font-size: 18px;">Procedural System - Input/Output Schema</text>
+  
+  <!-- Central System -->
+  <g>
+    <rect class="system-box" x="500" y="350" width="200" height="120" rx="8"/>
+    <text class="text-title" x="600" y="375">Procedural System</text>
+    <line x1="510" y1="385" x2="690" y2="385" stroke="#1565c0"/>
+    <text class="text-subtitle" x="510" y="405">Components:</text>
+    <text class="text-content" x="510" y="420">• Action Recognition</text>
+    <text class="text-content" x="510" y="435">• Task Recognition</text>
+    <text class="text-content" x="510" y="450">• Procedural Memory</text>
+    <text class="text-content" x="510" y="465">• HTN Planning</text>
+  </g>
+  
+  <!-- Input Sources -->
+  <g>
+    <rect class="input-config" x="50" y="100" width="150" height="100" rx="5"/>
+    <text class="text-title" x="125" y="125">YAML Files</text>
+    <line x1="60" y1="135" x2="190" y2="135" stroke="#e65100"/>
+    <text class="text-content" x="60" y="150">• action definitions</text>
+    <text class="text-content" x="60" y="165">• parameters</text>
+    <text class="text-content" x="60" y="180">• state machines</text>
+    <text class="text-content" x="60" y="195">• preconditions/effects</text>
+  </g>
+  
+  <g>
+    <rect class="input-domain" x="250" y="100" width="150" height="100" rx="5"/>
+    <text class="text-title" x="325" y="125">Domain Files</text>
+    <line x1="260" y1="135" x2="390" y2="135" stroke="#4a148c"/>
+    <text class="text-content" x="260" y="150">• .dom HTN domains</text>
+    <text class="text-content" x="260" y="165">• HATP grammar</text>
+    <text class="text-content" x="260" y="180">• task hierarchies</text>
+    <text class="text-content" x="260" y="195">• method definitions</text>
+  </g>
+  
+  <g>
+    <rect class="input-owl" x="450" y="100" width="150" height="100" rx="5"/>
+    <text class="text-title" x="525" y="125">OWL Ontologies</text>
+    <line x1="460" y1="135" x2="590" y2="135" stroke="#2e7d32"/>
+    <text class="text-content" x="460" y="150">• recognition.owl</text>
+    <text class="text-content" x="460" y="165">• agents.owl</text>
+    <text class="text-content" x="460" y="180">• kitchen_onto.owl</text>
+    <text class="text-content" x="460" y="195">• semantic relations</text>
+  </g>
+  
+  <g>
+    <rect class="input-params" x="650" y="100" width="150" height="100" rx="5"/>
+    <text class="text-title" x="725" y="125">Config Files</text>
+    <line x1="660" y1="135" x2="790" y2="135" stroke="#c2185b"/>
+    <text class="text-content" x="660" y="150">• mementar.yaml</text>
+    <text class="text-content" x="660" y="165">• ontologenius.yaml</text>
+    <text class="text-content" x="660" y="180">• overworld.yaml</text>
+    <text class="text-content" x="660" y="195">• system parameters</text>
+  </g>
+  
+  <!-- Runtime Inputs -->
+  <g>
+    <rect class="runtime-input" x="50" y="350" width="150" height="120" rx="5"/>
+    <text class="text-title" x="125" y="375">Observations</text>
+    <line x1="60" y1="385" x2="190" y2="385" stroke="#ff8f00"/>
+    <text class="text-subtitle" x="60" y="405">Type: ROS Topics</text>
+    <text class="text-content" x="60" y="420">• sensor data</text>
+    <text class="text-content" x="60" y="435">• robot states</text>
+    <text class="text-content" x="60" y="450">• environment facts</text>
+    <text class="text-content" x="60" y="465">• temporal events</text>
+  </g>
+  
+  <g>
+    <rect class="ros-input" x="250" y="350" width="150" height="120" rx="5"/>
+    <text class="text-title" x="325" y="375">ROS Parameters</text>
+    <line x1="260" y1="385" x2="390" y2="385" stroke="#00695c"/>
+    <text class="text-content" x="260" y="405">• robot name</text>
+    <text class="text-content" x="260" y="420">• file paths</text>
+    <text class="text-content" x="260" y="435">• buffer sizes</text>
+    <text class="text-content" x="260" y="450">• TTL settings</text>
+  </g>
+  
+  <!-- External Systems -->
+  <g>
+    <rect class="external-onto" x="100" y="600" width="150" height="100" rx="5"/>
+    <text class="text-title" x="175" y="625">Ontologenius</text>
+    <line x1="110" y1="635" x2="240" y2="635" stroke="#689f38"/>
+    <text class="text-subtitle" x="110" y="655">I/O: Bidirectional</text>
+    <text class="text-content" x="110" y="670">• semantic queries</text>
+    <text class="text-content" x="110" y="685">• property expansion</text>
+    <text class="text-content" x="110" y="700">• reasoning results</text>
+  </g>
+  
+  <g>
+    <rect class="external-mem" x="300" y="600" width="150" height="100" rx="5"/>
+    <text class="text-title" x="375" y="625">Mementar</text>
+    <line x1="310" y1="635" x2="440" y2="635" stroke="#01579b"/>
+    <text class="text-subtitle" x="310" y="655">I/O: Bidirectional</text>
+    <text class="text-content" x="310" y="670">• episodic storage</text>
+    <text class="text-content" x="310" y="685">• temporal queries</text>
+    <text class="text-content" x="310" y="700">• memory retrieval</text>
+  </g>
+  
+  <!-- Outputs -->
+  <g>
+    <rect class="output-services" x="800" y="250" width="150" height="100" rx="5"/>
+    <text class="text-title" x="875" y="275">ROS Services</text>
+    <line x1="810" y1="285" x2="940" y2="285" stroke="#e65100"/>
+    <text class="text-content" x="810" y="305">• /getRobotActions</text>
+    <text class="text-content" x="810" y="320">• /getPractices</text>
+    <text class="text-content" x="810" y="335">• /getRoles</text>
+    <text class="text-content" x="810" y="350">• /getPracticeFrames</text>
+  </g>
+  
+  <g>
+    <rect class="output-recognition" x="800" y="400" width="150" height="120" rx="5"/>
+    <text class="text-title" x="875" y="425">Recognition Results</text>
+    <line x1="810" y1="435" x2="940" y2="435" stroke="#4a148c"/>
+    <text class="text-subtitle" x="810" y="455">Type: ROS Topics</text>
+    <text class="text-content" x="810" y="470">• recognized actions</text>
+    <text class="text-content" x="810" y="485">• task progress</text>
+    <text class="text-content" x="810" y="500">• state transitions</text>
+    <text class="text-content" x="810" y="515">• confidence scores</text>
+  </g>
+  
+  <g>
+    <rect class="output-visualization" x="800" y="550" width="150" height="100" rx="5"/>
+    <text class="text-title" x="875" y="575">DOT Graphs</text>
+    <line x1="810" y1="585" x2="940" y2="585" stroke="#2e7d32"/>
+    <text class="text-content" x="810" y="605">• state machine graphs</text>
+    <text class="text-content" x="810" y="620">• HTN hierarchies</text>
+    <text class="text-content" x="810" y="635">• execution traces</text>
+    <text class="text-content" x="810" y="650">• debug visualizations</text>
+  </g>
+  
+  <g>
+    <rect class="output-logs" x="1000" y="350" width="150" height="100" rx="5"/>
+    <text class="text-title" x="1075" y="375">Log Outputs</text>
+    <line x1="1010" y1="385" x2="1140" y2="385" stroke="#c2185b"/>
+    <text class="text-content" x="1010" y="405">• recognition logs</text>
+    <text class="text-content" x="1010" y="420">• debug information</text>
+    <text class="text-content" x="1010" y="435">• performance metrics</text>
+    <text class="text-content" x="1010" y="450">• error messages</text>
+  </g>
+  
+  <!-- Arrows - Configuration Inputs -->
+  <path class="arrow" d="M 125 200 Q 125 280 500 380" stroke="#e65100" fill="none"/>
+  <text x="250" y="260" class="text-content">Action Definitions</text>
+  
+  <path class="arrow" d="M 325 200 Q 325 280 540 380" stroke="#4a148c" fill="none"/>
+  <text x="380" y="260" class="text-content">HTN Domains</text>
+  
+  <path class="arrow" d="M 525 200 Q 525 280 580 380" stroke="#2e7d32" fill="none"/>
+  <text x="520" y="260" class="text-content">Ontologies</text>
+  
+  <path class="arrow" d="M 725 200 Q 725 280 620 380" stroke="#c2185b" fill="none"/>
+  <text x="650" y="260" class="text-content">Configuration</text>
+  
+  <!-- Runtime Inputs -->
+  <line class="arrow" x1="200" y1="410" x2="500" y2="410" stroke="#ff8f00"/>
+  <text x="320" y="395" class="text-content">Runtime Data</text>
+  
+  <line class="arrow" x1="400" y1="410" x2="500" y2="410" stroke="#00695c"/>
+  <text x="430" y="425" class="text-content">Parameters</text>
+  
+  <!-- External Systems -->
+  <path class="arrow-bidir" d="M 175 600 Q 175 550 550 470" stroke="#689f38" fill="none"/>
+  <text x="300" y="530" class="text-content">Semantic Queries</text>
+  
+  <path class="arrow-bidir" d="M 375 600 Q 375 550 600 470" stroke="#01579b" fill="none"/>
+  <text x="450" y="550" class="text-content">Memory I/O</text>
+  
+  <!-- Outputs -->
+  <path class="arrow" d="M 700 380 Q 750 360 800 300" stroke="#e65100" fill="none"/>
+  <text x="720" y="325" class="text-content">Query Interface</text>
+  
+  <line class="arrow" x1="700" y1="410" x2="800" y2="460" stroke="#4a148c"/>
+  <text x="720" y="445" class="text-content">Real-time Results</text>
+  
+  <path class="arrow" d="M 700 450 Q 750 520 800 600" stroke="#2e7d32" fill="none"/>
+  <text x="730" y="570" class="text-content">Visualizations</text>
+  
+  <line class="arrow" x1="700" y1="400" x2="1000" y2="400" stroke="#c2185b"/>
+  <text x="830" y="390" class="text-content">Debug Info</text>
+</svg>

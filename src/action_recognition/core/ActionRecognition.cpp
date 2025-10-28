@@ -17,20 +17,23 @@ void ActionRecognition::init(std::vector<Action*> actions, double tll, int max_s
 
 void ActionRecognition::addToQueue(Fact* fact) const
 {
-//    LOG_INFO << "Add to queue";
+    LOG_INFO << "Add to queue";
     buffer_->addFact(fact);
-//    LOG_INFO << "Buffer Size : " << buffer_->size();
+    LOG_INFO << "Buffer Size : " << buffer_->size();
 }
 
 void ActionRecognition::processQueue(TimeStamp_t current_time)
 {
-//    LOG_INFO << "------------------- Process queue ---------------------";
     auto facts = buffer_->getFacts(current_time);
-//    LOG_INFO << "Facts size: " << facts.size();
-//    LOG_INFO << "Facts: ";
-//    for (const auto& fact: facts) {
-//        LOG_INFO << fact->toString();
-//    }
+    // LOG_INFO << "processQueue called - retrieved " << facts.size() << " facts from buffer";
+    if (!facts.empty()) {
+        LOG_INFO << "------------------- Process queue ---------------------";
+        LOG_INFO << "Facts size: " << facts.size();
+        LOG_INFO << "Facts: ";
+        for (const auto& fact: facts) {
+            LOG_INFO << "  Fact to process: " << fact->toString();
+        }
+    }
     int nb_update = 0;
     int step = 0;
      std::set<uint32_t> used_facts;
@@ -39,20 +42,32 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
         std::vector<Graph*> local_uncompleted_graphs_;
         std::vector<Graph*> local_completed_graphs_;
         for (const auto& fact: facts) {
-//            LOG_DEBUG << ">>>>>>>>>>> Process fact: " << fact->toString();
+            LOG_DEBUG << ">>>>>>>>>>> Process fact: " << fact->toString();
             Observation* obs = new ObservationFact(*fact);
             for (const auto& action: actions_) {
-//                LOG_DEBUG << ">>>>>>>>>>> Process action: " << action->getName();
+                LOG_DEBUG << ">>>>>>>>>>> Process action: " << action->getName();
                 if (action->evolve(obs)) {
-//                    LOG_INFO << "<<<<<<<<<<<<<<< " <<action->getName() << " evolved";
+                    LOG_INFO << "<<<<<<<<<<<<<<< " <<action->getName() << " evolved";
                     used_facts.insert(fact->getId());
                     auto graphs = action->getActiveGraphs();
-//                    LOG_DEBUG << "Graphs size: " << graphs.size();
-//                    for (const auto& graph: graphs) {
-//                        LOG_DEBUG << "Graph completion : " << graph->getCompletionRatio();
+                    auto finished = action->getFinishedGraphs();
+                    LOG_DEBUG << "Active graphs size: " << graphs.size();
+                    LOG_DEBUG << "Finished graphs size: " << finished.size();
+                    for (const auto& graph: graphs) {
+                        LOG_DEBUG << "Active graph: " << graph->getName() << " completion: " << graph->getCompletionRatio();
 //                        LOG_DEBUG << "Graph: " << graph->toString();
 //                        graph->saveDot("/home/avigne/Projets/Procedural/catkin_ws/src/Procedural/dot/debug/recognition/" + graph->getName() +"_"+std::to_string(step)+ ".dot");
-//                    }
+                    }
+
+                    // Combiner actifs + terminés pour notification complète
+                    std::vector<Graph*> all_graphs;
+                    all_graphs.insert(all_graphs.end(), graphs.begin(), graphs.end());
+                    all_graphs.insert(all_graphs.end(), finished.begin(), finished.end());
+
+                    // Publier les graphes actifs ET terminés pour notifier le visualiseur
+                    if (callback_active_graphs_update_ && !all_graphs.empty()) {
+                        callback_active_graphs_update_(all_graphs);
+                    }
                     for (const auto& finished_graph: action->getFinishedGraphs()) {
                         if (finished_graph->getState() == GraphState::Completed) {
 //                            LOG_INFO << "Action completed: " << finished_graph->getName();
@@ -124,6 +139,11 @@ void ActionRecognition::processQueue(TimeStamp_t current_time)
     buffer_->cleanUsedFacts(used_facts);
     task_recognition_(observations);
     completed_graphs_.clear();
+
+    // Clear finished graphs from actions to prevent memory accumulation
+    for (auto* action : actions_) {
+        action->clearFinishedGraphs();
+    }
 }
 
 void ActionRecognition::defaultCallback(const std::vector<Graph*>& outputs)
