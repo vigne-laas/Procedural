@@ -42,12 +42,44 @@ All notable changes to the Procedural package are documented in this file.
 - Optional block - actions without commitments continue to work unchanged
 - All parser tests passing (CommitmentParser_test)
 
+### Testing Infrastructure
+- **commitment_test_publisher node** (`src/nodes/commitment_test_publisher.cpp`)
+  - Simulates commitment lifecycle events for integration testing
+  - Publishes CommitmentEvent messages to `/commitment/events`
+  - Test scenarios: MADE, ACTIVATED, FULFILLED, VIOLATED, DROPPED events
+  - Demonstrates multi-agent commitment tracking (robot_01, robot_02)
+  - Provides example SPARQL queries for verifying Yggdrasil integration
+
+### Test Scenarios
+The commitment_test_publisher simulates realistic commitment scenarios:
+1. **robot_01 GoToArea**: MADE → ACTIVATED → FULFILLED (successful completion)
+2. **robot_01 PickObject**: MADE → VIOLATED (INSTRUMENTAL failure with reaction)
+3. **robot_02 ServeCustomer**: MADE → DROPPED (agent unavailable)
+
+### Integration Points
+- Procedural package parses commitments from HATP domains
+- commitment_test_publisher simulates commitment monitoring
+- Yggdrasil's ActionRecognitionDataSource tracks commitment states
+- SPARQL queries provide real-time commitment status
+
+### Example SPARQL Queries
+```sparql
+# Find all agents with commitments to GoToArea
+SELECT ?agent WHERE { ?agent action:hasCommitment "GoToArea". }
+
+# Check which actions robot_01 violated
+SELECT ?action WHERE { robot_01 action:hasViolatedCommitment ?action. }
+
+# Verify robot_01 fulfilled GoToArea
+SELECT ?agent WHERE { ?agent action:hasFulfilledCommitment "GoToArea". }
+```
+
 ### Future Work
-- Integrate with Yggdrasil for runtime monitoring of commitment conditions
-- Implement MissionManager support for handling commitment violations
+- Integrate with MissionManager for automated violation handling
+- Implement real SPARQL condition monitoring (replacing simulated events)
 - Create reaction action executor for automatic recovery behaviors
-- Add support for actions without parameters in grammar
-- Extend with more sophisticated SPARQL parsing if needed
+- Add temporal constraint monitoring (deadlines, timeouts)
+- Extend with more sophisticated commitment negotiation
 
 ## [v0.1.0] - 2025-01-28
 

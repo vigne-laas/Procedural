@@ -370,6 +370,13 @@ target_link_libraries(action_recognition_multi_node
         ${ontologenius_LIBRARIES}
 )
 
+# Commitment test publisher node
+add_executable(commitment_test_publisher src/nodes/commitment_test_publisher.cpp)
+add_dependencies(commitment_test_publisher ${catkin_EXPORTED_TARGETS})
+target_link_libraries(commitment_test_publisher
+        ${catkin_LIBRARIES}
+)
+
 add_executable(task_recognition_node src/nodes/task_recognition_node.cpp)
 add_dependencies(task_recognition_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(task_recognition_node
