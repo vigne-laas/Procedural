@@ -8,7 +8,9 @@ All notable changes to the Procedural package are documented in this file.
 - **Commitment Block Support in HATP Grammar**
   - Extended `HATPLexer.g4` with commitment-related tokens (COMMITMENTS, INSTRUMENTAL, ENGAGEMENT, COMMON_GROUND, ON_*_FAILURE, RECOVERY_STRATEGY, MODE, MAX_ATTEMPTS, TIMEOUT)
   - Modified `HATPParser.g4` to accept optional COMMITMENTS block after EFFECTS in action definitions
-  - Grammar captures commitment content as ignore blocks for flexible manual parsing
+  - Grammar now supports actions without parameters using `OpenClosePar` token
+  - Grammar accepts optional semicolon after action closing brace for flexibility
+  - Grammar captures commitment content with proper nested brace handling
 
 - **Commitment Data Structures in ParsedHTN.h**
   - `CommitmentCondition_t`: Stores SPARQL queries and descriptions for commitment conditions
@@ -18,11 +20,13 @@ All notable changes to the Procedural package are documented in this file.
 
 - **HATPListener Extensions (`src/task_recognition/Reader/HATPListener.cpp`)**
   - Implemented text-based parsing of COMMITMENTS block content
+  - Uses brace-matching algorithm to correctly handle nested structures (SPARQL WHERE clauses, etc.)
   - Extracts INSTRUMENTAL conditions (physical/technical capabilities)
   - Extracts ENGAGEMENT conditions (willingness to continue)
   - Extracts COMMON_GROUND conditions (mutual understanding)
   - Parses ON_INSTRUMENTAL_FAILURE, ON_ENGAGEMENT_FAILURE, and ON_COMMON_GROUND_FAILURE reaction mappings
   - Extracts RECOVERY_STRATEGY parameters (mode, max_attempts, timeout)
+  - Handles whitespace-stripped text from ANTLR's getText() method
 
 - **Test Infrastructure**
   - Created `test/commitment_test.dom`: Test domain file with commitment blocks
@@ -31,10 +35,12 @@ All notable changes to the Procedural package are documented in this file.
 
 ### Implementation Notes
 - Commitments are specified AFTER effects in action definitions to maintain grammar compatibility
+- Actions without parameters are now supported (e.g., `action stop_and_wait()`)
 - SPARQL conditions are stored as strings for later evaluation by Yggdrasil
-- Text-based parsing approach allows flexibility in SPARQL query format while maintaining performance
+- Text-based parsing with brace-matching handles nested SPARQL structures correctly
 - Fully compatible with existing HATP domain format and HTN structures
 - Optional block - actions without commitments continue to work unchanged
+- All parser tests passing (CommitmentParser_test)
 
 ### Future Work
 - Integrate with Yggdrasil for runtime monitoring of commitment conditions

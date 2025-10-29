@@ -35,30 +35,45 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
             // Get the raw text content of commitments
             std::string commitment_text = commitments->getText();
 
+            // Helper function to find matching closing brace
+            auto findMatchingBrace = [](const std::string& text, size_t start_pos) -> size_t {
+                int depth = 1;
+                for (size_t i = start_pos; i < text.length(); ++i)
+                {
+                    if (text[i] == '{') depth++;
+                    else if (text[i] == '}') depth--;
+                    if (depth == 0) return i;
+                }
+                return std::string::npos;
+            };
+
             // Simple text-based parsing for now (can be improved later)
             // Parse INSTRUMENTAL conditions
             size_t instrumental_pos = commitment_text.find("INSTRUMENTAL{");
             if (instrumental_pos != std::string::npos)
             {
                 size_t start = commitment_text.find("{", instrumental_pos) + 1;
-                size_t end = commitment_text.find("};", start);
-                std::string instrumental_block = commitment_text.substr(start, end - start);
-
-                // Extract all SELECT queries
-                size_t pos = 0;
-                while ((pos = instrumental_block.find("SELECT", pos)) != std::string::npos)
+                size_t end = findMatchingBrace(commitment_text, start);
+                if (end != std::string::npos)
                 {
-                    size_t query_end = instrumental_block.find(";", pos);
-                    if (query_end != std::string::npos)
+                    std::string instrumental_block = commitment_text.substr(start, end - start);
+
+                    // Extract all SELECT queries (note: getText() removes all whitespace)
+                    size_t pos = 0;
+                    while ((pos = instrumental_block.find("SELECT", pos)) != std::string::npos)
                     {
-                        CommitmentCondition_t cond;
-                        cond.sparql_query = instrumental_block.substr(pos, query_end - pos + 1);
-                        action_.commitments.instrumental.push_back(cond);
-                        pos = query_end + 1;
-                    }
-                    else
-                    {
-                        break;
+                        size_t query_end = instrumental_block.find(";", pos);
+                        if (query_end != std::string::npos)
+                        {
+                            CommitmentCondition_t cond;
+                            cond.sparql_query = instrumental_block.substr(pos, query_end - pos + 1);
+                            action_.commitments.instrumental.push_back(cond);
+                            pos = query_end + 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -68,23 +83,26 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
             if (engagement_pos != std::string::npos)
             {
                 size_t start = commitment_text.find("{", engagement_pos) + 1;
-                size_t end = commitment_text.find("};", start);
-                std::string engagement_block = commitment_text.substr(start, end - start);
-
-                size_t pos = 0;
-                while ((pos = engagement_block.find("SELECT", pos)) != std::string::npos)
+                size_t end = findMatchingBrace(commitment_text, start);
+                if (end != std::string::npos)
                 {
-                    size_t query_end = engagement_block.find(";", pos);
-                    if (query_end != std::string::npos)
+                    std::string engagement_block = commitment_text.substr(start, end - start);
+
+                    size_t pos = 0;
+                    while ((pos = engagement_block.find("SELECT", pos)) != std::string::npos)
                     {
-                        CommitmentCondition_t cond;
-                        cond.sparql_query = engagement_block.substr(pos, query_end - pos + 1);
-                        action_.commitments.engagement.push_back(cond);
-                        pos = query_end + 1;
-                    }
-                    else
-                    {
-                        break;
+                        size_t query_end = engagement_block.find(";", pos);
+                        if (query_end != std::string::npos)
+                        {
+                            CommitmentCondition_t cond;
+                            cond.sparql_query = engagement_block.substr(pos, query_end - pos + 1);
+                            action_.commitments.engagement.push_back(cond);
+                            pos = query_end + 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -94,23 +112,26 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
             if (cg_pos != std::string::npos)
             {
                 size_t start = commitment_text.find("{", cg_pos) + 1;
-                size_t end = commitment_text.find("};", start);
-                std::string cg_block = commitment_text.substr(start, end - start);
-
-                size_t pos = 0;
-                while ((pos = cg_block.find("SELECT", pos)) != std::string::npos)
+                size_t end = findMatchingBrace(commitment_text, start);
+                if (end != std::string::npos)
                 {
-                    size_t query_end = cg_block.find(";", pos);
-                    if (query_end != std::string::npos)
+                    std::string cg_block = commitment_text.substr(start, end - start);
+
+                    size_t pos = 0;
+                    while ((pos = cg_block.find("SELECT", pos)) != std::string::npos)
                     {
-                        CommitmentCondition_t cond;
-                        cond.sparql_query = cg_block.substr(pos, query_end - pos + 1);
-                        action_.commitments.common_ground.push_back(cond);
-                        pos = query_end + 1;
-                    }
-                    else
-                    {
-                        break;
+                        size_t query_end = cg_block.find(";", pos);
+                        if (query_end != std::string::npos)
+                        {
+                            CommitmentCondition_t cond;
+                            cond.sparql_query = cg_block.substr(pos, query_end - pos + 1);
+                            action_.commitments.common_ground.push_back(cond);
+                            pos = query_end + 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
