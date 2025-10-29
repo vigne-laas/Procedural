@@ -8,7 +8,7 @@ hatp: comment* factbase* comment* htn comment* timepart comment* EOF;
 timepart: TIMEPART OpenCurly ignore*  CloseCurly ;
 factbase: FACTDATABASE OpenCurly ignore* CloseCurly ;
 htn: HTN  OpenCurly actions*  tasks*  CloseCurly ;
-actions: ACTION  action_name OpenPar arguments (Comma  arguments)* ClosePar   OpenCurly preconditions+ effects+ cost? duration? CloseCurly ;
+actions: ACTION  action_name OpenPar arguments (Comma  arguments)* ClosePar   OpenCurly preconditions+ effects+ commitments? cost? duration? CloseCurly ;
 action_name: IDENTIFIER;
 preconditions: PRECONDITIONS  OpenCurly  expression*  CloseCurly SEMICOLON;
 effects: EFFECTS  OpenCurly (forall|expression)* CloseCurly SEMICOLON;
@@ -46,3 +46,6 @@ order: operator NUMBER;
 forall : FORALL OpenPar arguments  Comma  ( OpenCurly expression? CloseCurly ) ( Comma   OpenCurly expression CloseCurly )* ClosePar SEMICOLON;
 cost : COST  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
 duration: DURATION  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
+
+// Commitment system rules - Capture as ignore blocks for manual parsing
+commitments: COMMITMENTS OpenCurly ignore+ CloseCurly SEMICOLON;

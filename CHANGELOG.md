@@ -2,6 +2,47 @@
 
 All notable changes to the Procedural package are documented in this file.
 
+## 2025-10-29 - Commitment System Support
+
+### Added
+- **Commitment Block Support in HATP Grammar**
+  - Extended `HATPLexer.g4` with commitment-related tokens (COMMITMENTS, INSTRUMENTAL, ENGAGEMENT, COMMON_GROUND, ON_*_FAILURE, RECOVERY_STRATEGY, MODE, MAX_ATTEMPTS, TIMEOUT)
+  - Modified `HATPParser.g4` to accept optional COMMITMENTS block after EFFECTS in action definitions
+  - Grammar captures commitment content as ignore blocks for flexible manual parsing
+
+- **Commitment Data Structures in ParsedHTN.h**
+  - `CommitmentCondition_t`: Stores SPARQL queries and descriptions for commitment conditions
+  - `RecoveryStrategy_t`: Defines recovery mode, max attempts, and timeout parameters
+  - `CommitmentBlock_t`: Main structure containing three categories of conditions (instrumental, engagement, common_ground), reaction mappings, and recovery strategy
+  - Added `commitments` field to `PrimitiveActionParsed_t` for seamless integration with existing HTN structure
+
+- **HATPListener Extensions (`src/task_recognition/Reader/HATPListener.cpp`)**
+  - Implemented text-based parsing of COMMITMENTS block content
+  - Extracts INSTRUMENTAL conditions (physical/technical capabilities)
+  - Extracts ENGAGEMENT conditions (willingness to continue)
+  - Extracts COMMON_GROUND conditions (mutual understanding)
+  - Parses ON_INSTRUMENTAL_FAILURE, ON_ENGAGEMENT_FAILURE, and ON_COMMON_GROUND_FAILURE reaction mappings
+  - Extracts RECOVERY_STRATEGY parameters (mode, max_attempts, timeout)
+
+- **Test Infrastructure**
+  - Created `test/commitment_test.dom`: Test domain file with commitment blocks
+  - Created `test/test_commitment_parser.cpp`: Unit tests for commitment parsing functionality
+  - Added CommitmentParser_test target to CMakeLists.txt for automated testing
+
+### Implementation Notes
+- Commitments are specified AFTER effects in action definitions to maintain grammar compatibility
+- SPARQL conditions are stored as strings for later evaluation by Yggdrasil
+- Text-based parsing approach allows flexibility in SPARQL query format while maintaining performance
+- Fully compatible with existing HATP domain format and HTN structures
+- Optional block - actions without commitments continue to work unchanged
+
+### Future Work
+- Integrate with Yggdrasil for runtime monitoring of commitment conditions
+- Implement MissionManager support for handling commitment violations
+- Create reaction action executor for automatic recovery behaviors
+- Add support for actions without parameters in grammar
+- Extend with more sophisticated SPARQL parsing if needed
+
 ## [v0.1.0] - 2025-01-28
 
 ### Summary

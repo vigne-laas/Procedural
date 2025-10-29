@@ -429,6 +429,9 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS DomainReader ################
     catkin_add_gtest(DomainReader_test test/task_recognition/Reader/test_domain_reader.cpp)
     target_link_libraries(DomainReader_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
+    ############### TESTS CommitmentParser ################
+    catkin_add_gtest(CommitmentParser_test test/test_commitment_parser.cpp)
+    target_link_libraries(CommitmentParser_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
     ############### TESTS TaskBuilder ################
     catkin_add_gtest(TaskBuilder_test test/task_recognition/Builder/test_builder_htn.cpp)
     target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib ${PROJECT_NAME}_action_reader_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_action_builder_lib)

@@ -1,0 +1,39 @@
+PRACTICE Greet {
+    DESCRIPTION {
+        "Social greeting practice for human-robot interaction";
+    }
+    COMPETENCES {
+        "social_interaction";
+        "speech_synthesis";
+    }
+    OBJECTS {
+        "human";
+        "greeting_gesture";
+    }
+    ACTIVATION_CONDITIONS {
+        "human detected";
+        "social_context active";
+    }
+    ROLES {
+        "greeter_role";
+    }
+}
+
+PRACTICE Assistance {
+    DESCRIPTION {
+        "General assistance practice";
+    }
+    COMPETENCES {
+        "task_planning";
+        "object_manipulation";
+    }
+    OBJECTS {
+        "task_objects";
+    }
+    ACTIVATION_CONDITIONS {
+        "assistance_requested";
+    }
+    ROLES {
+        "assistant_role";
+    }
+}

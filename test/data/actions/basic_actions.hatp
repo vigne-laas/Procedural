@@ -1,0 +1,36 @@
+ACTIONS {
+    action Move(Agent a, Location l) {
+        PRECONDITIONS {
+            robot a: position ?current_pos;
+            robot a: mobile true;
+        };
+        EFFECTS {
+            robot a: position l;
+        };
+        DESCRIPTION {
+            robot a: moving true;
+        };
+        DURATION {
+            2.0;
+        };
+    }
+
+    action PickUp(Agent a, Object o) {
+        PRECONDITIONS {
+            robot a: free_hands true;
+            object o: position ?loc;
+            robot a: position ?loc;
+        };
+        EFFECTS {
+            robot a: holding o;
+            robot a: free_hands false;
+        };
+        DESCRIPTION {
+            robot a: grasping true;
+            object o: held true;
+        };
+        DURATION {
+            1.5;
+        };
+    }
+};

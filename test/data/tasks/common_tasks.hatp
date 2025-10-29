@@ -1,0 +1,21 @@
+TASKS {
+    task transport(Agent a, Object o, Location from, Location to) {
+        method pick_and_place {
+            subtasks {
+                Move(a, from);
+                PickUp(a, o);
+                Move(a, to);
+                PutDown(a, o, to);
+            }
+        }
+    }
+
+    task deliver(Agent a, Object o, Agent recipient) {
+        method direct_delivery {
+            subtasks {
+                transport(a, o, ?current_location, ?recipient_location);
+                notify_recipient(recipient);
+            }
+        }
+    }
+};

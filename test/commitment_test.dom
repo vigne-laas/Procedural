@@ -1,0 +1,62 @@
+HTN {
+    action TestSimpleCommitment(Client C) {
+        preconditions {
+            C.hasStatus == waiting;
+        };
+
+        effects {
+            C.hasStatus = guided;
+        };
+
+        COMMITMENTS {
+            INSTRUMENTAL {
+                SELECT * WHERE { NOT { robot hasBlockageStatus true } };
+            };
+
+            ENGAGEMENT {
+                SELECT * WHERE { robot hasProximityStatus C close };
+            };
+
+            COMMON_GROUND {
+                SELECT * WHERE { robot isVisibleTo C };
+            };
+
+            ON_INSTRUMENTAL_FAILURE: "stop_and_wait";
+            ON_ENGAGEMENT_FAILURE: "turn_and_wait";
+            ON_COMMON_GROUND_FAILURE: "clarify_goal";
+
+            RECOVERY_STRATEGY {
+                MODE: "continue";
+                MAX_ATTEMPTS: 3;
+                TIMEOUT: 30.0;
+            };
+        };
+    };
+
+    action stop_and_wait() {
+        preconditions {
+            robot.hasStatus == executing;
+        };
+        effects {
+            robot.hasStatus = stopped;
+        };
+    };
+
+    action turn_and_wait() {
+        preconditions {
+            robot.hasStatus == executing;
+        };
+        effects {
+            robot.hasStatus = waiting;
+        };
+    };
+
+    action clarify_goal() {
+        preconditions {
+            robot.hasStatus == executing;
+        };
+        effects {
+            robot.hasStatus = clarifying;
+        };
+    };
+};

@@ -1,0 +1,37 @@
+include {
+    "actions/basic_actions.hatp";
+    "actions/robot_actions.hatp";
+    "practices/social_practices.hatp";
+    "tasks/common_tasks.hatp";
+}
+
+ACTIONS {
+    action Move(Agent a, Location l) {
+        DESCRIPTION {
+            robot a: navigation_mode "autonomous";
+            robot a: target_location l;
+        };
+    }
+}
+
+PRACTICE Greet {
+    COMPETENCES {
+        "gesture_recognition";
+    }
+    RULES {
+        "maintain_eye_contact";
+        "use_appropriate_tone";
+    }
+}
+
+PRIORITIES {
+    priority high_priority {
+        LEVEL 1;
+        DESCRIPTION "Urgent tasks that require immediate attention";
+    }
+
+    priority medium_priority {
+        LEVEL 3;
+        DESCRIPTION "Normal operational tasks";
+    }
+};

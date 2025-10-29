@@ -1,0 +1,11 @@
+include {
+    "circular_b.hatp";
+}
+
+ACTIONS {
+    action TestA(Agent a) {
+        EFFECTS {
+            robot a: test_a_executed true;
+        };
+    }
+};

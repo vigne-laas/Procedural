@@ -1,0 +1,41 @@
+ACTIONS {
+    action Move(Agent a, Location l) {
+        COST {
+            5.0;
+        };
+        EXECUTION {
+            navigate(l);
+            wait_for_completion();
+        };
+    }
+
+    action PickUp(Agent a, Object o) {
+        COST {
+            3.0;
+        };
+        EXECUTION {
+            approach_object(o);
+            grasp_object(o);
+        };
+    }
+
+    action PutDown(Agent a, Object o, Location l) {
+        PRECONDITIONS {
+            robot a: holding o;
+        };
+        EFFECTS {
+            robot a: free_hands true;
+            object o: position l;
+        };
+        EXECUTION {
+            navigate(l);
+            place_object(o);
+        };
+        DURATION {
+            1.8;
+        };
+        COST {
+            2.5;
+        };
+    }
+};

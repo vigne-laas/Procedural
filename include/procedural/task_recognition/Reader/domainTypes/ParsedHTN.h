@@ -153,6 +153,95 @@ struct effects_t {
     }
 };
 
+// Commitment System Structures
+struct CommitmentCondition_t {
+    std::string sparql_query;
+    std::string description;
+
+    friend std::ostream& operator<<(std::ostream& os, const CommitmentCondition_t& lhs)
+    {
+        os << "      Query: " << lhs.sparql_query;
+        if (!lhs.description.empty()) {
+            os << " (" << lhs.description << ")";
+        }
+        return os;
+    }
+};
+
+struct RecoveryStrategy_t {
+    std::string mode = "continue";  // continue | restart | checkpoint
+    int max_attempts = 3;
+    double timeout = 30.0;
+
+    friend std::ostream& operator<<(std::ostream& os, const RecoveryStrategy_t& lhs)
+    {
+        os << "    Recovery: mode=" << lhs.mode
+           << ", max_attempts=" << lhs.max_attempts
+           << ", timeout=" << lhs.timeout << "s";
+        return os;
+    }
+};
+
+struct CommitmentBlock_t {
+    // Trois catégories de conditions
+    std::vector<CommitmentCondition_t> instrumental;
+    std::vector<CommitmentCondition_t> engagement;
+    std::vector<CommitmentCondition_t> common_ground;
+
+    // Mappings de réactions
+    std::string on_instrumental_failure;
+    std::string on_engagement_failure;
+    std::string on_common_ground_failure;
+
+    // Stratégie optionnelle
+    RecoveryStrategy_t recovery_strategy;
+
+    bool has_commitments = false;
+
+    friend std::ostream& operator<<(std::ostream& os, const CommitmentBlock_t& lhs)
+    {
+        if (!lhs.has_commitments) {
+            return os;
+        }
+
+        os << "  COMMITMENTS:\n";
+
+        if (!lhs.instrumental.empty()) {
+            os << "    INSTRUMENTAL (" << lhs.instrumental.size() << " conditions):\n";
+            for (const auto& cond : lhs.instrumental) {
+                os << "      " << cond << "\n";
+            }
+            if (!lhs.on_instrumental_failure.empty()) {
+                os << "      → Reaction: " << lhs.on_instrumental_failure << "\n";
+            }
+        }
+
+        if (!lhs.engagement.empty()) {
+            os << "    ENGAGEMENT (" << lhs.engagement.size() << " conditions):\n";
+            for (const auto& cond : lhs.engagement) {
+                os << "      " << cond << "\n";
+            }
+            if (!lhs.on_engagement_failure.empty()) {
+                os << "      → Reaction: " << lhs.on_engagement_failure << "\n";
+            }
+        }
+
+        if (!lhs.common_ground.empty()) {
+            os << "    COMMON_GROUND (" << lhs.common_ground.size() << " conditions):\n";
+            for (const auto& cond : lhs.common_ground) {
+                os << "      " << cond << "\n";
+            }
+            if (!lhs.on_common_ground_failure.empty()) {
+                os << "      → Reaction: " << lhs.on_common_ground_failure << "\n";
+            }
+        }
+
+        os << "    " << lhs.recovery_strategy << "\n";
+
+        return os;
+    }
+};
+
 struct Abstract_task_t {
     std::string name;
     std::vector<Expression_t> goals;
@@ -256,6 +345,7 @@ struct PrimitiveActionParsed_t {
     std::vector<Arguments_t> arguments;
     std::vector<Expression_t> preconditions;
     effects_t effects;
+    CommitmentBlock_t commitments;
 
     friend std::ostream& operator<<(std::ostream& os, const PrimitiveActionParsed_t& lhs)
     {
@@ -265,6 +355,9 @@ struct PrimitiveActionParsed_t {
         for (const auto& precondition: lhs.preconditions)
             os << "\t" << precondition << "\n";
         os << "\t" << lhs.effects;
+        if (lhs.commitments.has_commitments) {
+            os << "\n" << lhs.commitments;
+        }
         return os;
 
     }
