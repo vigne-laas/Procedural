@@ -1,6 +1,7 @@
 #ifndef FULLPARSER_H
 #define FULLPARSER_H
 #include "ExtentedHATPParserBaseListener.h"
+#include "procedural/task_recognition/Reader/domainTypes/ParsedHTN.h"
 #include <procedural_interfaces/action_t.h>
 
 #include "procedural_interfaces/Practice.h"
@@ -8,7 +9,6 @@
 #include "procedural_interfaces/Role.h"
 #include "procedural_interfaces/Priority.h"
 #include "procedural_interfaces/task_t.h"
-#include "procedural/task_recognition/Reader/domainTypes/ParsedHTN.h"
 #include <set>
 #include <queue>
 #include <filesystem>
@@ -124,6 +124,13 @@ private:
     std::vector<ActionEffect_t> parseActionEffectsBloc(ExtentedHATPParser::Effects_blocContext* ctx);
     double parseActionDurationBloc(ExtentedHATPParser::Duration_blocContext* ctx);
     Recognition_t parseRecognitionBloc(ExtentedHATPParser::Recognition_blocContext* ctx);
+
+    // Commitment parsing methods (forward declarations)
+    CommitmentBlock_t parseCommitmentBlock(::procedural::ExtentedHATPParser::CommitmentsContext* ctx);
+    std::vector<CommitmentCondition_t> parseConditionsWithFor(
+        const std::string& text, const std::string& condition_type);
+    std::string parseRecoveryAction(::procedural::ExtentedHATPParser::CommitmentsContext* ctx, const std::string& failure_type);
+    RecoveryStrategy_t parseRecoveryStrategy(::procedural::ExtentedHATPParser::Recovery_strategyContext* ctx);
 
     // Nouvelles méthodes pour le système d'inclusion
     void processIncludes(ExtentedHATPParser::Include_blocContext* include_bloc);

@@ -1,0 +1,111 @@
+HTN {
+    action TestCommitmentWithFor(Client C) {
+        preconditions {
+            robot.isAvailable == true;
+        };
+
+        effects {
+            robot.isGuiding = C;
+        };
+
+        COMMITMENTS {
+            INSTRUMENTAL {
+                "Battery sufficient" FOR robot {
+                    SELECT * WHERE {
+                        robot hasBatteryLevel ?level
+                        FILTER(?level > 20)
+                    }
+                };
+
+                "Path is clear" FOR environment {
+                    SELECT * WHERE {
+                        NOT EXISTS { ?obstacle blockingPath true }
+                    }
+                };
+            };
+
+            ENGAGEMENT {
+                "Client follows" FOR ?C {
+                    SELECT * WHERE {
+                        ?C isFollowing robot
+                    }
+                };
+            };
+
+            COMMON_GROUND {
+                "Mutual goal understanding" FOR both(robot, ?C) {
+                    SELECT * WHERE {
+                        robot hasGoal ?goal .
+                        ?C hasExpectedGoal ?goal
+                    }
+                };
+            };
+
+            ON_INSTRUMENTAL_FAILURE: "stop_and_diagnose";
+            ON_ENGAGEMENT_FAILURE: "call_client_back";
+            ON_COMMON_GROUND_FAILURE: "clarify_goal";
+
+            RECOVERY_STRATEGY {
+                MODE: "retry";
+                MAX_ATTEMPTS: 3;
+                TIMEOUT: 30.0;
+            };
+        };
+    };
+
+    action TestNoForClause() {
+        preconditions {
+            robot.isReady == true;
+        };
+
+        effects {
+            robot.hasExecuted = true;
+        };
+
+        COMMITMENTS {
+            INSTRUMENTAL {
+                "System operational" {
+                    SELECT * WHERE { robot hasStatus operational }
+                };
+            };
+
+            ON_INSTRUMENTAL_FAILURE: "restart_system";
+        };
+    };
+
+    action stop_and_diagnose() {
+        preconditions {
+            robot.hasStatus == executing;
+        };
+        effects {
+            robot.hasStatus = diagnosing;
+        };
+    };
+
+    action call_client_back() {
+        preconditions {
+            robot.canCommunicate == true;
+        };
+        effects {
+            robot.hasCalled = client;
+        };
+    };
+
+    action clarify_goal() {
+        preconditions {
+            robot.canCommunicate == true;
+        };
+        effects {
+            robot.hasExplained = goal;
+        };
+    };
+
+    action restart_system() {
+        preconditions {
+            robot.hasStatus == error;
+        };
+        effects {
+            robot.hasStatus = restarting;
+        };
+    };
+};

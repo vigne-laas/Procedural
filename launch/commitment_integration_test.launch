@@ -1,0 +1,59 @@
+<launch>
+  <!-- Commitment System Integration Test Launch File -->
+  <!-- This launch file starts all components needed for testing the complete commitment system -->
+
+  <arg name="use_simulated_facts" default="true" doc="Use simulated fact injection instead of real robot"/>
+  <arg name="test_scenario" default="violation" doc="Test scenario: success, violation, or multi_agent"/>
+  <arg name="debug_mode" default="true" doc="Enable debug logging"/>
+
+  <!-- 1. Ontologenius (Multi-agent Knowledge Base) -->
+  <include file="$(find ontologenius)/launch/ontologenius_multi.launch">
+    <arg name="config_file" value="$(find procedural)/config/commitment_test_agents.yaml" />
+  </include>
+
+  <!-- 2. Mementar (Timeline Management) -->
+  <include file="$(find mementar)/launch/mementar_multi.launch" />
+
+  <!-- 3. Yggdrasil (SPARQL Event System with ActionRecognitionDataSource) -->
+  <node name="yggdrasil" pkg="yggdrasil" type="yggdrasil_node" output="screen">
+    <rosparam file="$(find yggdrasil)/config/yggdrasil_config.yaml" command="load"/>
+    <param name="debug_mode" value="$(arg debug_mode)"/>
+  </node>
+
+  <!-- 4. Action Recognition (Multi-agent) -->
+  <node name="action_recognition_multi" pkg="procedural" type="action_recognition_multi_node" output="screen">
+    <param name="memory_service_namespace" value="procedural_memory"/>
+    <param name="debug_mode" value="$(arg debug_mode)"/>
+  </node>
+
+  <!-- 5. CommitmentMonitor (Real SPARQL Monitoring) -->
+  <node name="commitment_monitor" pkg="procedural" type="commitment_monitor" output="screen">
+    <param name="debug_mode" value="$(arg debug_mode)"/>
+  </node>
+
+  <!-- 6. MissionManager (Action Execution & Commitment Lifecycle) -->
+  <node name="mission_manager" pkg="supervision" type="supervision_mission_node" output="screen">
+    <param name="debug_commitment_events" value="true"/>
+  </node>
+
+  <!-- 7a. Simulated Fact Injector (for testing without real robot) -->
+  <node name="ontology_fact_injector" pkg="procedural" type="ontology_fact_injector" output="screen" if="$(arg use_simulated_facts)">
+    <param name="test_scenario" value="$(arg test_scenario)"/>
+    <param name="agent_id" value="robot_01"/>
+  </node>
+
+  <!-- 7b. Or use commitment_test_publisher for simulated events (legacy) -->
+  <node name="commitment_test_publisher" pkg="procedural" type="commitment_test_publisher" output="screen" unless="$(arg use_simulated_facts)">
+    <param name="test_delay" value="3.0"/>
+  </node>
+
+  <!-- 8. Test Monitoring Node (verifies system behavior) -->
+  <node name="commitment_test_monitor" pkg="procedural" type="commitment_test_monitor" output="screen">
+    <param name="expected_scenario" value="$(arg test_scenario)"/>
+    <param name="timeout_sec" value="60.0"/>
+  </node>
+
+  <!-- RViz for visualization (optional) -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find procedural)/rviz/commitment_test.rviz" if="$(arg debug_mode)" required="false"/>
+
+</launch>

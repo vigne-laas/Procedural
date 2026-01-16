@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
+#include <regex>
 
 
 
@@ -727,6 +728,17 @@ Action_t FullParser::parseAction(ExtentedHATPParser::ActionContext* action)
     for (auto* recognition_bloc : action->recognition_bloc())
     {
         new_action.recognition = parseRecognitionBloc(recognition_bloc);
+    }
+
+    // Parse commitments bloc (optional, single)
+    if (action->commitments() != nullptr)
+    {
+        CommitmentBlock_t parsed_commitments = parseCommitmentBlock(action->commitments());
+
+        // Create shared_ptr and assign directly
+        new_action.commitments = std::make_shared<CommitmentBlock_t>(parsed_commitments);
+        new_action.has_commitments = true;
+        std::cout << "  ✓ Parsed commitments for action: " << new_action.name << std::endl;
     }
 
     return new_action;
@@ -1835,6 +1847,276 @@ void FullParser::processIncludes(ExtentedHATPParser::Include_blocContext* includ
             std::cerr << "Warning: Could not extract filepath from inclusion" << std::endl;
         }
     }
+}
+
+// ============================================================================
+// Commitment Parsing Methods
+// ============================================================================
+
+CommitmentBlock_t FullParser::parseCommitmentBlock(
+    ExtentedHATPParser::CommitmentsContext* ctx)
+{
+    CommitmentBlock_t commitment_block;
+    commitment_block.has_commitments = true;
+
+    if (ctx == nullptr) {
+        return commitment_block;
+    }
+
+    // Get the raw text content
+    std::string commitment_text = ctx->getText();
+
+    std::cout << "  Parsing COMMITMENTS block..." << std::endl;
+
+    // Parse INSTRUMENTAL conditions
+    commitment_block.instrumental = parseConditionsWithFor(commitment_text, "INSTRUMENTAL");
+    std::cout << "    Found " << commitment_block.instrumental.size() << " INSTRUMENTAL conditions" << std::endl;
+
+    // Parse ENGAGEMENT conditions
+    commitment_block.engagement = parseConditionsWithFor(commitment_text, "ENGAGEMENT");
+    std::cout << "    Found " << commitment_block.engagement.size() << " ENGAGEMENT conditions" << std::endl;
+
+    // Parse COMMON_GROUND conditions
+    commitment_block.common_ground = parseConditionsWithFor(commitment_text, "COMMON_GROUND");
+    std::cout << "    Found " << commitment_block.common_ground.size() << " COMMON_GROUND conditions" << std::endl;
+
+    // Parse recovery actions
+    commitment_block.on_instrumental_failure = parseRecoveryAction(ctx, "ON_INSTRUMENTAL_FAILURE");
+    commitment_block.on_engagement_failure = parseRecoveryAction(ctx, "ON_ENGAGEMENT_FAILURE");
+    commitment_block.on_common_ground_failure = parseRecoveryAction(ctx, "ON_COMMON_GROUND_FAILURE");
+
+    // Parse recovery strategy directly from the commitment text
+    size_t recovery_pos = commitment_text.find("RECOVERY_STRATEGY{");
+    if (recovery_pos != std::string::npos) {
+        // Helper to extract quoted values
+        auto extractQuotedValue = [](const std::string& text, const std::string& key) -> std::string {
+            size_t pos = text.find(key + ":");
+            if (pos != std::string::npos) {
+                size_t quote1 = text.find("\"", pos);
+                if (quote1 != std::string::npos) {
+                    size_t quote2 = text.find("\"", quote1 + 1);
+                    if (quote2 != std::string::npos) {
+                        return text.substr(quote1 + 1, quote2 - quote1 - 1);
+                    }
+                }
+            }
+            return "";
+        };
+
+        // Helper to extract numeric values
+        auto extractNumericValue = [](const std::string& text, const std::string& key) -> std::string {
+            size_t pos = text.find(key + ":");
+            if (pos != std::string::npos) {
+                size_t colon_pos = text.find(":", pos);
+                size_t semicolon_pos = text.find(";", colon_pos);
+                if (colon_pos != std::string::npos && semicolon_pos != std::string::npos) {
+                    std::string num_str = text.substr(colon_pos + 1, semicolon_pos - colon_pos - 1);
+                    // Trim whitespace
+                    num_str.erase(0, num_str.find_first_not_of(" \t\n\r"));
+                    num_str.erase(num_str.find_last_not_of(" \t\n\r") + 1);
+                    return num_str;
+                }
+            }
+            return "";
+        };
+
+        std::string mode = extractQuotedValue(commitment_text, "MODE");
+        if (!mode.empty()) {
+            commitment_block.recovery_strategy.mode = mode;
+        }
+
+        std::string attempts_str = extractNumericValue(commitment_text, "MAX_ATTEMPTS");
+        if (!attempts_str.empty()) {
+            try {
+                commitment_block.recovery_strategy.max_attempts = std::stoi(attempts_str);
+            } catch (...) {
+                std::cerr << "Warning: Failed to parse MAX_ATTEMPTS value" << std::endl;
+            }
+        }
+
+        std::string timeout_str = extractNumericValue(commitment_text, "TIMEOUT");
+        if (!timeout_str.empty()) {
+            try {
+                commitment_block.recovery_strategy.timeout = std::stod(timeout_str);
+            } catch (...) {
+                std::cerr << "Warning: Failed to parse TIMEOUT value" << std::endl;
+            }
+        }
+    }
+
+    std::cout << "  ✓ Commitments parsed successfully" << std::endl;
+
+    return commitment_block;
+}
+
+std::vector<CommitmentCondition_t> FullParser::parseConditionsWithFor(
+    const std::string& text, const std::string& condition_type)
+{
+    std::vector<CommitmentCondition_t> conditions;
+
+    // Find the block for this condition type
+    std::string block_start = condition_type + "{";
+    size_t block_pos = text.find(block_start);
+    if (block_pos == std::string::npos) {
+        return conditions;
+    }
+
+    // Find matching closing brace
+    size_t start = text.find("{", block_pos) + 1;
+    int depth = 1;
+    size_t end = start;
+    while (end < text.length() && depth > 0) {
+        if (text[end] == '{') depth++;
+        else if (text[end] == '}') depth--;
+        if (depth > 0) end++;
+    }
+
+    if (end >= text.length()) {
+        return conditions;
+    }
+
+    std::string block_text = text.substr(start, end - start);
+
+    // Regex pattern to match: "description" [FOR for_clause] { SELECT ... };
+    // Pattern explanation:
+    // \"([^\"]+)\"          - Capture description in quotes
+    // \\s*                 - Optional whitespace
+    // (?:FOR\\s+([^{]+))?  - Optional FOR clause (non-capturing group with capturing inside)
+    // \\s*\\{([^}]+)\\}    - SPARQL query in braces
+    std::regex condition_regex(R"(\"([^\"]+)\"\s*(?:FOR\s+([^{]+))?\s*\{([^}]+)\})");
+
+    std::sregex_iterator iter(block_text.begin(), block_text.end(), condition_regex);
+    std::sregex_iterator end_iter;
+
+    while (iter != end_iter) {
+        std::smatch match = *iter;
+
+        CommitmentCondition_t condition;
+
+        // Capture group 1: description
+        condition.description = trim(match[1].str());
+
+        // Capture group 2: for_clause (optional)
+        if (match[2].matched) {
+            condition.for_clause = trim(match[2].str());
+        } else {
+            condition.for_clause = "";
+        }
+
+        // Capture group 3: SPARQL query
+        condition.sparql_query = trim(match[3].str());
+
+        conditions.push_back(condition);
+
+        std::cout << "      Parsed: \"" << condition.description << "\"";
+        if (!condition.for_clause.empty()) {
+            std::cout << " FOR " << condition.for_clause;
+        }
+        std::cout << std::endl;
+
+        ++iter;
+    }
+
+    return conditions;
+}
+
+std::string FullParser::parseRecoveryAction(
+    ExtentedHATPParser::CommitmentsContext* ctx, const std::string& failure_type)
+{
+    if (ctx == nullptr) {
+        return "";
+    }
+
+    std::string text = ctx->getText();
+    std::string search_key = failure_type + ":";
+    size_t pos = text.find(search_key);
+
+    if (pos == std::string::npos) {
+        return "";
+    }
+
+    // Extract the quoted value
+    size_t quote1 = text.find("\"", pos);
+    if (quote1 != std::string::npos) {
+        size_t quote2 = text.find("\"", quote1 + 1);
+        if (quote2 != std::string::npos) {
+            return text.substr(quote1 + 1, quote2 - quote1 - 1);
+        }
+    }
+
+    return "";
+}
+
+RecoveryStrategy_t FullParser::parseRecoveryStrategy(
+    ExtentedHATPParser::Recovery_strategyContext* ctx)
+{
+    RecoveryStrategy_t strategy;
+
+    // Since recovery_strategy() method doesn't exist in context, we parse from parent text
+    // This parameter is kept for API compatibility but not used
+    // Text parsing is done by parseCommitmentBlock which passes the full commitment text
+    if (ctx == nullptr) {
+        return strategy;  // Return default values
+    }
+
+    std::string text = ctx->getText();
+
+    // Extract MODE
+    auto extractQuotedValue = [](const std::string& text, const std::string& key) -> std::string {
+        size_t pos = text.find(key + ":");
+        if (pos != std::string::npos) {
+            size_t quote1 = text.find("\"", pos);
+            if (quote1 != std::string::npos) {
+                size_t quote2 = text.find("\"", quote1 + 1);
+                if (quote2 != std::string::npos) {
+                    return text.substr(quote1 + 1, quote2 - quote1 - 1);
+                }
+            }
+        }
+        return "";
+    };
+
+    // Extract numeric value
+    auto extractNumericValue = [](const std::string& text, const std::string& key) -> std::string {
+        size_t pos = text.find(key + ":");
+        if (pos != std::string::npos) {
+            size_t colon_pos = text.find(":", pos);
+            size_t semicolon_pos = text.find(";", colon_pos);
+            if (colon_pos != std::string::npos && semicolon_pos != std::string::npos) {
+                std::string num_str = text.substr(colon_pos + 1, semicolon_pos - colon_pos - 1);
+                // Trim whitespace
+                num_str.erase(0, num_str.find_first_not_of(" \t\n\r"));
+                num_str.erase(num_str.find_last_not_of(" \t\n\r") + 1);
+                return num_str;
+            }
+        }
+        return "";
+    };
+
+    std::string mode = extractQuotedValue(text, "MODE");
+    if (!mode.empty()) {
+        strategy.mode = mode;
+    }
+
+    std::string attempts_str = extractNumericValue(text, "MAX_ATTEMPTS");
+    if (!attempts_str.empty()) {
+        try {
+            strategy.max_attempts = std::stoi(attempts_str);
+        } catch (...) {
+            std::cerr << "Warning: Failed to parse MAX_ATTEMPTS value: " << attempts_str << std::endl;
+        }
+    }
+
+    std::string timeout_str = extractNumericValue(text, "TIMEOUT");
+    if (!timeout_str.empty()) {
+        try {
+            strategy.timeout = std::stod(timeout_str);
+        } catch (...) {
+            std::cerr << "Warning: Failed to parse TIMEOUT value: " << timeout_str << std::endl;
+        }
+    }
+
+    return strategy;
 }
 
 } // procedural

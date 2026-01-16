@@ -14,7 +14,7 @@ link: SLASH? IDENTIFIER (SLASH IDENTIFIER)* POINT IDENTIFIER;
 
 
 actions_bloc: ACTIONS OpenCurly action* CloseCurly SEMICOLON;
-action: ACTION name OpenPar arguments* (Comma arguments)* ClosePar OpenCurly preconditions_bloc? effects_bloc? (recognition_bloc|execution_bloc|description_bloc|cost_bloc|duration_bloc)+ CloseCurly SEMICOLON;
+action: ACTION name OpenPar arguments* (Comma arguments)* ClosePar OpenCurly preconditions_bloc? effects_bloc? (recognition_bloc|execution_bloc|description_bloc|cost_bloc|duration_bloc)+ commitments? CloseCurly SEMICOLON;
 
 preconditions_bloc: PRECONDITIONS OpenCurly (query | triplet)* CloseCurly SEMICOLON;
 query: SELECT (variable|TIMES|MINUS) (Comma variable)* WHERE OpenCurly where_clause CloseCurly;
@@ -53,6 +53,18 @@ sequence_bloc: SEQUENCE OpenCurly sequence* CloseCurly SEMICOLON;
 sequence: (NOT)? subject predicate object (REQUIRED)? SEMICOLON;
 parameters_bloc: PARAMETERS OpenCurly parameter* CloseCurly SEMICOLON;
 parameter: name OpenPar value ClosePar SEMICOLON;
+
+// Commitment rules (simple pass-through approach - actual parsing done in FullParser.cpp)
+commitments: COMMITMENTS OpenCurly commitment_content CloseCurly SEMICOLON;
+commitment_content: (commitment_token | commitment_block | recovery_strategy)*;
+commitment_block: OpenCurly commitment_content CloseCurly;
+recovery_strategy: RECOVERY_STRATEGY OpenCurly commitment_content CloseCurly;
+commitment_token: INSTRUMENTAL | ENGAGEMENT | COMMON_GROUND
+                | ON_INSTRUMENTAL_FAILURE | ON_ENGAGEMENT_FAILURE | ON_COMMON_GROUND_FAILURE
+                | MODE | MAX_ATTEMPTS | TIMEOUT
+                | SELECT | WHERE | FOR | NOT | EXISTS
+                | STRING | IDENTIFIER | NUMBER | COLON | POINT | SEMICOLON | Comma
+                | QUESTIONMARK | MINUS | PLUS | TIMES | SLASH | OpenPar | ClosePar | OpenSquare | CloseSquare;
 
 
 attentes_bloc: ATTENTES OpenCurly role* CloseCurly SEMICOLON;

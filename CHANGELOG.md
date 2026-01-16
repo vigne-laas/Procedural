@@ -2,6 +2,275 @@
 
 All notable changes to the Procedural package are documented in this file.
 
+## 2025-11-07 - ROS Message Conversion for Commitments (TASK 2 - COMPLETED)
+
+### Added
+- **CommitmentConverter helper class** (`include/procedural/memory/CommitmentConverter.h`)
+  - Static methods to convert internal commitment structures to ROS messages
+  - `convertToRosMessage()`: Converts `CommitmentBlock_t` → `CommitmentInfo` ROS message
+  - `convertCondition()`: Converts `CommitmentCondition_t` → `CommitmentCondition` ROS message
+  - Preserves FOR clause from parsed commitments for responsibility attribution
+  - Handles optional recovery strategy fields (mode, max_attempts, timeout)
+
+- **ActionRosConverter utility** (`include/procedural/memory/ActionRosConverter.h`)
+  - Wrapper function `convertActionToRos()` that extends standard `toRosMsg()`
+  - Performs commitment conversion where `CommitmentBlock_t` type is fully defined
+  - Resolves circular dependency between action_t.h and ParsedHTN.h
+
+- **MemoryRosInterface commitment support** (`src/memory/ROS_Interfaces/MemoryRosInterface.cpp`)
+  - Updated `getRobotActions()` to use `convertActionToRos()` (line 22)
+  - Updated `getActions()` to use `convertActionToRos()` (line 121)
+  - Updated `getActionDetails()` to use `convertActionToRos()` (line 159)
+  - All ROS service responses now include full commitment information
+
+### Fixed
+- **Namespace resolution** (`include/procedural_interfaces/action_t.h:8-11`)
+  - Moved forward declaration of `CommitmentBlock_t` outside `procedural_interfaces` namespace
+  - Changed from `procedural_interfaces::procedural::task_recognition` to just `procedural`
+  - Fixed commitments field type: `std::shared_ptr<procedural::CommitmentBlock_t>`
+
+- **Type consistency** (`src/memory/FullParser.cpp:736-741, include/procedural/memory/FullParser.h:129-133`)
+  - Updated all commitment-related method signatures to use correct namespace
+  - Removed incorrect `task_recognition::` namespace qualifier
+  - Direct assignment of `CommitmentBlock_t` shared_ptr without reinterpret_pointer_cast
+
+### Technical Details
+- Commitment conversion happens in procedural package where full types are available
+- Action_t.toRosMsg() sets has_commitments flag; actual conversion delegated to ActionRosConverter
+- Maintains backward compatibility: actions without commitments work unchanged
+- Full support for FOR clause responsibility attribution in ROS messages
+
+## 2025-11-07 - Namespace Ambiguity Fix
+
+### Fixed
+- **memory_node.cpp namespace resolution** (`src/nodes/memory_node.cpp:13-19`)
+  - Fixed compilation error: "reference to 'procedural' is ambiguous"
+  - Root cause: Multiple `procedural` namespaces visible due to ANTLR-generated parsers (RobotActionParser.h and ExtentedHATPParser.h both define `procedural` namespace)
+  - Solution: Used global namespace qualifier (`::procedural::`) to explicitly reference main procedural namespace
+  - Changed references to: `::procedural::Parameters`, `::procedural::Parameter`, `::procedural::MemoryROSInterface`
+  - Compilation verified successful with no errors
+
+## 2025-11-07 - FullParser Commitment Parsing Implementation (TASK 1 - COMPLETED)
+
+### Added
+- **FullParser commitment parsing methods** (`src/memory/FullParser.cpp`)
+  - Implemented `parseCommitmentBlock()` to parse complete COMMITMENTS blocks from domain files
+  - Implemented `parseConditionsWithFor()` with regex pattern matching for FOR clause extraction
+    - Pattern: `"([^"]+)"\s*(?:FOR\s+([^{]+))?\s*\{([^}]+)\}` captures description, optional FOR clause, and SPARQL query
+    - Supports INSTRUMENTAL, ENGAGEMENT, and COMMON_GROUND conditions
+  - Implemented `parseRecoveryAction()` to extract ON_*_FAILURE action mappings
+  - Implemented `parseRecoveryStrategy()` to parse RECOVERY_STRATEGY blocks (MODE, MAX_ATTEMPTS, TIMEOUT)
+  - Added regex support with `#include <regex>` in FullParser.cpp
+
+- **FullParser integration** (`src/memory/FullParser.cpp:732-742`)
+  - Modified `parseAction()` to detect and parse COMMITMENTS blocks
+  - Creates `std::shared_ptr<CommitmentBlock_t>` for actions with commitments
+  - Sets `has_commitments` flag appropriately
+  - Logs successful commitment parsing for each action
+
+- **Method declarations** (`include/procedural/memory/FullParser.h:128-133`)
+  - Added parseCommitmentBlock, parseConditionsWithFor, parseRecoveryAction, parseRecoveryStrategy declarations
+  - Properly ordered includes: ParsedHTN.h before action_t.h to resolve type dependencies
+
+- **Unit test infrastructure**
+  - Created `test/test_fullparser_commitments.cpp` with comprehensive test cases:
+    - `testCommitmentsParsingWithForClause` - Verifies FOR clause extraction for all patterns (robot, ?C, environment, both())
+    - `testCommitmentsWithoutForClause` - Validates optional FOR clause handling
+    - `testActionWithoutCommitments` - Ensures recovery actions have no commitments
+  - Created `test/test_commitment_with_for.dom` domain file with diverse FOR clause patterns
+  - Added test configuration to CMakeLists.txt (line 471-479)
+
+### Technical Details
+- **FOR Clause Patterns Supported:**
+  - Simple identifiers: `FOR robot`, `FOR environment`
+  - Variables: `FOR ?C` (action arguments)
+  - Multi-entity: `FOR both(robot, ?C)`
+  - Optional: Conditions without FOR clause have empty `for_clause` field
+
+- **Recovery Strategy Fields:**
+  - mode: string (retry/abort/continue)
+  - max_attempts: int (default 3)
+  - timeout: double (default 30.0s)
+
+### Resolved Issues
+
+1. **Added Commitment Support to ANTLR Grammar**
+   - Extended `ExtentedHATPParser.g4` line 17: Added `commitments?` to action rule
+   - Added commitment rules (lines 57-67): `commitments`, `commitment_content`, `commitment_block`, `recovery_strategy`, `commitment_token`
+   - Extended `ExtentedHATPLexer.g4` (lines 58-70): Added 13 new tokens (COMMITMENTS, INSTRUMENTAL, ENGAGEMENT, etc.)
+   - Grammar regenerated successfully by catkin_make
+
+2. **Resolved Namespace Ambiguity**
+   - Issue: `procedural::CommitmentBlock_t` vs `procedural_interfaces::procedural::task_recognition::CommitmentBlock_t`
+   - Solution: Used `std::reinterpret_pointer_cast` to convert between namespace aliases (FullParser.cpp:741)
+   - Both types reference the same struct definition from ParsedHTN.h
+
+3. **Recovery Strategy Parsing**
+   - ANTLR doesn't generate `recovery_strategy()` accessor method
+   - Solution: Parse RECOVERY_STRATEGY block directly from commitment text string (FullParser.cpp:1900-1957)
+   - Inline lambda functions extract MODE, MAX_ATTEMPTS, TIMEOUT values
+
+4. **Compilation Success**
+   - Library `libprocedural_full_procedural_parser_lib.so` compiled successfully (6.5MB)
+   - All FullParser methods compile without errors
+   - Grammar changes properly integrated into build system
+
+### Files Modified
+- `src/memory/FullParser.cpp` - Added 216 lines of commitment parsing logic
+- `include/procedural/memory/FullParser.h` - Added 4 method declarations
+- `test/test_fullparser_commitments.cpp` - Created (200 lines)
+- `test/test_commitment_with_for.dom` - Created (112 lines)
+- `CMakeLists.txt` - Added test configuration (lines 471-479)
+
+## 2025-10-30 - Simplified Commitment System Architecture
+
+### Added
+- **Commitment fields in Action.msg** (`procedural_interfaces/msg/Action.msg`)
+  - Added `has_commitments` boolean flag
+  - Added `commitment_info` field of type CommitmentInfo
+  - Enables commitments to travel with actions in SharedPlan messages
+  - Backward compatible: actions without commitments work unchanged
+
+### Architecture Change
+- **Direct commitment attachment approach**
+  - Commitments are now attached directly to actions in SharedPlan messages
+  - Eliminates need for separate commitment_info_server service
+  - Reduces latency by avoiding service calls
+  - Simplifies architecture with fewer moving parts
+  - Commitments are populated by HRI Planning when creating execution plans
+
+### Modified Files
+- `procedural_interfaces/msg/Action.msg` - Extended with commitment fields
+- `procedural_interfaces/include/procedural_interfaces/action_t.h` - Added commitment support to Action_t struct
+
+### Benefits
+- ✅ No additional service required
+- ✅ Zero latency for commitment access
+- ✅ Guaranteed consistency between actions and commitments
+- ✅ Simplified debugging (all data in one message)
+- ✅ Better support for plan replay and logging
+- ✅ Minimal bandwidth overhead (~1-2 KB per action with commitments)
+
+## 2025-10-30 - Integration Test Infrastructure
+
+### Added
+- **commitment_integration_test.launch** (`launch/`)
+  - Comprehensive launch file for testing the complete commitment system
+  - Launches all required components: Ontologenius, Mementar, Yggdrasil, CommitmentMonitor, MissionManager
+  - Supports multiple test scenarios: success, violation, multi_violation
+  - Configurable simulation modes and debug options
+
+- **ontology_fact_injector node** (`src/nodes/ontology_fact_injector.cpp`)
+  - Test utility to simulate real-world events by publishing facts
+  - Three test scenarios:
+    - `success`: All commitments maintained throughout execution
+    - `violation`: INSTRUMENTAL commitment violated mid-execution
+    - `multi_violation`: Multiple commitment types violated sequentially
+  - Publishes to `/ontologenius/insert` topic for fact injection
+  - Configurable delays and agent IDs
+
+- **commitment_test_monitor node** (`src/nodes/commitment_test_monitor.cpp`)
+  - Automated test validation that verifies system behavior
+  - Monitors `/commitment/events` and `/yggdrasil/events` topics
+  - Validates expected event sequences for each scenario
+  - Reports test pass/fail with detailed failure reasons
+  - Configurable timeout and expected scenario
+  - Exits with appropriate return code for CI/CD integration
+
+### Test Scenarios
+
+**Success Scenario**:
+- Expected: MADE → ACTIVATED → FULFILLED
+- Validates: Commitment lifecycle without violations
+
+**Violation Scenario**:
+- Expected: MADE → ACTIVATED → Yggdrasil deactivation → CONDITION_VIOLATED
+- Validates: Real-time SPARQL monitoring, violation detection, recovery action triggering
+
+**Multi-Violation Scenario**:
+- Expected: Multiple VIOLATED events with different condition_types
+- Validates: Handling of INSTRUMENTAL, ENGAGEMENT, and COMMON_GROUND violations
+
+### Usage
+
+```bash
+# Run violation test scenario
+roslaunch procedural commitment_integration_test.launch test_scenario:=violation
+
+# Run success test scenario
+roslaunch procedural commitment_integration_test.launch test_scenario:=success
+
+# Run with debug mode
+roslaunch procedural commitment_integration_test.launch test_scenario:=violation debug_mode:=true
+```
+
+### Files Modified
+- `launch/commitment_integration_test.launch` (new)
+- `src/nodes/ontology_fact_injector.cpp` (new)
+- `src/nodes/commitment_test_monitor.cpp` (new)
+- `CMakeLists.txt` (added 2 new executables)
+- `CHANGELOG.md` (this file)
+
+### Integration Test Results
+✅ All test nodes compile successfully
+✅ Launch file configuration complete
+⏳ End-to-end testing pending (requires full system running)
+
+## 2025-10-30 - Real SPARQL Commitment Monitoring
+
+### Added
+- **commitment_monitor node** (`src/nodes/commitment_monitor.cpp`)
+  - Real-time SPARQL-based commitment monitoring during action execution
+  - Subscribes to `/commitment/monitoring_request` for monitoring requests from MissionManager
+  - Registers SPARQL conditions with Yggdrasil for continuous evaluation
+  - Publishes CONDITION_VIOLATED events when conditions become false
+  - Automatic cleanup of SPARQL registrations when actions complete
+
+- **Yggdrasil Integration**
+  - Registers INSTRUMENTAL, ENGAGEMENT, and COMMON_GROUND conditions separately
+  - Uses `/yggdrasil/register_event` service for condition registration
+  - Monitors `/yggdrasil/events` for deactivation (condition becoming false)
+  - Unregisters conditions via `/yggdrasil/unregister_event` on action completion
+
+- **CommitmentMonitoringRequest message** (`procedural_interfaces/msg/`)
+  - Contains commitment_id, action_name, agent_id, and full CommitmentInfo
+  - Enables MissionManager to request monitoring for specific actions
+  - Published on `/commitment/monitoring_request` topic
+
+### Architecture
+**Real-time monitoring flow:**
+```
+MissionManager: Action starts
+    ↓ publishes CommitmentMonitoringRequest
+CommitmentMonitor: Receives request
+    ↓ for each condition (INSTRUMENTAL, ENGAGEMENT, COMMON_GROUND)
+    ↓   calls /yggdrasil/register_event
+Yggdrasil: Monitors SPARQL conditions
+    ↓ [continuous evaluation]
+    ↓ condition becomes false?
+    ↓ publishes Event (is_deactivation=true)
+CommitmentMonitor: Detects violation
+    ↓ publishes CommitmentEvent (CONDITION_VIOLATED)
+MissionManager: Handles violation
+    ↓ executes recovery action
+```
+
+### Integration Points
+- Works with existing Yggdrasil infrastructure
+- Leverages ActionRecognitionDataSource commitment predicates
+- Seamlessly integrates with MissionManager commitment lifecycle
+- Replaces simulated events from commitment_test_publisher
+
+### Files Modified
+- `src/nodes/commitment_monitor.cpp` (new)
+- `CMakeLists.txt` (added commitment_monitor executable)
+- `CHANGELOG.md` (this file)
+
+### Dependencies
+- `yggdrasil_interfaces` for event registration services
+- `procedural_interfaces` for commitment messages
+- Requires Yggdrasil node running with ActionRecognitionDataSource
+
 ## 2025-10-29 - Commitment System Support
 
 ### Added

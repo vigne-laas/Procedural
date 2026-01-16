@@ -10,13 +10,13 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "ProceduralMemory");
     ros::NodeHandle n;
 
-    procedural::Parameters params;
-    params.insert(procedural::Parameter("name", {"-n", "--name"}));
-    params.insert(procedural::Parameter("file_path", {"-f", "--file_path"}));
+    ::procedural::Parameters params;
+    params.insert(::procedural::Parameter("name", {"-n", "--name"}));
+    params.insert(::procedural::Parameter("file_path", {"-f", "--file_path"}));
 
     params.set(argc, argv);
     params.display();
-    procedural::MemoryROSInterface memory_ros_interface(&n, params.at("file_path").getFirst());
+    ::procedural::MemoryROSInterface memory_ros_interface(&n, params.at("file_path").getFirst());
     memory_ros_interface.run();
 
 

@@ -1,0 +1,50 @@
+HTN {
+    action GuideClient(Client C) {
+        preconditions {
+            robot isAvailable true;
+        };
+        effects {
+            robot isGuiding C;
+        };
+        COMMITMENTS {
+            INSTRUMENTAL {
+                "Battery sufficient" FOR robot {
+                    SELECT * WHERE { robot hasBattery ?b FILTER(?b > 20) }
+                };
+                "Path is clear" FOR environment {
+                    SELECT * WHERE { NOT { ?obs blockingPath true } }
+                };
+            };
+            ENGAGEMENT {
+                "Client follows robot" FOR ?C {
+                    SELECT * WHERE { ?C isFollowing robot }
+                };
+            };
+            COMMON_GROUND {
+                "Both know destination" FOR both(robot, ?C) {
+                    SELECT * WHERE { robot knowsDestination ?d . ?C knowsDestination ?d }
+                };
+            };
+            ON_INSTRUMENTAL_FAILURE: "stop_and_wait";
+            ON_ENGAGEMENT_FAILURE: "call_client";
+            ON_COMMON_GROUND_FAILURE: "explain_destination";
+        };
+    };
+
+    action MoveToLocation(Location L) {
+        preconditions {
+            robot canMove true;
+        };
+        effects {
+            robot isAt L;
+        };
+        COMMITMENTS {
+            INSTRUMENTAL {
+                "Motors operational" FOR robot {
+                    SELECT * WHERE { robot motorsOK true }
+                };
+            };
+            ON_INSTRUMENTAL_FAILURE: "emergency_stop";
+        };
+    };
+};

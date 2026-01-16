@@ -157,12 +157,16 @@ struct effects_t {
 struct CommitmentCondition_t {
     std::string sparql_query;
     std::string description;
+    std::string for_clause;  // KISS: Who/what to monitor (robot, ?C, environment, etc.)
 
     friend std::ostream& operator<<(std::ostream& os, const CommitmentCondition_t& lhs)
     {
         os << "      Query: " << lhs.sparql_query;
         if (!lhs.description.empty()) {
             os << " (" << lhs.description << ")";
+        }
+        if (!lhs.for_clause.empty()) {
+            os << " FOR " << lhs.for_clause;
         }
         return os;
     }

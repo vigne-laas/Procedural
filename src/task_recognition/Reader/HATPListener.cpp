@@ -47,6 +47,32 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                 return std::string::npos;
             };
 
+            // Helper function to extract FOR clause before SELECT query
+            auto extractForClause = [](const std::string& text, size_t before_select_pos) -> std::string {
+                // Look backward from SELECT position to find "FOR identifier"
+                if (before_select_pos > 3) {
+                    size_t search_start = (before_select_pos > 50) ? before_select_pos - 50 : 0;
+                    std::string search_area = text.substr(search_start, before_select_pos - search_start);
+                    size_t for_pos = search_area.rfind("FOR");
+                    if (for_pos != std::string::npos) {
+                        // Extract identifier after FOR
+                        size_t id_start = for_pos + 3;  // After "FOR"
+                        // Skip whitespace
+                        while (id_start < search_area.length() && isspace(search_area[id_start])) id_start++;
+                        // Extract identifier
+                        size_t id_end = id_start;
+                        while (id_end < search_area.length() &&
+                               (isalnum(search_area[id_end]) || search_area[id_end] == '_' || search_area[id_end] == '?')) {
+                            id_end++;
+                        }
+                        if (id_end > id_start) {
+                            return search_area.substr(id_start, id_end - id_start);
+                        }
+                    }
+                }
+                return "";
+            };
+
             // Simple text-based parsing for now (can be improved later)
             // Parse INSTRUMENTAL conditions
             size_t instrumental_pos = commitment_text.find("INSTRUMENTAL{");
@@ -67,6 +93,8 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                         {
                             CommitmentCondition_t cond;
                             cond.sparql_query = instrumental_block.substr(pos, query_end - pos + 1);
+                            // Extract FOR clause if present
+                            cond.for_clause = extractForClause(instrumental_block, pos);
                             action_.commitments.instrumental.push_back(cond);
                             pos = query_end + 1;
                         }
@@ -96,6 +124,8 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                         {
                             CommitmentCondition_t cond;
                             cond.sparql_query = engagement_block.substr(pos, query_end - pos + 1);
+                            // Extract FOR clause if present
+                            cond.for_clause = extractForClause(engagement_block, pos);
                             action_.commitments.engagement.push_back(cond);
                             pos = query_end + 1;
                         }
@@ -125,6 +155,8 @@ void HATPListener::enterHtn(HATPParser::HtnContext* ctx)
                         {
                             CommitmentCondition_t cond;
                             cond.sparql_query = cg_block.substr(pos, query_end - pos + 1);
+                            // Extract FOR clause if present
+                            cond.for_clause = extractForClause(cg_block, pos);
                             action_.commitments.common_ground.push_back(cond);
                             pos = query_end + 1;
                         }

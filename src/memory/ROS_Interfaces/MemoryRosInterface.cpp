@@ -1,5 +1,6 @@
 #include "procedural/memory/ROS_Interfaces/MemoryRosInterface.h"
 #include <procedural/memory/ProceduralFullReader.h>
+#include <procedural/memory/ActionRosConverter.h>
 
 namespace procedural {
 MemoryROSInterface::MemoryROSInterface(ros::NodeHandle* n, const std::string& path)
@@ -17,8 +18,8 @@ bool MemoryROSInterface::getRobotActions(procedural_interfaces::getRobotActions:
 {
     for (const auto& action: parser_.getActions().actions)
     {
-        // Utilise directement toRosMsg() qui gère correctement les champs literal/value
-        res.actions.push_back(action.toRosMsg());
+        // Use ActionRosConverter to handle commitment conversion
+        res.actions.push_back(convertActionToRos(action));
     }
     return true;
 }
@@ -116,8 +117,8 @@ bool MemoryROSInterface::getActions(procedural_interfaces::GetActions::Request& 
     {
         if (req.filter.empty() || action.name.find(req.filter) != std::string::npos)
         {
-            procedural_interfaces::Action action_msg = action.toRosMsg();
-            res.actions.push_back(action_msg);
+            // Use ActionRosConverter to handle commitment conversion
+            res.actions.push_back(convertActionToRos(action));
         }
     }
     std::cout << "GetActions service called - returned " << res.actions.size() << " actions" << std::endl;
@@ -154,7 +155,8 @@ bool MemoryROSInterface::getActionDetails(procedural_interfaces::GetActionDetail
     {
         if (action.name == req.action_name)
         {
-            res.action = action.toRosMsg();
+            // Use ActionRosConverter to handle commitment conversion
+            res.action = convertActionToRos(action);
             res.found = true;
             break;
         }

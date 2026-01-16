@@ -64,5 +64,5 @@ commitment_token: INSTRUMENTAL | ENGAGEMENT | COMMON_GROUND
                 | ON_INSTRUMENTAL_FAILURE | ON_ENGAGEMENT_FAILURE | ON_COMMON_GROUND_FAILURE
                 | RECOVERY_STRATEGY | MODE | MAX_ATTEMPTS | TIMEOUT
                 | SELECT | COLON | SEMICOLON | STRING | NUMBER | POINT
-                | IDENTIFIER | OpenPar | ClosePar | Comma | FORALL
+                | IDENTIFIER | OpenPar | ClosePar | Comma | FORALL | FOR
                 | ~(OpenCurly | CloseCurly);

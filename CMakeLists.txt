@@ -166,6 +166,7 @@ add_library(${PROJECT_NAME}_logger_lib
 
 add_library(${PROJECT_NAME}_utils_lib
         src/utils/WordTable.cpp
+        src/ResponsibilityAnalyzer.cpp
 )
 target_link_libraries(${PROJECT_NAME}_utils_lib
         ${PROJECT_NAME}_logger_lib
@@ -377,6 +378,28 @@ target_link_libraries(commitment_test_publisher
         ${catkin_LIBRARIES}
 )
 
+# Commitment monitor node (real SPARQL monitoring)
+add_executable(commitment_monitor src/nodes/commitment_monitor.cpp)
+add_dependencies(commitment_monitor ${catkin_EXPORTED_TARGETS})
+target_link_libraries(commitment_monitor
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}_utils_lib
+)
+
+# Ontology fact injector (test utility)
+add_executable(ontology_fact_injector src/nodes/ontology_fact_injector.cpp)
+add_dependencies(ontology_fact_injector ${catkin_EXPORTED_TARGETS})
+target_link_libraries(ontology_fact_injector
+        ${catkin_LIBRARIES}
+)
+
+# Commitment test monitor (test validation)
+add_executable(commitment_test_monitor src/nodes/commitment_test_monitor.cpp)
+add_dependencies(commitment_test_monitor ${catkin_EXPORTED_TARGETS})
+target_link_libraries(commitment_test_monitor
+        ${catkin_LIBRARIES}
+)
+
 add_executable(task_recognition_node src/nodes/task_recognition_node.cpp)
 add_dependencies(task_recognition_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(task_recognition_node
@@ -439,6 +462,21 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS CommitmentParser ################
     catkin_add_gtest(CommitmentParser_test test/test_commitment_parser.cpp)
     target_link_libraries(CommitmentParser_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
+    ############### TESTS FOR Clause Parsing ################
+    catkin_add_gtest(ForClauseParsing_test test/test_for_clause_parsing.cpp)
+    target_link_libraries(ForClauseParsing_test ${catkin_LIBRARIES} ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_logger_lib)
+    ############### TESTS ResponsibilityAnalyzer ################
+    catkin_add_gtest(ResponsibilityAnalyzer_test test/test_responsibility_analyzer.cpp)
+    target_link_libraries(ResponsibilityAnalyzer_test ${catkin_LIBRARIES} ${PROJECT_NAME}_utils_lib)
+    ############### TESTS FullParser Commitments ################
+    catkin_add_gtest(FullParserCommitments_test test/test_fullparser_commitments.cpp)
+    target_link_libraries(FullParserCommitments_test
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}_memory_lib
+        ${PROJECT_NAME}_full_procedural_parser_lib
+        ${PROJECT_NAME}_logger_lib
+        ${ANTLR4_RUNTIME_LIBRARIES}
+    )
     ############### TESTS TaskBuilder ################
     catkin_add_gtest(TaskBuilder_test test/task_recognition/Builder/test_builder_htn.cpp)
     target_link_libraries(TaskBuilder_test ${catkin_LIBRARIES} ${PROJECT_NAME}_htn_builder_lib ${PROJECT_NAME}_domain_reader_lib ${PROJECT_NAME}_task_structure_lib ${PROJECT_NAME}_logger_lib ${PROJECT_NAME}_action_reader_lib ${PROJECT_NAME}_action_lib ${PROJECT_NAME}_action_builder_lib)
