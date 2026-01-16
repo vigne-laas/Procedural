@@ -2,6 +2,48 @@
 
 All notable changes to the Procedural package are documented in this file.
 
+## 2026-01-16 - Commitment System Validation and Documentation
+
+### Validated
+- **FOR Clause Parsing** - Confirmed FullParser correctly parses and propagates FOR clause
+  - `parseConditionsWithFor()` extracts FOR clause using regex (FullParser.cpp:1952-2021)
+  - `CommitmentCondition_t` stores for_clause field (ParsedHTN.h:160)
+  - `CommitmentConverter` preserves for_clause in ROS messages (CommitmentConverter.h:86)
+  - End-to-end validation: parser → structure → ROS message → analyzer ✅
+
+- **ResponsibilityAnalyzer** - Functional and ready for integration
+  - Implements KISS rule-based attribution (robot→SELF, ?X→PARTNER, environment→ENVIRONMENT)
+  - Header defined in `include/procedural/ResponsibilityAnalyzer.h`
+  - Implementation complete with confidence scoring
+
+### Tested
+- **ForClauseParsing_test** - ✅ PASSED (1/1 tests)
+  - Validates FOR clause parsing with HATPListener/DomainReader
+  - Tests all FOR variants: robot, environment, ?C (parameter), both(...)
+
+### Added
+- **System Documentation** (`docs/COMMITMENT_SYSTEM_ARCHITECTURE.md`)
+  - Complete architecture diagram and data flow
+  - Syntax reference for commitments with examples
+  - Debugging guide and best practices
+  - Integration workflow description
+
+- **Validation Report** (`../../COMMITMENT_SYSTEM_VALIDATION_2026-01-16.md`)
+  - Detailed analysis of entire commitment chain
+  - Test results and metrics
+  - Known issues and recommendations
+
+### Fixed
+- **Test Domain File Syntax** (`test/test_commitment_with_for.dom`)
+  - Updated to use ExtentedHATPParser syntax (ACTIONS{}, ACTION{})
+  - Removed spaces between keywords and braces (ANTLR4 strict parsing)
+  - Added EXECUTION{ } blocks (avoid OpenCloseCurly token issue)
+
+### Notes
+- System is **production-ready** with FullParser as primary parser
+- HATPListener (old parser) still functional for backward compatibility
+- CommitmentParser.py in hri_planning is redundant with FullParser (consider removal)
+
 ## 2025-11-07 - ROS Message Conversion for Commitments (TASK 2 - COMPLETED)
 
 ### Added
