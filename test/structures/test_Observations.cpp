@@ -87,14 +87,14 @@ TEST(Observation_FactTest, testWithObservationFact)
     LOG_INFO << "Test avec faits partiellement set et faux \n";
     obs_transition = procedural::ObservationFact(fact_transition);
     auto subject = obs_transition.getFact().getSubject();
-    subject->setValue(procedural::WordTable::individuals_table.get("sub"));
-    LOG_DEBUG << "fact transition : " << obs_transition.getFact().getSubject()->getValue();
+    subject.second->setValue(procedural::WordTable::individuals_table.get("sub"));
+    LOG_DEBUG << "fact transition : " << obs_transition.getFact().getSubject().second->getValue();
 
-    obs_transition.getFact().getSubject()->setValue(procedural::WordTable::individuals_table.get("sub"));
+    obs_transition.getFact().getSubject().second->setValue(procedural::WordTable::individuals_table.get("sub"));
 //    LOG_DEBUG << "obs_transition : " << obs_transition.table_variables_.toString();
 //    LOG_DEBUG << "obs_receipt : " << obs_receipt.table_variables_.toString();
     LOG_DEBUG << "fact transition : " << obs_transition.getFact().toString();
-    LOG_DEBUG << "subject fact : " << obs_transition.getFact().getSubject()->toString();
+    LOG_DEBUG << "subject fact : " << obs_transition.getFact().getSubject().second->toString();
     ASSERT_FALSE(obs_transition == obs_receipt);
 //    var_object->setValue(procedural::WordTable::individuals_table.get("obj"));
 //    ASSERT_FALSE(obs_transition == obs_receipt);
@@ -128,16 +128,16 @@ TEST(ObservationTest, testLinkVariables)
 {
 
 
-    // Créer des variables à lier
-    std::shared_ptr<procedural::Variable_t> var1 = std::make_shared<procedural::Variable_t>("A", "var");
-    std::shared_ptr<procedural::Variable_t> var2 = std::make_shared<procedural::Variable_t>("B", "var");
-    std::shared_ptr<procedural::Variable_t> var3 = std::make_shared<procedural::Variable_t>("C", "var");
+    // Créer des variables à lier - use single-argument constructor
+    std::shared_ptr<procedural::Variable_t> var1 = std::make_shared<procedural::Variable_t>("var");
+    std::shared_ptr<procedural::Variable_t> var2 = std::make_shared<procedural::Variable_t>("var");
+    std::shared_ptr<procedural::Variable_t> var3 = std::make_shared<procedural::Variable_t>("var");
 
-    std::shared_ptr<procedural::Variable_t> var4 = std::make_shared<procedural::Variable_t>("A", "var");
+    std::shared_ptr<procedural::Variable_t> var4 = std::make_shared<procedural::Variable_t>("var");
     var4->setValue(1);
-    std::shared_ptr<procedural::Variable_t> var5 = std::make_shared<procedural::Variable_t>("B", "var");
+    std::shared_ptr<procedural::Variable_t> var5 = std::make_shared<procedural::Variable_t>("var");
     var5->setValue(2);
-    std::shared_ptr<procedural::Variable_t> var6 = std::make_shared<procedural::Variable_t>("C", "var");
+    std::shared_ptr<procedural::Variable_t> var6 = std::make_shared<procedural::Variable_t>("var");
     var6->setValue(3);
 
     // Créer une map de variables
@@ -187,7 +187,7 @@ TEST(ObservationTest, testLinkVariables)
 
 int main(int argc, char** argv)
 {
-    SET_MIN_LEVEL(Logger::DEBUG);
+    SET_MIN_LEVEL(procedural::Logger::DEBUG);
     testing::InitGoogleTest(&argc, argv);
     ros::init(argc, argv, "test_ObservationFact");
     return RUN_ALL_TESTS();

@@ -430,7 +430,7 @@ if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     ############### TESTS Variables Table################
     catkin_add_gtest(VariablesTable_test test/structures/test_VariablesTable.cpp)
-    target_link_libraries(VariablesTable_test ${catkin_LIBRARIES})
+    target_link_libraries(VariablesTable_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib)
     ############### TESTS Observation ################
     catkin_add_gtest(Observations_test test/structures/test_Observations.cpp)
     target_link_libraries(Observations_test ${catkin_LIBRARIES} ${PROJECT_NAME}_structures_lib)
@@ -484,6 +484,16 @@ if (CATKIN_ENABLE_TESTING)
     ############### TESTS Parser Inclusion System ################
     catkin_add_gtest(ParserInclusion_test test/test_parser_inclusion.cpp)
     target_link_libraries(ParserInclusion_test
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}_memory_lib
+        ${PROJECT_NAME}_full_procedural_parser_lib
+        ${PROJECT_NAME}_logger_lib
+        ${ANTLR4_RUNTIME_LIBRARIES}
+    )
+
+    ############### TESTS Hospital Domain Parsing ################
+    catkin_add_gtest(HospitalDomain_test test/test_hospital_domain.cpp)
+    target_link_libraries(HospitalDomain_test
         ${catkin_LIBRARIES}
         ${PROJECT_NAME}_memory_lib
         ${PROJECT_NAME}_full_procedural_parser_lib

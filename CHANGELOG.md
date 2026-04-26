@@ -2,6 +2,24 @@
 
 All notable changes to the Procedural package are documented in this file.
 
+## 2026-02-13 - Support CONDITIONS dans les roles de PRACTICES
+
+### Modified
+- **`ExtentedHATPParser.g4`** (ligne 114) : Ajout de `conditions?` optionnel dans la regle `role_with_attente`
+  - Avant : `role_with_attente: MINUS name (OpenCurly capacites_list? attentes_list? CloseCurly)? SEMICOLON`
+  - Apres : `role_with_attente: MINUS name (OpenCurly conditions? capacites_list? attentes_list? CloseCurly)? SEMICOLON`
+  - Permet aux roles de PRACTICES de definir leurs propres CONDITIONS SPARQL
+
+- **`FullParser.cpp`** : 2 modifications
+  - Parsing des CONDITIONS pour les roles de practice (~ligne 543) : extrait `conditions_query` si present dans `role_with_attente`
+  - `linkRolesToPractices()` (~ligne 327) : preserve les CONDITIONS specifiques du practice au lieu d'ecraser avec celles du frame
+  - Avant : les roles de practice heritaient toujours des CONDITIONS du frame
+  - Apres : si le practice definit ses propres CONDITIONS, elles sont utilisees a la place
+
+### Tested
+- HospitalDomain_test : 8/8 tests passent
+- MemoryIntegration_test : 7/7 OK, 0 failed (pas de regression)
+
 ## 2026-01-16 - Commitment System Validation and Documentation
 
 ### Validated

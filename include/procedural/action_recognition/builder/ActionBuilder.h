@@ -23,14 +23,14 @@ public:
 
 
     ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                  std::vector<ParsedComposedAction_t>& composed_actions,const std::string& path = "");
+                  const std::vector<ParsedComposedAction_t>& composed_actions,const std::string& path = "");
 
     ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                  std::vector<ParsedComposedAction_t>& composed_actions,
+                  const std::vector<ParsedComposedAction_t>& composed_actions,
                   onto::OntologyManipulator* client, const std::string& path = "");
 
     bool build(const std::vector<ParsedSimpleAction_t>& simple_actions,
-               std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path = "");
+               const std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path = "");
 
     void display() const;
 
@@ -43,7 +43,7 @@ private:
 
     void buildSimpleAction(const std::vector<ParsedSimpleAction_t>& simple_actions, const std::string& path = "");
 
-    bool buildComposedAction(std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path = "");
+    bool buildComposedAction(const std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path = "");
 
     bool completeRemap(SubStateMachine_t& sub_state_machine);
 

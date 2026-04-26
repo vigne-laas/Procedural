@@ -111,7 +111,7 @@ role_with_condition: MINUS name (OpenCurly conditions capacites_list? attentes_l
 
 // New rules for roles with attentes (at practice level)
 roles_with_attentes: ROLES OpenCurly role_with_attente* CloseCurly SEMICOLON;
-role_with_attente: MINUS name (OpenCurly capacites_list? attentes_list? CloseCurly)? SEMICOLON;
+role_with_attente: MINUS name (OpenCurly conditions? capacites_list? attentes_list? CloseCurly)? SEMICOLON;
 attentes_list: ATTENTES COLON OpenCurly attente_extended* CloseCurly;
 
 // New rules for capacites

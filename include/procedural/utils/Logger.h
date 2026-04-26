@@ -102,13 +102,13 @@ private:
     static Level minLevel_;
 };
 
-#define LOG(level) Logger(level, __PRETTY_FUNCTION__)
-#define LOG_DEBUG Logger(Logger::DEBUG, __PRETTY_FUNCTION__)
-#define LOG_INFO Logger(Logger::INFO, __PRETTY_FUNCTION__)
-#define LOG_WARNING Logger(Logger::WARNING, __PRETTY_FUNCTION__)
-#define LOG_ERROR Logger(Logger::ERROR, __PRETTY_FUNCTION__)
-
-#define SET_MIN_LEVEL(level) Logger::setMinLevel(level)
-
 } // procedural
+
+#define LOG(level) procedural::Logger(level, __PRETTY_FUNCTION__)
+#define LOG_DEBUG procedural::Logger(procedural::Logger::DEBUG, __PRETTY_FUNCTION__)
+#define LOG_INFO procedural::Logger(procedural::Logger::INFO, __PRETTY_FUNCTION__)
+#define LOG_WARNING procedural::Logger(procedural::Logger::WARNING, __PRETTY_FUNCTION__)
+#define LOG_ERROR procedural::Logger(procedural::Logger::ERROR, __PRETTY_FUNCTION__)
+
+#define SET_MIN_LEVEL(level) procedural::Logger::setMinLevel(level)
 #endif //PROCEDURAL_LOGGER_H

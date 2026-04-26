@@ -324,16 +324,25 @@ void FullParser::linkRolesToPractices()
             
             if (frame_role != nullptr)
             {
-                // Store original practice-specific attentes
+                // Store original practice-specific data
                 std::vector<Attente> practice_attentes = practice_role.attentes;
                 std::vector<Capacite> practice_capacites = practice_role.capacites;
+                std::string practice_conditions = practice_role.conditions_query;
                 std::cout << "    DEBUG: Storing " << practice_attentes.size() << " practice-specific attentes before merge" << std::endl;
                 std::cout << "    DEBUG: Storing " << practice_capacites.size() << " practice-specific capacites before merge" << std::endl;
-                
+                std::cout << "    DEBUG: Practice-level conditions: " << (practice_conditions.empty() ? "(none)" : practice_conditions) << std::endl;
+
                 // Copy the complete role from the frame (includes CONDITIONS and CAPACITES)
                 practice_role = *frame_role;
-                std::cout << "    DEBUG: Copied frame role data (" << frame_role->capacites.size() 
+                std::cout << "    DEBUG: Copied frame role data (" << frame_role->capacites.size()
                           << " capacites, " << frame_role->attentes.size() << " frame attentes)" << std::endl;
+
+                // If practice defines its own conditions, use them instead of frame conditions
+                if (!practice_conditions.empty())
+                {
+                    practice_role.conditions_query = practice_conditions;
+                    std::cout << "    DEBUG: Using practice-specific conditions instead of frame conditions" << std::endl;
+                }
                 
                 // Merge attentes: keep frame attentes + add practice-specific attentes
                 int added_attentes = 0;
@@ -542,8 +551,18 @@ Practice* FullParser::parsePractice(ExtentedHATPParser::PracticeContext* practic
         {
             Role* new_role = new Role();
             new_role->role_name = trim(role_with_attente->name()->getText());
-            std::cout << "  DEBUG: Found role '" << new_role->role_name << "' in practice (no capacites at this level)" << std::endl;
-            
+            std::cout << "  DEBUG: Found role '" << new_role->role_name << "' in practice" << std::endl;
+
+            // Parse conditions if present (optional for practice-level roles)
+            if (role_with_attente->conditions() != nullptr)
+            {
+                for (auto* const query: role_with_attente->conditions()->query())
+                {
+                    new_role->conditions_query = query->getText();
+                    std::cout << "    DEBUG: Added practice-level conditions: " << new_role->conditions_query << std::endl;
+                }
+            }
+
             // Parse attentes if present
             if (role_with_attente->attentes_list() != nullptr)
             {

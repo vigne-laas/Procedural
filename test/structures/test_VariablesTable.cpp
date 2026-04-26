@@ -7,7 +7,8 @@
 TEST(VariableTableTest, testVariableTable)
 {
     procedural::VariableTable_t table;
-    procedural::Variable_t var("value","type");
+    // Use single-argument constructor (type only)
+    procedural::Variable_t var("type");
     auto var_ptr = std::make_shared<procedural::Variable_t>(var);
     table.variables["test_var"] = var_ptr;
     table.agents.insert("test_agent");

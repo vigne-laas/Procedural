@@ -5,7 +5,7 @@ namespace procedural {
 
 
 ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                             std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
+                             const std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
         : onto_client_(nullptr), actions_(),
           incomplete_creation_state_machine_()
 {
@@ -16,7 +16,7 @@ ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_act
 }
 
 ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                             std::vector<ParsedComposedAction_t>& composed_actions,
+                             const std::vector<ParsedComposedAction_t>& composed_actions,
                              onto::OntologyManipulator* client, const std::string& path) : onto_client_(client),
                                                                                            actions_(),
                                                                                            incomplete_creation_state_machine_()
@@ -28,7 +28,7 @@ ActionBuilder::ActionBuilder(const std::vector<ParsedSimpleAction_t>& simple_act
 }
 
 bool ActionBuilder::build(const std::vector<ParsedSimpleAction_t>& simple_actions,
-                          std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
+                          const std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
 {
     LOG_INFO << "ActionBuilder::build starting with " << simple_actions.size()
              << " simple actions and " << composed_actions.size() << " composed actions";
@@ -68,7 +68,7 @@ void ActionBuilder::buildSimpleAction(const std::vector<ParsedSimpleAction_t>& s
     }
 }
 
-bool ActionBuilder::buildComposedAction(std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
+bool ActionBuilder::buildComposedAction(const std::vector<ParsedComposedAction_t>& composed_actions, const std::string& path)
 {
     auto toBuildActions = composed_actions;
     std::vector<ParsedComposedAction_t> incomplete_action_;

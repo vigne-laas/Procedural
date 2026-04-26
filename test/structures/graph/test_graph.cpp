@@ -11,8 +11,8 @@ TEST(GraphTest, addTransitionTest)
     procedural::Graph graph("graph", 1, "type");
     // Create a table of variables
     procedural::VariableTable_t table;
-    // Create a Variable instance
-    auto var = std::make_shared<procedural::Variable_t>("A","var");
+    // Create a Variable instance - use single-argument constructor
+    auto var = std::make_shared<procedural::Variable_t>("var");
     // Add the variable to the table
     table.variables.insert(std::make_pair("A", var));
     table.agents.insert("agent1");
@@ -61,8 +61,8 @@ TEST(GraphTest, closeTest)
     procedural::Graph graph("test_graph", 1, "test_type");
     // Create a table of variables
     procedural::VariableTable_t table;
-    // Create a Variable instance
-    auto var = std::make_shared<procedural::Variable_t>("A","var");
+    // Create a Variable instance - use single-argument constructor
+    auto var = std::make_shared<procedural::Variable_t>("var");
     // Add the variable to the table
     table.variables.insert(std::make_pair("A", var));
     table.agents.insert("agent1");

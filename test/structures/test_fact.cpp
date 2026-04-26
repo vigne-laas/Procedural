@@ -176,7 +176,7 @@ TEST(FactTestOntology, testExpandPropertyOnlyOneandMatch)
 // Run all the tests
 int main(int argc, char** argv)
 {
-    Logger::setMinLevel(Logger::DEBUG);
+    SET_MIN_LEVEL(procedural::Logger::DEBUG);
     ros::init(argc, argv, "test_Fact");
 
     onto::OntologyManipulator mock;
