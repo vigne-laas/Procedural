@@ -35,5 +35,6 @@
   <exec_depend>mementar</exec_depend>
   <exec_depend>overworld</exec_depend>
   <depend>procedural_interfaces</depend>
+  <depend>yggdrasil_interfaces</depend>
 
 </package>

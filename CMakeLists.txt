@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
         mementar
         procedural_interfaces
         overworld
+        yggdrasil_interfaces
 )
 find_package(GTest REQUIRED)
 #include_directories(/usr/src/gmock/gtest/include)
