@@ -8,7 +8,7 @@ hatp: comment* factbase* comment* htn comment* timepart comment* EOF;
 timepart: TIMEPART OpenCurly ignore*  CloseCurly ;
 factbase: FACTDATABASE OpenCurly ignore* CloseCurly ;
 htn: HTN  OpenCurly actions*  tasks*  CloseCurly ;
-actions: ACTION  action_name (OpenPar (arguments (Comma  arguments)*)? ClosePar | OpenClosePar)   OpenCurly preconditions+ effects+ commitments? cost? duration? CloseCurly SEMICOLON?;
+actions: ACTION  action_name OpenPar (arguments (Comma  arguments)*)? ClosePar   OpenCurly preconditions+ effects+ commitments? cost? duration? CloseCurly SEMICOLON?;
 action_name: IDENTIFIER;
 preconditions: PRECONDITIONS  OpenCurly  expression*  CloseCurly SEMICOLON;
 effects: EFFECTS  OpenCurly (forall|expression)* CloseCurly SEMICOLON;
@@ -44,8 +44,8 @@ list : NUMBER COLON function (order|Comma order)* SEMICOLON;
 function : IDENTIFIER OpenPar varname ( Comma varname)*  ClosePar ;
 order: operator NUMBER;
 forall : FORALL OpenPar arguments  Comma  ( OpenCurly expression? CloseCurly ) ( Comma   OpenCurly expression CloseCurly )* ClosePar SEMICOLON;
-cost : COST  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
-duration: DURATION  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
+cost : COST  OpenCurly  IDENTIFIER OpenPar ClosePar CloseCurly  SEMICOLON;
+duration: DURATION  OpenCurly  IDENTIFIER OpenPar ClosePar CloseCurly  SEMICOLON;
 
 // Commitment system rules - Accept anything as raw text
 // This rule matches everything between COMMITMENTS { and };

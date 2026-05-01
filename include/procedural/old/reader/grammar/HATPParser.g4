@@ -44,5 +44,5 @@ list : NUMBER COLON function (order|Comma order)* SEMICOLON;
 function : IDENTIFIER OpenPar varname ( Comma varname)*  ClosePar ;
 order: operator NUMBER;
 forall : FORALL OpenPar arguments  Comma  ( OpenCurly expression? CloseCurly ) ( Comma   OpenCurly expression CloseCurly )* ClosePar SEMICOLON;
-cost : COST  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
-duration: DURATION  OpenCurly  IDENTIFIER OpenClosePar CloseCurly  SEMICOLON;
+cost : COST  OpenCurly  IDENTIFIER OpenPar ClosePar CloseCurly  SEMICOLON;
+duration: DURATION  OpenCurly  IDENTIFIER OpenPar ClosePar CloseCurly  SEMICOLON;

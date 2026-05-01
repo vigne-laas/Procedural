@@ -100,7 +100,6 @@ LINE_COMMENT
 
 OpenPar: '(';
 ClosePar: ')';
-OpenClosePar: '()';
 OpenCurly: '{' ;
 CloseCurly: '}';
 OpenCloseCurly: '{}';

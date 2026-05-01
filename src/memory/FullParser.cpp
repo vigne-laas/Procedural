@@ -517,7 +517,7 @@ std::string FullParser::parseDescriptionPracticeBloc(
 Practice* FullParser::parsePractice(ExtentedHATPParser::PracticeContext* practice_context)
 {
     Practice* new_practice = new Practice();
-    new_practice->name = practice_context->name()->getText();
+    new_practice->name = trim(practice_context->name()->getText());
     new_practice->description = parseDescriptionPracticeBloc(practice_context->description_practice());
     for (auto* const competences_context: practice_context->competences())
     {
@@ -611,7 +611,7 @@ Practice* FullParser::parsePractice(ExtentedHATPParser::PracticeContext* practic
 PracticeFrame* FullParser::parsePracticeFrame(ExtentedHATPParser::Practice_frameContext* frame)
 {
     PracticeFrame* new_frame = new PracticeFrame();
-    new_frame->name = frame->name()->getText();
+    new_frame->name = trim(frame->name()->getText());
     new_frame->description = parseDescriptionPracticeBloc(frame->description_practice());
     for (auto* const conditions: frame->conditions_practices())
     {
@@ -623,7 +623,7 @@ PracticeFrame* FullParser::parsePracticeFrame(ExtentedHATPParser::Practice_frame
         {
             // std::cout << "Adding practice: " << practice->name()->getText() << std::endl;
             Practice * temp = new Practice();
-            temp->name = practice->name()->getText();
+            temp->name = trim(practice->name()->getText());
             new_frame->practices.push_back(*temp);
 
         }
@@ -709,7 +709,7 @@ PracticeFrame* FullParser::parsePracticeFrame(ExtentedHATPParser::Practice_frame
 Action_t FullParser::parseAction(ExtentedHATPParser::ActionContext* action)
 {
     Action_t new_action;
-    new_action.name = action->name()->getText();
+    new_action.name = trim(action->name()->getText());
     new_action.arguments = parseArguments(action->arguments());
 
     // Parse execution bloc
@@ -770,8 +770,8 @@ std::vector<Argument_t> FullParser::parseArguments(std::vector<ExtentedHATPParse
     for (auto* const arg: args)
     {
         Argument_t new_arg;
-        new_arg.type = arg->type()->getText();
-        new_arg.literal = arg->varname()->getText();
+        new_arg.type = trim(arg->type()->getText());
+        new_arg.literal = trim(arg->varname()->getText());
         arguments.push_back(new_arg);
     }
     return arguments;
@@ -794,7 +794,7 @@ std::vector<Execution_action_t> FullParser::parseExecutionBloc(ExtentedHATPParse
 Execution_action_t FullParser::parseExecutionAction(ExtentedHATPParser::Exec_actionContext* execution_action)
 {
     Execution_action_t new_execution_action;
-    new_execution_action.name = execution_action->name()->getText();
+    new_execution_action.name = trim(execution_action->name()->getText());
     for (auto* const arg: execution_action->exec_action_arg())
     {
         Execution_argument_t new_execution_arg = parseExecutionArgument(arg);
@@ -893,7 +893,7 @@ TripletVariable_t FullParser::parseVariable(ExtentedHATPParser::ObjectContext* c
 Attente& FullParser::parseAttente(ExtentedHATPParser::AttenteContext* attente)
 {
     const auto res = new Attente();
-    res->name = attente->name()->getText();
+    res->name = trim(attente->name()->getText());
     const auto condition = attente->conditions();
     for (auto* const query : condition->query())
     {
@@ -1032,7 +1032,7 @@ Role* FullParser::parseRole(ExtentedHATPParser::RoleContext* ctx)
 Priority* FullParser::parsePriority(ExtentedHATPParser::PriorityContext* ctx)
 {
     const auto priority = new Priority();
-    priority->name = ctx->name()->getText();
+    priority->name = trim(ctx->name()->getText());
     
     // Parse priority level
     for (auto* const priority_level_ctx: ctx->priority_level())
@@ -1077,7 +1077,7 @@ Priority* FullParser::parsePriority(ExtentedHATPParser::PriorityContext* ctx)
             else if (content_ctx->task_bloc() != nullptr)
             {
                 auto* task_ctx = content_ctx->task_bloc();
-                priority->task_name = task_ctx->name()->getText();
+                priority->task_name = trim(task_ctx->name()->getText());
 
                 // Parse task parameters
                 for (auto* const task_arg: task_ctx->task_arg())
@@ -1195,7 +1195,7 @@ Recognition_t FullParser::parseRecognitionBloc(ExtentedHATPParser::Recognition_b
     {
         for (auto* parameter : parameters_bloc->parameter())
         {
-            std::string param_name = parameter->name()->getText();
+            std::string param_name = trim(parameter->name()->getText());
             if (param_name == "ttl")
             {
                 auto* value = parameter->value();
@@ -1223,14 +1223,14 @@ void FullParser::parseTasksBloc(ExtentedHATPParser::Tasks_blocContext* ctx)
 Abstract_task_t FullParser::parseTask(ExtentedHATPParser::TaskContext* ctx)
 {
     Abstract_task_t task;
-    task.name = ctx->name()->getText();
+    task.name = trim(ctx->name()->getText());
 
     // Parse arguments
     for (auto* const arg_ctx: ctx->arguments())
     {
         Arguments_t arg;
-        arg.type = arg_ctx->type()->getText();
-        arg.name = arg_ctx->varname()->getText();
+        arg.type = trim(arg_ctx->type()->getText());
+        arg.name = trim(arg_ctx->varname()->getText());
         task.arguments.push_back(arg);
     }
 
@@ -1303,7 +1303,7 @@ Method_t FullParser::parseMethod(ExtentedHATPParser::MethodContext* ctx)
         {
             Ordered_Action_t ordered_action;
             ordered_action.id = action_id++;
-            ordered_action.name = subtask_line->name()->getText();
+            ordered_action.name = trim(subtask_line->name()->getText());
 
             // Add arguments
             for (auto* const arg: subtask_line->arg())

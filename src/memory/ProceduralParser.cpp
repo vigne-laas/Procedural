@@ -1,6 +1,20 @@
 #include "procedural/memory/ProceduralParser.h"
 
 namespace procedural {
+
+namespace {
+// Trim whitespace from both ends. Necessary because ANTLR getText() on a
+// rule context concatenates every token in its span, including the visible
+// SPACE tokens declared in ExtentedHATPLexer.g4.
+std::string trim(const std::string& str)
+{
+    const auto start = str.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) return "";
+    const auto end = str.find_last_not_of(" \t\n\r");
+    return str.substr(start, end - start + 1);
+}
+}  // namespace
+
 void ProceduralParser::enterRoot(RobotActionParser::RootContext* ctx)
 {
     for (auto* const action_bloc: ctx->actions_bloc())
@@ -19,7 +33,7 @@ void ProceduralParser::parseActionBloc(RobotActionParser::Actions_blocContext* a
 Action_t ProceduralParser::parseAction(RobotActionParser::ActionContext* action)
 {
     Action_t new_action;
-    new_action.name = action->name()->getText();
+    new_action.name = trim(action->name()->getText());
     new_action.arguments = parseArguments(action->arguments());
     new_action.executions_bloc = parseExecutionBloc(action->execution_bloc());
     new_action.description = parseDescriptionBloc(action->description_bloc());
@@ -33,8 +47,8 @@ std::vector<Argument_t> ProceduralParser::parseArguments(std::vector<RobotAction
     for (auto* const arg: args)
     {
         Argument_t new_arg;
-        new_arg.type = arg->type()->getText();
-        new_arg.literal = arg->varname()->getText();
+        new_arg.type = trim(arg->type()->getText());
+        new_arg.literal = trim(arg->varname()->getText());
         arguments.push_back(new_arg);
     }
     return arguments;
@@ -52,7 +66,7 @@ std::vector<Execution_action_t> ProceduralParser::parseExecutionBloc(RobotAction
 Execution_action_t ProceduralParser::parseExecutionAction(RobotActionParser::Exec_actionContext* execution_action)
 {
     Execution_action_t new_execution_action;
-    new_execution_action.name = execution_action->name()->getText();
+    new_execution_action.name = trim(execution_action->name()->getText());
     for (auto* const arg: execution_action->exec_action_arg())
     {
         Execution_argument_t new_execution_arg = parseExecutionArgument(arg);

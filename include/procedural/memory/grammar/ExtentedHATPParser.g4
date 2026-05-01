@@ -39,7 +39,7 @@ description_bloc: DESCRIPTION OpenCurly triplet* CloseCurly SEMICOLON;
 triplet: (NOT)? subject predicate object (REQUIRED)? SEMICOLON;
 
 execution_bloc: EXECUTION OpenCurly exec_action* CloseCurly SEMICOLON;
-exec_action: name (OpenPar exec_action_arg (Comma exec_action_arg)* ClosePar) SEMICOLON |OpenClosePar SEMICOLON;
+exec_action: name (OpenPar exec_action_arg (Comma exec_action_arg)* ClosePar) SEMICOLON | name OpenPar ClosePar SEMICOLON;
 exec_action_arg: arg |topic_name| json_struct | OpenCloseCurly;
 arg: IDENTIFIER;
 name: IDENTIFIER;
